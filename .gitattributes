@@ -1,0 +1,21 @@
+# 统一换行符：仓库内存 LF，检出也用 LF。
+# 不设的话 Windows 上 core.autocrlf=true 会把检出改成 CRLF，
+# 于是「只改了一行」的提交在 macOS / Linux 协作者那里看起来是整文件重写。
+* text=auto eol=lf
+
+# 字体与位图是二进制，禁止任何换行符转换
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+# 构建产物与依赖不进 diff 统计、不算语言占比
+dist/** linguist-generated=true
+package-lock.json linguist-generated=true
+public/fonts/*.ttf linguist-vendored=true

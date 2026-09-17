@@ -1,0 +1,846 @@
+/* 在线字体 (Google Fonts) 只在 index.html 中引入一次，避免重复请求同一份 CSS */
+
+@font-face {
+  font-family: 'Long Cang';
+  src: url('/fonts/LongCang-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ma Shan Zheng';
+  src: url('/fonts/MaShanZheng-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zhi Mang Xing';
+  src: url('/fonts/ZhiMangXing-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ZCOOL KuaiLe';
+  src: url('/fonts/ZCOOLKuaiLe-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-sidebar: #182234;
+  --bg-input: #0f172a;
+  --border-color: #334155;
+  --border-hover: #475569;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --accent: #10b981;
+  --accent-purple: #8b5cf6;
+  --card-radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* App Header */
+.app-header {
+  /* height 固定为 58px 时，内容一旦放不下就会溢出而不是换行。
+     改成 min-height + flex-wrap：宽屏放得下就仍是一行 58px（内容高 34px，
+     被 min-height 撑住），窄屏自动折成两行。
+     比用媒体查询定死断点稳 —— 顶栏一行大约要 1000px 才放得下，
+     而它下面的分栏断点是 900px，中间那 100px 区间本来会挤压变形。 */
+  height: auto;
+  min-height: 58px;
+  flex-wrap: wrap;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  gap: 8px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 品牌标识：与 public/favicon.svg 同一份图形，自带米白纸底。
+   不要再套背景色或渐变 —— 图形本身已经提供对比度。 */
+.brand-mark {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* 「画质」这个标签原本没有 nowrap：旁边的下拉框宽度是内容驱动的、不会让位，
+   于是容器一紧，标签就被挤成两行（实测 390px 下宽 20px、高 32px = 「画」/「质」）。
+   这里先禁止折行；更窄的屏干脆整条藏掉，只留下拉本身。 */
+.quality-label {
+  white-space: nowrap;
+}
+
+.brand-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-badge {
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  /* 自身也要能换行：否则整块作为一行换到第二行后，
+     在 390px 手机上依旧塞不下，还是会溢出 */
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Common Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-hover), #1d4ed8);
+}
+
+.btn-secondary {
+  background: #27354a;
+  color: #e2e8f0;
+  border-color: var(--border-color);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--border-color);
+  color: #fff;
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), #059669);
+  color: white;
+}
+.btn-accent:hover:not(:disabled) {
+  background: #059669;
+}
+
+/* 禁用态必须自己给视觉反馈：.btn-* 显式设了 color，会盖掉浏览器对 disabled
+   的默认灰化，结果「导出中」「第一页的上一页」「没有手绘时的清空」这些按钮
+   看起来完全可用，点了却没反应。 */
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 键盘可达性：这些元素原本没有任何焦点样式，Tab 时看不出焦点落在哪。
+   .preset-card 已经带了 role="button" + tabIndex，能被 Tab 到却是隐形的，
+   属于实打实的坑。用 :focus-visible 而不是 :focus，鼠标点击不会留下焦点圈。 */
+.btn:focus-visible,
+.dropdown-item:focus-visible,
+.tab-btn:focus-visible,
+.preset-card:focus-visible,
+.thumb-item:focus-visible,
+.color-swatch:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* 仅图标的方形按钮（顶栏 GitHub 入口等），去掉文字侧的横向内边距 */
+.btn-icon {
+  padding: 7px;
+  gap: 0;
+}
+
+/* App Main Body: Split View */
+.app-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Left Configuration Panel */
+.sidebar-panel {
+  width: 480px;
+  min-width: 380px;
+  background: var(--bg-sidebar);
+  /* 逻辑方向：RTL 下侧栏会跑到右侧，物理的 border-right 会落到外侧、
+     导致侧栏与预览之间没有分隔线。border-inline-end 会跟着书写方向走。 */
+  border-inline-end: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Sidebar Tab navigation */
+.tab-bar {
+  display: flex;
+  background: #111b27;
+  border-bottom: 1px solid var(--border-color);
+  padding: 4px 8px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: #fff;
+  background: #253347;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Tab Content */
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Editor Input & Area */
+.text-editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+}
+
+.editor-textarea {
+  flex: 1;
+  min-height: 280px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+.editor-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.editor-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-subtle);
+  padding: 0 4px;
+}
+
+.file-drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.4);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.file-drop-zone:hover, .file-drop-zone.dragover {
+  border-color: var(--primary);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+/* Control Group / Sections */
+.control-group {
+  background: var(--bg-card);
+  border: 1px solid #2e3c51;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 标题与右侧按钮组在窄屏会互相挤压：按钮组宽度由内容决定、不让位，于是标题被压成
+     两行（实测 390px 下「手写与系统字」/「体」），按钮文字也跟着折行。
+     允许换行后按钮组整体落到下一行，两边都恢复单行。
+     用 row-gap 而不是 gap —— 后者会同时加上横向间距，改动桌面观感。 */
+  flex-wrap: wrap;
+  row-gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.control-value {
+  font-size: 12px;
+  font-family: monospace;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  background: var(--border-color);
+  border-radius: 3px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  transition: transform 0.1s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Select, Inputs */
+select, input[type="text"], input[type="number"] {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+}
+select:focus, input:focus {
+  border-color: var(--primary);
+}
+
+/* Ink Color Palette */
+.color-palette {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+.color-swatch.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* Right Preview Viewport */
+.preview-viewport {
+  flex: 1;
+  background: #0a0f1d;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview-toolbar {
+  /* 同理：这一条工具栏一行要约 690px，而它只有「窗口宽 − 侧栏 480px」可用，
+     也就是 1024px 的笔记本上本来就会溢出（不是只有手机才有的问题）。 */
+  height: auto;
+  min-height: 48px;
+  flex-wrap: wrap;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  gap: 8px;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+/* 工具栏里的两组控件自身也要能换行。
+   实测 390px 下：缩放组宽 382px，而工具栏内容盒只有 366px —— 组内不换行就会被
+   .preview-viewport 的 overflow:hidden 裁掉最右侧按钮（越界 16px，而按钮仅 35px 宽，
+   近一半被切）。给个换行兜底，以后标签变长也只是多一行，不会切掉。 */
+.preview-toolbar > div {
+  flex-wrap: wrap;
+}
+
+/* 导出按钮与前面的缩放组拉开距离。原本是内联的 marginLeft: 12px，
+   挪到类里是为了窄屏能覆盖掉 —— 那 12px 在 390px 下正是越界的一部分。 */
+.toolbar-export {
+  margin-inline-start: 12px;
+}
+
+.preview-canvas-container {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: radial-gradient(circle at center, #151f32 0%, #090e17 100%);
+}
+
+.paper-canvas-wrapper {
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  transition: transform 0.15s ease-out;
+  background: #fff;
+  display: inline-block;
+  line-height: 0;
+}
+
+.preview-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 手绘层：绝对定位覆盖纸面，默认不吃指针事件（由内联 pointerEvents 接管） */
+.doodle-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* Bottom Thumbnail Strip */
+.thumbnail-strip {
+  height: 90px;
+  background: #111a2c;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.thumb-item {
+  width: 52px;
+  height: 70px;
+  background: #fff;
+  border-radius: 3px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--border-color);
+  transition: all 0.15s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+.thumb-item:hover {
+  transform: translateY(-2px);
+}
+.thumb-item.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  width: 720px;
+  max-width: 92vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.preset-card {
+  background: #111b27;
+  border: 1px solid #2e3c51;
+  border-radius: 10px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.preset-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  background: #182538;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  inset-inline-end: 0;
+  margin-top: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  padding: 6px;
+  min-width: 170px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #e2e8f0;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: start;
+}
+.dropdown-item:hover {
+  background: #2b394f;
+  color: #fff;
+}
+
+/* ============================================================
+   响应式适配（桌面优先）
+   ------------------------------------------------------------
+   #root 是 height:100%，且 body/html overflow:hidden —— 页面本身不滚动，
+   纵向空间全靠 flex 分配。所以窄屏必须把「左右分栏」改成「上下分栏」，
+   否则侧栏那 380px 的 min-width 会把预览区挤成一条缝。
+   ============================================================ */
+@media (max-width: 900px) {
+  /* 换行能力已在基础样式里给足，这里只是收紧留白 */
+  .app-header {
+    padding: 8px 12px;
+  }
+
+  /* 字数/页数在窄屏是次要信息，让位给操作按钮。
+     品牌徽标「100% 本地」是隐私卖点，不隐藏。 */
+  .brand-stats {
+    display: none;
+  }
+
+  .app-main {
+    flex-direction: column;
+  }
+
+  /* min-width 归零是重点：380px 的下限正是横向溢出的直接原因。
+     侧栏给 42vh，把更多纵向空间留给预览 —— 配置区本来就能滚。 */
+  .sidebar-panel {
+    width: 100%;
+    min-width: 0;
+    max-height: 42vh;
+    border-inline-end: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  /* min-height:0 不能省，否则内部内容会把这块顶高、反过来挤压配置区 */
+  .preview-viewport {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  /* 输入框 280px 的下限比 42vh 还高，会把侧栏顶出屏幕 */
+  .editor-textarea {
+    min-height: 150px;
+  }
+
+  .tab-content {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .preview-toolbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  /* 40px 留白在手机上过于奢侈 */
+  .preview-canvas-container {
+    padding: 16px;
+  }
+
+  .thumbnail-strip {
+    height: 70px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .thumb-item {
+    width: 40px;
+    height: 54px;
+  }
+}
+
+/* 手机竖屏：文字标签收成纯图标。
+   顶栏按钮、预览工具栏按钮、侧栏 tab 都带 title（本次给预览区导出按钮
+   与侧栏 tab 一并补上），悬停与读屏仍拿得到名称。 */
+@media (max-width: 560px) {
+  .header-actions .btn {
+    padding: 7px 10px;
+  }
+
+  .header-actions .btn > span,
+  .preview-toolbar .btn > span,
+  .tab-btn > span {
+    display: none;
+  }
+
+  /* 窄屏下拉框里的「标准 (1x · 145 DPI)」已经自解释，标签是纯占位 */
+  .quality-label {
+    display: none;
+  }
+
+  /* 收紧工具栏留白，给缩放组腾出 16px（实测的越界量） */
+  .preview-toolbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .preview-toolbar > div {
+    gap: 4px;
+  }
+
+  .toolbar-export {
+    margin-inline-start: 0;
+  }
+}
+
+/* Print Media Query */
+@media print {
+  body, html {
+    background: #fff !important;
+    color: #000 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .app-header,
+  .sidebar-panel,
+  .preview-toolbar,
+  .thumbnail-strip,
+  .modal-backdrop,
+  .dropdown-menu {
+    display: none !important;
+  }
+
+  .app-main {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .preview-viewport {
+    background: #fff !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .preview-canvas-container {
+    background: transparent !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .paper-canvas-wrapper {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 auto !important;
+    display: block !important;
+    transform: none !important;
+  }
+
+  .preview-canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    page-break-inside: avoid;
+    /* 屏幕上画布是靠 .preview-canvas-container 的 flex + justify-content:center 居中的，
+       而上面的打印规则把容器改成了 display:block —— 居中就此丢失。
+       A4 / Letter 下画布会缩放到填满宽度所以看不出来，但 A3 横向（420mm ≈ 1587px）
+       这类比画布本身（1200px）还宽的纸，画布就会贴左、右侧空出一大片。
+       这里补回水平居中。 */
+    margin: 0 auto;
+  }
+}

@@ -1,0 +1,60 @@
+name: 🚀 Build & deploy to EdgeOne Pages
+
+on:
+  push:
+    branches:
+      # 确保这是你正在使用的分支名称
+      - main
+  workflow_dispatch:
+
+# 同一分支连推两次时取消上一次，别排队跑一堆注定要覆盖的构建
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write # 需要写权限把构建产物推到 gh-pages 分支
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v7
+        with:
+          # 获取完整历史，供部署动作生成稳定提交
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 三道门禁，坏构建不发布。oxlint 只显式开了两条规则
+      # （rules-of-hooks=error、only-export-components=warn），实质把关靠 tsc + vitest；
+      # npm run build 里已经含 tsc -b。
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build website
+        run: npm run build
+
+      # 部署到 gh-pages 分支。gh-pages 只当静态产物的存放处，
+      # 对外由 EdgeOne Pages 拉这个分支来发布，缓存与安全响应头由 public/edgeone.json 决定。
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          # Vite 构建产物目录
+          folder: dist
+          # 不转发 head commit message——任意提交正文中的 shell 元字符
+          # （引号、$、!、反引号）会破坏动作内部的 git commit -m 调用（exit 129）。
+          # 动作默认的静态提交信息足矣，规范历史保留在 main。

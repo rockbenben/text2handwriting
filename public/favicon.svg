@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- 纸墨手写风：米白纸张 + 红左边线 + 淡蓝横线 + 墨蓝笔迹 + 红笔批注 -->
+  <rect width="48" height="48" rx="11" fill="#fdf6e9"/>
+  <rect width="48" height="48" rx="11" fill="none" stroke="#e8dcc4" stroke-width="1"/>
+
+  <!-- 笔记本红左边线 -->
+  <line x1="10.5" y1="7" x2="10.5" y2="41" stroke="#e2a8a4" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- 淡蓝横线 -->
+  <line x1="15" y1="14.5" x2="40" y2="14.5" stroke="#b9cede" stroke-width="1.6" stroke-linecap="round" opacity="0.85"/>
+  <line x1="15" y1="36" x2="40" y2="36" stroke="#b9cede" stroke-width="1.6" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- 墨蓝手写主笔迹：行书波划，一笔连写 -->
+  <path d="M12 29
+           C 15 22, 19.5 20.5, 22.5 23.5
+           C 25.5 26.5, 23.5 30.5, 27.5 30
+           C 31.5 29.5, 32.5 24.5, 36.5 23.5
+           C 38.5 23, 40 23, 41.5 23.6"
+        fill="none" stroke="#1e3a5f" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 红笔波浪批注下划线 -->
+  <path d="M19 32 Q 21 30.5, 23 32 T 27 32 T 31 32" fill="none" stroke="#c0564e" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

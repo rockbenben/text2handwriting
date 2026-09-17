@@ -1,0 +1,65 @@
+{
+  "name": "text2handwriting",
+  "private": true,
+  "version": "0.1.0",
+  "description": "把普通文本排版成高拟真手写文稿的纯本地工具：种子化随机笔迹扰动、中文避头尾排版、真实纸张与实拍质感，支持 PNG / PDF / ZIP 导出。Turn plain text into realistic handwriting, fully offline in your browser.",
+  "type": "module",
+  "license": "MIT",
+  "author": "rockbenben <qingwhat@gmail.com>",
+  "homepage": "https://shouxie.newzone.top",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rockbenben/text2handwriting.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rockbenben/text2handwriting/issues"
+  },
+  "keywords": [
+    "handwriting",
+    "handwriting-generator",
+    "text-to-handwriting",
+    "canvas",
+    "typesetting",
+    "chinese-typesetting",
+    "font",
+    "pwa",
+    "react",
+    "vite",
+    "手写",
+    "手写文稿生成器",
+    "文字转手写",
+    "字体转手写",
+    "手写文稿",
+    "离线可用"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "i18next": "^26.4.2",
+    "jspdf": "^4.2.1",
+    "jszip": "^3.10.2",
+    "lucide-react": "^1.45.0",
+    "mammoth": "^1.12.3",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-i18next": "^17.0.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.82.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
+  }
+}
