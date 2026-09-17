@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="vignette" cx="50%" cy="42%" r="75%">
+      <stop offset="0%" stop-color="#fbf5ea"/>
+      <stop offset="70%" stop-color="#faf2e2"/>
+      <stop offset="100%" stop-color="#f1e5cd"/>
+    </radialGradient>
+    <filter id="paperShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#a8875a" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <!-- 纸张底色 -->
+  <rect width="1200" height="630" fill="url(#vignette)"/>
+
+  <!-- ===================== 左侧文字区 ===================== -->
+
+  <!-- 眉头：小钢笔 + 纯本地标识 -->
+  <g transform="translate(90 76) rotate(-38)">
+    <rect x="0" y="0" width="30" height="9" rx="2.5" fill="#1e3a5f"/>
+    <path d="M30 0 L41 4.5 L30 9 Z" fill="#c0564e"/>
+  </g>
+  <text x="148" y="97" font-family="Microsoft YaHei" font-size="24" fill="#7d8fa3" letter-spacing="2">纯本地渲染 · 文字不离开你的设备</text>
+
+  <!-- 大标题：手写体 -->
+  <text x="86" y="224" font-family="Ma Shan Zheng" font-size="92" fill="#1e3a5f">手写文稿生成器</text>
+
+  <!-- 标题下的红笔波浪线（产品特性：批注） -->
+  <path d="M92 250 q12 -9 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0"
+        fill="none" stroke="#c0564e" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- 标语 -->
+  <text x="88" y="312" font-family="Microsoft YaHei" font-size="30" fill="#52657a">文字转手写 · 纯本地渲染 · 一键导出 PNG / PDF</text>
+
+  <!-- 特性标签 -->
+  <g font-family="Microsoft YaHei" font-size="26" fill="#1e3a5f">
+    <rect x="88" y="368" width="172" height="54" rx="27" fill="#fffdf6" stroke="#dccfae" stroke-width="1.5"/>
+    <circle cx="116" cy="395" r="6" fill="#1e3a5f"/>
+    <text x="134" y="404">拟真笔迹</text>
+
+    <rect x="280" y="368" width="172" height="54" rx="27" fill="#fffdf6" stroke="#dccfae" stroke-width="1.5"/>
+    <circle cx="308" cy="395" r="6" fill="#c0564e"/>
+    <text x="326" y="404">真实纸张</text>
+
+    <rect x="472" y="368" width="172" height="54" rx="27" fill="#fffdf6" stroke="#dccfae" stroke-width="1.5"/>
+    <circle cx="500" cy="395" r="6" fill="#b7791f"/>
+    <text x="518" y="404">划改批注</text>
+  </g>
+
+  <!-- 底部信息 -->
+  <text x="88" y="506" font-family="Microsoft YaHei" font-size="22" fill="#94a3b8">开源免费 · 多语言界面 · PWA 可安装离线使用</text>
+  <text x="86" y="562" font-family="Ma Shan Zheng" font-size="42" fill="#1e3a5f">shouxie.newzone.top</text>
+
+  <!-- ===================== 右侧手写稿 mockup ===================== -->
+  <g transform="rotate(-5 945 315)">
+    <!-- 和纸胶带 -->
+    <rect x="878" y="50" width="134" height="34" rx="4" fill="#f3c9b8" opacity="0.8"/>
+    <!-- 纸张 -->
+    <rect x="745" y="70" width="400" height="490" rx="6" fill="#fffef8" stroke="#e6d9bd" stroke-width="1.5" filter="url(#paperShadow)"/>
+    <!-- 红左边线 -->
+    <line x1="778" y1="92" x2="778" y2="538" stroke="#e2a8a4" stroke-width="2"/>
+    <!-- 淡蓝横线 -->
+    <g stroke="#c7d8e8" stroke-width="1.5">
+      <line x1="768" y1="140" x2="1122" y2="140"/>
+      <line x1="768" y1="192" x2="1122" y2="192"/>
+      <line x1="768" y1="244" x2="1122" y2="244"/>
+      <line x1="768" y1="296" x2="1122" y2="296"/>
+      <line x1="768" y1="348" x2="1122" y2="348"/>
+      <line x1="768" y1="400" x2="1122" y2="400"/>
+      <line x1="768" y1="452" x2="1122" y2="452"/>
+      <line x1="768" y1="504" x2="1122" y2="504"/>
+    </g>
+
+    <!-- 手写正文 -->
+    <text x="792" y="132" font-family="Ma Shan Zheng" font-size="38" fill="#1e3a5f" letter-spacing="6">周末计划</text>
+    <g font-family="Ma Shan Zheng" font-size="30" fill="#2b4a6b">
+      <text x="792" y="184">背五十个单词，再默写</text>
+      <text x="792" y="236">一遍；给外婆打个电话</text>
+      <text x="792" y="288">把上个月的周记重新</text>
+      <text x="792" y="340">誊在方格稿纸上，字迹</text>
+      <text x="792" y="392">要像真正手写的一样。</text>
+    </g>
+
+    <!-- 划改：波浪划掉「五十」，上方红笔写正确字 -->
+    <text x="826" y="158" font-family="Ma Shan Zheng" font-size="24" fill="#c0564e" transform="rotate(-4 838 150)">六十</text>
+    <path d="M820 176 q6 -7 12 0 t12 0 t12 0 t12 0 t12 0 t12 0"
+          fill="none" stroke="#c0564e" stroke-width="2.4" stroke-linecap="round"/>
+
+    <!-- 批注：红笔圈出「外婆」 -->
+    <ellipse cx="938" cy="226" rx="46" ry="20" fill="none" stroke="#c0564e" stroke-width="2.2"
+             transform="rotate(-3 938 226)"/>
+
+    <!-- 批注：红笔波浪下划线「字迹」 -->
+    <path d="M996 354 q6 -6 12 0 t12 0 t12 0 t12 0 t12 0"
+          fill="none" stroke="#c0564e" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+</svg>

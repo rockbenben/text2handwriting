@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- maskable：纸色满幅出血，内容收在中央 80% 安全区（半径约 19） -->
+  <rect width="48" height="48" fill="#fdf6e9"/>
+
+  <!-- 笔记本红左边线 -->
+  <line x1="14.5" y1="10" x2="14.5" y2="38" stroke="#e2a8a4" stroke-width="1.7" stroke-linecap="round"/>
+
+  <!-- 淡蓝横线 -->
+  <line x1="18.5" y1="18" x2="36.5" y2="18" stroke="#b9cede" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
+  <line x1="18.5" y1="32" x2="36.5" y2="32" stroke="#b9cede" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- 墨蓝手写主笔迹 -->
+  <path d="M15.5 28
+           C 18 22.5, 21.5 21.4, 24 23.8
+           C 26.4 26.2, 24.8 29.5, 28.2 29.1
+           C 31.5 28.7, 32.4 24.7, 35.6 24
+           C 37.2 23.7, 38.4 23.7, 39.6 24.1"
+        fill="none" stroke="#1e3a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 红笔波浪批注下划线 -->
+  <path d="M21.5 30.5 Q 23.2 29.3, 24.9 30.5 T 28.3 30.5 T 31.7 30.5" fill="none" stroke="#c0564e" stroke-width="1.7" stroke-linecap="round"/>
+</svg>
