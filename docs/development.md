@@ -16,7 +16,7 @@
 
 ## 分包策略
 
-首屏只加载主 chunk（约 483 kB / gzip 153 kB）与 10.9 kB 的 CSS
+首屏只加载主 chunk（约 481 kB / gzip 157 kB）与 11.3 kB 的 CSS
 （入口 HTML 不生成 `modulepreload`，所以没有别的 chunk 被提前拉取）。三个重依赖
 都在用户点击时才按需加载，不占首屏：
 
@@ -24,7 +24,7 @@
 | --- | --- | --- |
 | `jspdf` | 导出 PDF | 130 kB |
 | `jszip` | 导出 ZIP | 28 kB |
-| `mammoth`（含传递依赖 bluebird） | 导入 `.docx` | 98 kB |
+| `mammoth` | 导入 `.docx` | 76 kB |
 
 jsPDF 还会带出三个可选依赖 chunk：`html2canvas`（47 kB）、`canvg`（产物名
 `index.es`，49 kB）、`dompurify`（产物名 `purify.es`，11 kB）。本应用不调用其

@@ -53,7 +53,7 @@ Tags must be properly paired; mismatched ones like `[circle]x[/框]` are rendere
 
 ## Local development
 
-Requires Node.js **>= 22.12** (Vitest 5's floor; CI builds on Node 24).
+Requires Node.js **22.12+ / 24+ / 26+** (Vitest 5's supported range; CI builds on Node 26).
 
 ```bash
 npm install

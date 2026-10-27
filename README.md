@@ -53,7 +53,7 @@
 
 ## 本地开发
 
-需要 Node.js **>= 22.12**（Vitest 5 的下限；CI 用 Node 24 构建）。
+需要 Node.js **22.12+ / 24+ / 26+**（Vitest 5 的支持下限；CI 用 Node 26 构建）。
 
 ```bash
 npm install
