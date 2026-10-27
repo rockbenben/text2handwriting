@@ -163,6 +163,20 @@ export function parseParagraphTokens(text: string): CharToken[] {
   return tokens;
 }
 
+const RIGHT_TAG_RE = /^\[(?:right|靠右)\]([\s\S]*?)\[\/(?:right|靠右)\]$/i;
+
+function stripRightTag(text: string): string {
+  const match = text.match(RIGHT_TAG_RE);
+  return (match ? match[1] : text).trim();
+}
+
+function isDateOnlyLine(text: string): boolean {
+  return (
+    /^\d{4}年\d{1,2}月\d{1,2}日$/.test(text) ||
+    /^\d{4}[.\-/]\d{1,2}[.\-/]\d{1,2}$/.test(text)
+  );
+}
+
 /**
  * Typesets input text into pages with handwriting perturbation
  */
@@ -219,6 +233,23 @@ export function typesetText(
   let totalCharsCount = 0;
   const charOccurrenceMap = new Map<string, number>();
 
+  // 落款常见写法是「姓名/班级 + 日期」两行，而姓名行通常没有任何前缀。
+  // 只看正则会把姓名留在左边、日期贴到右边。这里在「最后一行是日期」时，
+  // 把紧邻的短行也视为落款（排除正文句子，避免把普通短句也拉到右边）。
+  const signatureLineIndices = new Set<number>();
+  if (config.smartSignatureAlign !== false) {
+    const nonEmpty = paragraphs
+      .map((paragraph, index) => ({ text: stripRightTag(paragraph), index }))
+      .filter((entry) => entry.text.length > 0);
+    const last = nonEmpty[nonEmpty.length - 1];
+    const prev = nonEmpty[nonEmpty.length - 2];
+    if (last && prev && isDateOnlyLine(last.text)) {
+      if (prev.text.length <= 24 && !/[。！？!?；;]$/.test(prev.text)) {
+        signatureLineIndices.add(prev.index);
+      }
+    }
+  }
+
   for (let pIdx = 0; pIdx < paragraphs.length; pIdx++) {
     const rawParagraph = paragraphs[pIdx];
 
@@ -233,7 +264,7 @@ export function typesetText(
 
     let cleanedParagraph = rawParagraph;
     let isExplicitRight = false;
-    const rightTagMatch = cleanedParagraph.match(/^\[(?:right|靠右)\]([\s\S]*?)\[\/(?:right|靠右)\]$/i);
+    const rightTagMatch = cleanedParagraph.match(RIGHT_TAG_RE);
     if (rightTagMatch) {
       isExplicitRight = true;
       cleanedParagraph = rightTagMatch[1].trim();
@@ -242,11 +273,13 @@ export function typesetText(
     const trimmed = cleanedParagraph.trim();
     const isSignaturePattern = 
       /^(?:申请人|报告人|汇报人|写信人|致敬人|签名|学生|署名|日期|落款|班级|指导老师)[：:]/i.test(trimmed) ||
-      /^\d{4}年\d{1,2}月\d{1,2}日$/.test(trimmed) ||
-      /^\d{4}[.-/]\d{1,2}[.-/]\d{1,2}$/.test(trimmed) ||
+      isDateOnlyLine(trimmed) ||
       /^(?:此致|敬礼|顺祝商祺)$/.test(trimmed);
 
-    const shouldRightAlign = isExplicitRight || (config.smartSignatureAlign !== false && isSignaturePattern);
+    const shouldRightAlign =
+      isExplicitRight ||
+      (config.smartSignatureAlign !== false &&
+        (isSignaturePattern || signatureLineIndices.has(pIdx)));
 
     // Prepare line buffer
     let lineChars: (CharToken & { width: number })[] = [];
