@@ -39,7 +39,8 @@
     "progress": "{{current}} / {{total}} sayfa tamamlandı",
     "doodlePen": "Kalem (serbest ok ve şema çizimi)",
     "doodleEraser": "Silgi (çizimleri sil)",
-    "doodleClear": "Bu sayfadaki tüm çizimleri temizle"
+    "doodleClear": "Bu sayfadaki tüm çizimleri temizle",
+    "doodleSessionHint": "Çizimler yalnızca bu oturumda kalır; sayfa yenilendiğinde veya metin ya da kağıt düzeni değiştiğinde kaybolabilir."
   },
   "preset": {
     "title": "Stil Şablonları",
@@ -61,7 +62,9 @@
     "other": "Diğer kağıt"
   },
   "confirm": {
-    "applyPreset": "Bu şablonu uygulamak, girdiğiniz tüm metnin kalıcı olarak üzerine yazacaktır. Devam etmek istiyor musunuz?"
+    "applyPreset": "Bu şablonu uygulamak, girdiğiniz tüm metnin kalıcı olarak üzerine yazacaktır. Devam etmek istiyor musunuz?",
+    "resetSample": "Örneği sıfırlamak, girdiğiniz tüm metnin yerine geçer ve bu işlem geri alınamaz. Devam edilsin mi?",
+    "clearText": "Temizleme, girdiğiniz tüm metni kalıcı olarak siler. Temizlensin mi?"
   },
   "errors": {
     "exportFailed": "Resim dışa aktarılamadı, lütfen tekrar deneyin",
@@ -356,7 +359,9 @@
       "underline": "[u]anahtar[/u]",
       "circle": "[circle]anahtar[/circle]",
       "box": "[box]anahtar[/box]"
-    }
+    },
+    "customBgLargeHint": "Bu arka plan görseli büyük olduğu için yalnızca bu oturumda tutulur; sayfayı yeniledikten sonra yeniden yüklemeniz gerekir.",
+    "importedFontSessionHint": "İçe aktarılan yazı tipleri yalnızca bu oturumda geçerlidir; sayfayı yeniledikten sonra yeniden içe aktarmanız gerekir."
   },
   "file": {
     "baseName": "elyazisi",

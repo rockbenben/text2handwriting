@@ -154,19 +154,21 @@ export function App() {
   const localizedSample = (preset: PresetTemplate): string =>
     t(`samples.${preset.id}`, { defaultValue: preset.sampleText });
 
-  // Apply a preset template
-  const handleSelectPreset = (preset: PresetTemplate) => {
+  // Apply a preset template. 返回是否真的套用，弹窗据此决定要不要关闭：
+  // 用户在确认框里点「取消」时，弹窗必须留着，否则还得重新打开一次。
+  const handleSelectPreset = (preset: PresetTemplate): boolean => {
     // 预设会整篇替换当前文本，而应用里没有撤销栈，所以必须显式确认
     const sample = localizedSample(preset);
     if (text.trim() && text !== sample) {
       const confirmed = window.confirm(t('confirm.applyPreset'));
-      if (!confirmed) return;
+      if (!confirmed) return false;
     }
     setActivePresetId(preset.id);
     setPaper({ ...preset.paper });
     setHandwriting({ ...preset.handwriting });
     setText(sample);
     setCurrentPageIndex(0);
+    return true;
   };
 
   const handleAddCustomFont = (font: FontOption) => {
@@ -316,6 +318,12 @@ export function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+      {/* 预设弹窗打开时，把背景设为 inert/aria-hidden，键盘与读屏都留在弹窗内 */}
+      <div
+        className="app-shell"
+        inert={isPresetModalOpen || undefined}
+        aria-hidden={isPresetModalOpen || undefined}
+      >
       {/* Top Navigation */}
       <Header 
         onOpenPresets={() => setIsPresetModalOpen(true)}
@@ -346,7 +354,10 @@ export function App() {
           onAddMultipleFonts={handleAddMultipleFonts}
           onSelectSampleText={() => {
             const currentPreset = PRESET_TEMPLATES.find((p) => p.id === activePresetId) || defaultPreset;
-            setText(localizedSample(currentPreset));
+            const sample = localizedSample(currentPreset);
+            // 只换回示例文字、不动纸张与笔迹设置，所以确认文案只说替换正文
+            if (text.trim() && text !== sample && !window.confirm(t('confirm.resetSample'))) return;
+            setText(sample);
           }}
           totalChars={typesetResult.totalChars}
           totalPages={typesetResult.totalPages}
@@ -366,6 +377,7 @@ export function App() {
           doodles={doodles[currentPageIndex] ?? []}
           onDoodlesChange={(strokes) => handleDoodlesChange(currentPageIndex, strokes)}
         />
+      </div>
       </div>
 
       {/* Presets Modal */}

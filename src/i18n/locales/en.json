@@ -39,7 +39,8 @@
     "progress": "Completed {{current}} / {{total}} pages",
     "doodlePen": "Pen (draw arrows/diagrams on the paper)",
     "doodleEraser": "Eraser (remove drawings)",
-    "doodleClear": "Clear drawings on this page"
+    "doodleClear": "Clear drawings on this page",
+    "doodleSessionHint": "Drawings last for this session only; refreshing or changing the text or paper layout may lose them."
   },
   "preset": {
     "title": "Preset Templates",
@@ -61,7 +62,9 @@
     "other": "Other paper"
   },
   "confirm": {
-    "applyPreset": "Applying this template will replace all the text you've entered, and this cannot be undone. Continue?"
+    "applyPreset": "Applying this template will replace all the text you've entered, and this cannot be undone. Continue?",
+    "resetSample": "Resetting the sample will replace all the text you've entered, and this can't be undone. Continue?",
+    "clearText": "Clearing will permanently remove all the text you've entered. Clear it?"
   },
   "errors": {
     "exportFailed": "Export failed, please try again",
@@ -356,7 +359,9 @@
       "underline": "[u]keyword[/u]",
       "circle": "[circle]keyword[/circle]",
       "box": "[box]keyword[/box]"
-    }
+    },
+    "customBgLargeHint": "This background image is large, so it's only kept for this session; you'll need to upload it again after refreshing.",
+    "importedFontSessionHint": "Imported fonts only last for this session; you'll need to import them again after refreshing."
   },
   "file": {
     "baseName": "handwriting",

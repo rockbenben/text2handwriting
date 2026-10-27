@@ -133,6 +133,11 @@ export const FontSection: React.FC<FontSectionProps> = ({
 
         {/* Font dropdown grouped by category */}
         <div className="control-item">
+          {filteredFonts.find(f => f.family === handwriting.fontFamily)?.sessionOnly && (
+            <div style={{ fontSize: '11px', lineHeight: 1.4, color: '#fbbf24' }}>
+              {t('editor.importedFontSessionHint')}
+            </div>
+          )}
           {(() => {
             const getFontLabel = (f: FontOption) => {
               const cleanName = f.name.replace(/^本机:\s*/, '');

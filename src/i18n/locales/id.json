@@ -39,7 +39,8 @@
     "progress": "Selesai {{current}} / {{total}} halaman",
     "doodlePen": "Pena (gambar panah dan coretan bebas)",
     "doodleEraser": "Penghapus (hapus coretan)",
-    "doodleClear": "Hapus semua coretan di halaman ini"
+    "doodleClear": "Hapus semua coretan di halaman ini",
+    "doodleSessionHint": "Goresan hanya bertahan selama sesi ini; dapat hilang setelah memuat ulang atau saat teks atau tata letak kertas berubah."
   },
   "preset": {
     "title": "Template Gaya",
@@ -61,7 +62,9 @@
     "other": "Kertas lainnya"
   },
   "confirm": {
-    "applyPreset": "Menerapkan template ini akan menimpa seluruh teks yang Anda ketik secara permanen. Lanjutkan?"
+    "applyPreset": "Menerapkan template ini akan menimpa seluruh teks yang Anda ketik secara permanen. Lanjutkan?",
+    "resetSample": "Mereset contoh akan mengganti semua teks yang sudah Anda masukkan dan tidak dapat dibatalkan. Lanjutkan?",
+    "clearText": "Menghapus akan menghilangkan semua teks yang sudah Anda masukkan secara permanen. Hapus?"
   },
   "errors": {
     "exportFailed": "Gagal mengekspor gambar, silakan coba lagi",
@@ -356,7 +359,9 @@
       "underline": "[u]kunci[/u]",
       "circle": "[circle]kunci[/circle]",
       "box": "[box]kunci[/box]"
-    }
+    },
+    "customBgLargeHint": "Gambar latar ini besar, jadi hanya disimpan selama sesi ini; Anda perlu mengunggahnya lagi setelah memuat ulang halaman.",
+    "importedFontSessionHint": "Font yang diimpor hanya berlaku untuk sesi ini; Anda perlu mengimpornya lagi setelah memuat ulang halaman."
   },
   "file": {
     "baseName": "tulisan_tangan",

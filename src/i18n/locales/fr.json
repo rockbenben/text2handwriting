@@ -39,7 +39,8 @@
     "progress": "{{current}} / {{total}} pages terminées",
     "doodlePen": "Stylo (dessiner des flèches et croquis)",
     "doodleEraser": "Gomme (effacer les dessins)",
-    "doodleClear": "Effacer tous les dessins de cette page"
+    "doodleClear": "Effacer tous les dessins de cette page",
+    "doodleSessionHint": "Les dessins ne sont conservés que pour cette session ; ils peuvent disparaître après actualisation ou modification du texte ou de la mise en page du papier."
   },
   "preset": {
     "title": "Modèles de style",
@@ -61,7 +62,9 @@
     "other": "Autre papier"
   },
   "confirm": {
-    "applyPreset": "L'application de ce modèle remplacera tout le texte saisi actuellement. Continuer ?"
+    "applyPreset": "L'application de ce modèle remplacera tout le texte saisi actuellement. Continuer ?",
+    "resetSample": "Réinitialiser l'exemple remplacera tout le texte saisi. Cette action est irréversible. Continuer ?",
+    "clearText": "Effacer supprimera définitivement tout le texte saisi. Effacer ?"
   },
   "errors": {
     "exportFailed": "Échec de l'exportation, veuillez réessayer",
@@ -356,7 +359,9 @@
       "underline": "[u]clé[/u]",
       "circle": "[circle]clé[/circle]",
       "box": "[box]clé[/box]"
-    }
+    },
+    "customBgLargeHint": "Cette image de fond est volumineuse : elle n'est conservée que pour cette session. Vous devrez la téléverser à nouveau après actualisation.",
+    "importedFontSessionHint": "Les polices importées ne durent que le temps de cette session ; vous devrez les réimporter après actualisation."
   },
   "file": {
     "baseName": "manuscrit",

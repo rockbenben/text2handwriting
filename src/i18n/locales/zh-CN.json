@@ -39,7 +39,8 @@
     "progress": "已完成 {{current}} / {{total}} 页",
     "doodlePen": "画笔（在纸上手绘箭头/简图）",
     "doodleEraser": "橡皮擦（擦除手绘）",
-    "doodleClear": "清空本页手绘"
+    "doodleClear": "清空本页手绘",
+    "doodleSessionHint": "手绘只保留在当前会话；刷新页面或修改正文、纸张排版导致分页变化后可能丢失。"
   },
   "preset": {
     "title": "预设风格模板",
@@ -61,7 +62,9 @@
     "other": "其他纸张"
   },
   "confirm": {
-    "applyPreset": "应用该模板会清空当前已输入的全部文字，且无法撤销。确定继续吗？"
+    "applyPreset": "应用该模板会清空当前已输入的全部文字，且无法撤销。确定继续吗？",
+    "resetSample": "重置示例会替换当前已输入的全部文字，且无法撤销。确定继续吗？",
+    "clearText": "清空后当前已输入的全部文字将无法恢复。确定清空吗？"
   },
   "errors": {
     "exportFailed": "导出失败，请重试",
@@ -356,7 +359,9 @@
       "underline": "[u]重点[/u]",
       "circle": "[circle]重点[/circle]",
       "box": "[box]重点[/box]"
-    }
+    },
+    "customBgLargeHint": "这张底图较大，只在本次打开中保留；刷新页面后需要重新上传。",
+    "importedFontSessionHint": "导入的字体只在本次打开中有效，刷新页面后需要重新导入。"
   },
   "file": {
     "baseName": "手写文稿",

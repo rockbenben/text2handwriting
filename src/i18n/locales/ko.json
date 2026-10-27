@@ -39,7 +39,8 @@
     "progress": "{{current}} / {{total}} 쪽 완료",
     "doodlePen": "펜 (화살표·간단한 손그림 그리기)",
     "doodleEraser": "지우개 (손그림 지우기)",
-    "doodleClear": "이 페이지 손그림 지우기"
+    "doodleClear": "이 페이지 손그림 지우기",
+    "doodleSessionHint": "손그림은 이번 세션에서만 유지됩니다. 새로고침하거나 본문 또는 용지 레이아웃을 수정해 페이지가 바뀌면 사라질 수 있습니다."
   },
   "preset": {
     "title": "프리셋 템플릿",
@@ -61,7 +62,9 @@
     "other": "기타 용지"
   },
   "confirm": {
-    "applyPreset": "템플릿을 적용하면 현재 입력된 텍스트가 모두 바뀝니다. 계속하시겠습니까?"
+    "applyPreset": "템플릿을 적용하면 현재 입력된 텍스트가 모두 바뀝니다. 계속하시겠습니까?",
+    "resetSample": "샘플을 재설정하면 입력한 모든 텍스트가 바뀌며 되돌릴 수 없습니다. 계속할까요?",
+    "clearText": "지우면 입력한 모든 텍스트가 영구적으로 삭제되며 되돌릴 수 없습니다. 지울까요?"
   },
   "errors": {
     "exportFailed": "내보내기에 실패했습니다. 다시 시도해 주세요",
@@ -356,7 +359,9 @@
       "underline": "[u]핵심[/u]",
       "circle": "[circle]핵심[/circle]",
       "box": "[box]핵심[/box]"
-    }
+    },
+    "customBgLargeHint": "이 배경 이미지는 커서 이번 열기에서만 유지됩니다. 새로고침한 뒤에는 다시 업로드해야 합니다.",
+    "importedFontSessionHint": "가져온 글꼴은 이번 열기에서만 유효하며, 새로고침 후에는 다시 가져와야 합니다."
   },
   "file": {
     "baseName": "손글씨문서",

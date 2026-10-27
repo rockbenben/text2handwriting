@@ -235,6 +235,14 @@ body, html {
   gap: 0;
 }
 
+/* App shell: keeps header + main layout while allowing inert when a modal is open */
+.app-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* App Main Body: Split View */
 .app-main {
   flex: 1;
@@ -513,6 +521,17 @@ select:focus, input:focus {
   margin-inline-start: 12px;
 }
 
+/* 手绘会话提示：只在开启画笔或已有笔迹时出现，提醒刷新后不会保留 */
+.doodle-session-hint {
+  flex-shrink: 0;
+  padding: 5px 20px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #fbbf24;
+  background: rgba(15, 23, 42, 0.92);
+  border-bottom: 1px solid var(--border-color);
+}
+
 .preview-canvas-container {
   flex: 1;
   overflow: auto;
@@ -562,6 +581,9 @@ select:focus, input:focus {
 .thumb-item {
   width: 52px;
   height: 70px;
+  /* 页码多时外层是 overflow-x:auto，默认的 flex-shrink 会把缩略图压到十几像素，
+     页码既看不清也点不中；固定宽度才能真的横向滚动。 */
+  flex-shrink: 0;
   background: #fff;
   border-radius: 3px;
   border: 2px solid transparent;
@@ -734,6 +756,10 @@ select:focus, input:focus {
   .preview-toolbar {
     padding: 8px 12px;
     gap: 8px;
+  }
+
+  .doodle-session-hint {
+    padding: 5px 12px;
   }
 
   /* 40px 留白在手机上过于奢侈 */

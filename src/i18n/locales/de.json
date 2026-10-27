@@ -39,7 +39,8 @@
     "progress": "{{current}} / {{total}} Seiten fertiggestellt",
     "doodlePen": "Stift (Pfeile und Skizzen frei zeichnen)",
     "doodleEraser": "Radiergummi (Zeichnungen entfernen)",
-    "doodleClear": "Alle Skizzen auf dieser Seite löschen"
+    "doodleClear": "Alle Skizzen auf dieser Seite löschen",
+    "doodleSessionHint": "Handzeichnungen bleiben nur für diese Sitzung erhalten; nach Neuladen oder Änderungen am Text oder Papierlayout können sie verloren gehen."
   },
   "preset": {
     "title": "Stilvorlagen",
@@ -61,7 +62,9 @@
     "other": "Anderes Papier"
   },
   "confirm": {
-    "applyPreset": "Das Anwenden dieser Vorlage ersetzt Ihren gesamten eingegebenen Text unwiderruflich. Fortfahren?"
+    "applyPreset": "Das Anwenden dieser Vorlage ersetzt Ihren gesamten eingegebenen Text unwiderruflich. Fortfahren?",
+    "resetSample": "Beim Zurücksetzen des Beispiels wird der gesamte eingegebene Text ersetzt. Das lässt sich nicht rückgängig machen. Fortfahren?",
+    "clearText": "Beim Leeren wird der gesamte eingegebene Text dauerhaft entfernt. Leeren?"
   },
   "errors": {
     "exportFailed": "Export fehlgeschlagen, bitte erneut versuchen",
@@ -356,7 +359,9 @@
       "underline": "[u]wichtig[/u]",
       "circle": "[circle]wichtig[/circle]",
       "box": "[box]wichtig[/box]"
-    }
+    },
+    "customBgLargeHint": "Dieses Hintergrundbild ist groß und bleibt nur für diese Sitzung erhalten. Nach dem Neuladen musst du es erneut hochladen.",
+    "importedFontSessionHint": "Importierte Schriften gelten nur für diese Sitzung; nach dem Neuladen musst du sie erneut importieren."
   },
   "file": {
     "baseName": "Handschrift_Dokument",

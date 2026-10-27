@@ -56,7 +56,10 @@ export const TextTab: React.FC<TextTabProps> = ({
             </button>
             <button 
               className="btn btn-secondary btn-sm"
-              onClick={() => onTextChange('')}
+              onClick={() => {
+                if (text.trim() && !window.confirm(t('confirm.clearText'))) return;
+                onTextChange('');
+              }}
               title={t('editor.clearTitle')}
             >
               <span>{t('common.clear')}</span>

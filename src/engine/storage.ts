@@ -1,6 +1,6 @@
 import type { PaperConfig, HandwritingConfig } from './types';
 import { PRESET_TEMPLATES } from './presets';
-import type { FontOption } from './fontLoader';
+import { CUSTOM_FONT_FAMILY_PREFIX, type FontOption } from './fontLoader';
 
 export const STORAGE_KEYS = {
   SETTINGS: 'text2handwriting_settings_v1',
@@ -25,6 +25,31 @@ export const LEGACY_STORAGE_KEYS = {
 
 /** 最多持久化的自定义字体条数。字体只存元数据，但一次扫描可能识别上百款。 */
 const MAX_PERSISTED_FONTS = 120;
+
+/**
+ * 文件导入的字体只在内存里，刷新后不可用。它的元数据不能落盘，
+ * 否则重开页面时下拉框会显示一个「已选中但实际不存在」的字体。
+ * 旧版本已经把这类条目写进过用户存储，读取时同样要过滤掉。
+ */
+function isSessionOnlyFont(font: Pick<FontOption, 'family' | 'sessionOnly'>): boolean {
+  return (
+    font.sessionOnly === true ||
+    (typeof font.family === 'string' && font.family.startsWith(CUSTOM_FONT_FAMILY_PREFIX))
+  );
+}
+
+/**
+ * 超过这个长度的底图（data URL 字符数）不会写入 localStorage，仅本次会话可用。
+ * 阈值与 saveStoredSettings 的兜底保持一致，UI 也用它提前告知用户。
+ */
+export const CUSTOM_BG_PERSIST_MAX_CHARS = 2_000_000;
+
+export function isCustomBackgroundTooLarge(
+  paper: Pick<PaperConfig, 'customImageUrl'>
+): boolean {
+  const url = paper.customImageUrl;
+  return typeof url === 'string' && url.startsWith('data:') && url.length > CUSTOM_BG_PERSIST_MAX_CHARS;
+}
 
 /**
  * 用户是否真的存过正文。首次访问时 TEXT 与 SETTINGS.text 都不存在，
@@ -286,6 +311,15 @@ export function loadStoredSettings(): LoadedSettings {
     console.warn('Failed to parse stored handwriting config:', e);
   }
 
+  // 文件导入的字体刷新后已不存在，选中项必须回落到可用字体，
+  // 否则下拉框会空着一个不存在的 family，预览悄悄换成系统兜底字体。
+  if (
+    typeof handwriting.fontFamily === 'string' &&
+    handwriting.fontFamily.startsWith(CUSTOM_FONT_FAMILY_PREFIX)
+  ) {
+    handwriting = { ...handwriting, fontFamily: DEFAULT_HANDWRITING_CONFIG.fontFamily };
+  }
+
   return {
     text,
     paper,
@@ -335,11 +369,7 @@ export function saveStoredSettings(settings: StoredSettings): void {
 
     // 底图是 base64 data URL，一张手机照片就能把 5MB 配额吃光。
     // 预先兜底：超过阈值就不持久化底图（当前会话仍然可用）。
-    if (
-      paperToSave.customImageUrl &&
-      paperToSave.customImageUrl.startsWith('data:') &&
-      paperToSave.customImageUrl.length > 2_000_000
-    ) {
+    if (isCustomBackgroundTooLarge(paperToSave)) {
       paperToSave = { ...paperToSave, customImageUrl: undefined };
     }
 
@@ -389,7 +419,7 @@ export function loadStoredCustomFonts(): FontOption[] {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        return parsed.filter(f => f && f.id && f.name && f.family);
+        return parsed.filter(f => f && f.id && f.name && f.family && !isSessionOnlyFont(f));
       }
     }
   } catch (e) {
@@ -406,7 +436,7 @@ export function saveStoredCustomFonts(fonts: FontOption[]): void {
   if (!storage) return;
   // 一次本机扫描可能识别出上百款字体，全量持久化会挤占给底图和正文用的配额
   const serializable = fonts
-    .filter(f => f.isCustom || f.category === 'system')
+    .filter(f => (f.isCustom || f.category === 'system') && !isSessionOnlyFont(f))
     .slice(0, MAX_PERSISTED_FONTS)
     .map(f => ({
       id: f.id,

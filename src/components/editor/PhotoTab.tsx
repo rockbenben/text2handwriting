@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Camera, Upload, RotateCcw, Sparkles, ImageIcon, Maximize2 } from 'lucide-react';
 import { HD_PAPER_PRESETS, calculatePaperDimensionsFromImage } from '../../engine/paper';
-import { SECTION_DEFAULTS } from '../../engine/storage';
+import { SECTION_DEFAULTS, isCustomBackgroundTooLarge } from '../../engine/storage';
 import type { RefObject } from 'react';
 import type { PaperConfig } from '../../engine/types';
 
@@ -72,6 +72,12 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
             e.target.value = '';
           }}
         />
+
+        {isCustomBackgroundTooLarge(paper) && (
+          <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#fbbf24' }}>
+            {t('editor.customBgLargeHint')}
+          </div>
+        )}
 
         {paper.customImageUrl && (
           <>

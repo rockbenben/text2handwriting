@@ -1,11 +1,19 @@
 export type FontCategory = 'bundled' | 'system';
 
+/**
+ * 文件导入字体生成的 family 前缀。字体二进制只驻留内存，元数据不能跨刷新保留：
+ * 否则重开页面后下拉框仍显示「文件导入: xxx」并保持选中，实际却已回落到系统字体。
+ */
+export const CUSTOM_FONT_FAMILY_PREFIX = 'CustomFont_';
+
 export interface FontOption {
   id: string;
   name: string;
   family: string;
   isCustom?: boolean;
   category: FontCategory;
+  /** 只在本会话有效、不应写入 localStorage 的字体（文件导入） */
+  sessionOnly?: boolean;
   /**
    * 仓库内是否真的自带字体文件 (public/fonts/*.ttf)。
    * true  = 完全离线可用，断网也能渲染
@@ -193,7 +201,7 @@ export function createCustomFontOption(fontName: string): FontOption {
  */
 export async function loadCustomFontFromFile(file: File): Promise<FontOption> {
   const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_\u4e00-\u9fa5]/g, '_');
-  const familyName = `CustomFont_${cleanName}_${Date.now()}`;
+  const familyName = `${CUSTOM_FONT_FAMILY_PREFIX}${cleanName}_${Date.now()}`;
 
   const arrayBuffer = await file.arrayBuffer();
   const fontFace = new FontFace(familyName, arrayBuffer);
@@ -209,5 +217,6 @@ export async function loadCustomFontFromFile(file: File): Promise<FontOption> {
     category: 'system',
     // 字体二进制来自用户本机文件，加载后即驻留内存，无需联网
     offline: true,
+    sessionOnly: true,
   };
 }

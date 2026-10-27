@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Upload, RotateCcw } from 'lucide-react';
 import { getPaperDimensions } from '../../engine/paper';
-import { SECTION_DEFAULTS } from '../../engine/storage';
+import { SECTION_DEFAULTS, isCustomBackgroundTooLarge } from '../../engine/storage';
 import type { PaperType, PaperSize } from '../../engine/types';
 import type { RefObject } from 'react';
 import type { PaperConfig, HandwritingConfig } from '../../engine/types';
@@ -89,6 +89,11 @@ export const PaperTab: React.FC<PaperTabProps> = ({
                 e.target.value = '';
               }}
             />
+            {isCustomBackgroundTooLarge(paper) && (
+              <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#fbbf24' }}>
+                {t('editor.customBgLargeHint')}
+              </div>
+            )}
           </div>
         )}
 

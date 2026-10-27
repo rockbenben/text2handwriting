@@ -58,6 +58,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
   // 手绘层
   const doodleCanvasRef = useRef<HTMLCanvasElement>(null);
+  const thumbnailStripRef = useRef<HTMLDivElement>(null);
   const [doodleMode, setDoodleMode] = useState<'off' | 'pen' | 'eraser'>('off');
   const activeStrokeRef = useRef<DoodleStroke | null>(null);
   const drawingRef = useRef(false);
@@ -235,8 +236,26 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     return () => window.removeEventListener('resize', handleAutoFit);
   }, [handleAutoFit]);
 
+  // 页码多时缩略图条会横向滚动；用上一页/下一页切页后，让当前页始终留在可视区。
+  useEffect(() => {
+    const strip = thumbnailStripRef.current;
+    if (!strip) return;
+    const active = strip.querySelector<HTMLElement>('.thumb-item.active');
+    if (!active) return;
+    const stripRect = strip.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+    const centered =
+      strip.scrollLeft +
+      (activeRect.left - stripRect.left) -
+      (strip.clientWidth - activeRect.width) / 2;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    strip.scrollTo({ left: Math.max(0, centered), behavior: reduceMotion ? 'auto' : 'smooth' });
+  }, [currentPageIndex, totalPages]);
+
   const handleZoomIn = () => setZoom((prev) => Math.min(1.5, Math.round((prev + 0.1) * 10) / 10));
-  const handleZoomOut = () => setZoom((prev) => Math.max(0.3, Math.round((prev - 0.1) * 10) / 10));
+  // 下限必须低于窄屏自动适配的最小值（0.18），否则在手机上点「缩小」反而会放大：
+  // 18% - 10% = 8%，被 0.3 的下限抬到 30%。
+  const handleZoomOut = () => setZoom((prev) => Math.max(0.1, Math.round((prev - 0.1) * 10) / 10));
   const handleResetZoom = handleAutoFit;
 
   return (
@@ -330,6 +349,16 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         </div>
       </div>
 
+      {/*
+        手绘只在当前会话有效，但工具栏里只有图标，移动端也没有 hover title；
+        用户在纸上画完再刷新时没有任何提示，会以为批注已经保存。
+      */}
+      {(doodleMode !== 'off' || doodles.length > 0) && (
+        <div className="doodle-session-hint" role="note">
+          {t('preview.doodleSessionHint')}
+        </div>
+      )}
+
       {/* Main Canvas Viewport */}
       <div className="preview-canvas-container" ref={containerRef}>
         <div 
@@ -367,7 +396,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
       {/* Bottom Thumbnail Strip for Multi-page Navigation */}
       {totalPages > 1 && (
-        <div className="thumbnail-strip">
+        <div className="thumbnail-strip" ref={thumbnailStripRef}>
           {Array.from({ length: totalPages }).map((_, index) => (
             <div 
               key={index} 

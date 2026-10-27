@@ -39,7 +39,8 @@
     "progress": "已完成 {{current}} / {{total}} 頁",
     "doodlePen": "畫筆（在紙上手繪箭頭/簡圖）",
     "doodleEraser": "橡皮擦（擦除手繪）",
-    "doodleClear": "清空本頁手繪"
+    "doodleClear": "清空本頁手繪",
+    "doodleSessionHint": "手繪只保留在目前工作階段；重新整理頁面或修改正文、紙張排版導致分頁變化後可能遺失。"
   },
   "preset": {
     "title": "預設風格模板",
@@ -61,7 +62,9 @@
     "other": "其他紙張"
   },
   "confirm": {
-    "applyPreset": "應用該模板會清空當前已輸入的全部文字，且無法撤銷。確定繼續嗎？"
+    "applyPreset": "應用該模板會清空當前已輸入的全部文字，且無法撤銷。確定繼續嗎？",
+    "resetSample": "重設範例會取代目前輸入的全部文字，且無法復原。確定要繼續嗎？",
+    "clearText": "清空後目前輸入的全部文字將無法復原。確定要清空嗎？"
   },
   "errors": {
     "exportFailed": "匯出失敗，請重試",
@@ -356,7 +359,9 @@
       "underline": "[u]重點[/u]",
       "circle": "[circle]重點[/circle]",
       "box": "[box]重點[/box]"
-    }
+    },
+    "customBgLargeHint": "這張底圖較大，只在本次開啟中保留；重新整理頁面後需要重新上傳。",
+    "importedFontSessionHint": "匯入的字型只在本次開啟中有效，重新整理頁面後需要重新匯入。"
   },
   "file": {
     "baseName": "手寫文稿",

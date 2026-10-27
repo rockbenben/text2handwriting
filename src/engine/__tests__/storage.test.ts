@@ -6,10 +6,15 @@ import {
   DEFAULT_HANDWRITING_CONFIG,
   loadStoredSettings,
   saveStoredSettings,
+  loadStoredCustomFonts,
+  saveStoredCustomFonts,
   clearStoredSettings,
   migrateLegacyStorage,
+  isCustomBackgroundTooLarge,
+  CUSTOM_BG_PERSIST_MAX_CHARS,
   SECTION_DEFAULTS,
 } from '../storage';
+import { CUSTOM_FONT_FAMILY_PREFIX } from '../fontLoader';
 import type { PaperConfig, HandwritingConfig } from '../types';
 
 describe('Local Storage Persistence and Section Resets', () => {
@@ -160,6 +165,65 @@ describe('Local Storage Persistence and Section Resets', () => {
 
     clearStoredSettings();
     expect(mockStorage[STORAGE_KEYS.SETTINGS]).toBeUndefined();
+  });
+
+  it('never persists file-imported fonts, including stale entries from older versions', () => {
+    const imported = {
+      id: `${CUSTOM_FONT_FAMILY_PREFIX}mine_1`,
+      name: '文件导入: mine.ttf',
+      family: `${CUSTOM_FONT_FAMILY_PREFIX}mine_1`,
+      isCustom: true,
+      category: 'system' as const,
+      sessionOnly: true,
+    };
+    const manual = {
+      id: 'custom_system_x',
+      name: '本机输入: X',
+      family: '"X", sans-serif',
+      isCustom: true,
+      category: 'system' as const,
+    };
+
+    saveStoredCustomFonts([imported, manual]);
+    expect(JSON.parse(mockStorage[STORAGE_KEYS.FONTS]).map((f: { id: string }) => f.id))
+      .toEqual(['custom_system_x']);
+
+    mockStorage[STORAGE_KEYS.FONTS] = JSON.stringify([
+      { ...imported, sessionOnly: undefined },
+      manual,
+    ]);
+    expect(loadStoredCustomFonts().map(f => f.id)).toEqual(['custom_system_x']);
+  });
+
+  it('resets a stale imported-font selection to the default font on load', () => {
+    mockStorage[STORAGE_KEYS.HANDWRITING] = JSON.stringify({
+      fontFamily: `${CUSTOM_FONT_FAMILY_PREFIX}mine_1`,
+      fontSize: 50,
+    });
+
+    const loaded = loadStoredSettings();
+    expect(loaded.handwriting.fontFamily).toBe(DEFAULT_HANDWRITING_CONFIG.fontFamily);
+    expect(loaded.handwriting.fontSize).toBe(50);
+  });
+
+  it('only drops oversized backgrounds from persistence, not from the live config', () => {
+    const oversized = {
+      ...DEFAULT_PAPER_CONFIG,
+      customImageUrl: `data:image/png;base64,${'x'.repeat(CUSTOM_BG_PERSIST_MAX_CHARS)}`,
+    };
+    const small = {
+      ...DEFAULT_PAPER_CONFIG,
+      customImageUrl: 'data:image/png;base64,abc',
+    };
+
+    expect(isCustomBackgroundTooLarge(oversized)).toBe(true);
+    expect(isCustomBackgroundTooLarge(small)).toBe(false);
+
+    saveStoredSettings({ paper: oversized });
+    expect(JSON.parse(mockStorage[STORAGE_KEYS.PAPER]).customImageUrl).toBeUndefined();
+
+    saveStoredSettings({ paper: small });
+    expect(JSON.parse(mockStorage[STORAGE_KEYS.PAPER]).customImageUrl).toBe('data:image/png;base64,abc');
   });
 });
 

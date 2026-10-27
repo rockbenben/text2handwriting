@@ -39,7 +39,8 @@
     "progress": "{{current}} / {{total}} pagine completate",
     "doodlePen": "Penna (disegna frecce e schemi)",
     "doodleEraser": "Gomma (cancella disegni)",
-    "doodleClear": "Cancella tutti i disegni da questa pagina"
+    "doodleClear": "Cancella tutti i disegni da questa pagina",
+    "doodleSessionHint": "I disegni vengono conservati solo per questa sessione; possono andare persi dopo il ricaricamento o se cambiano il testo o l'impaginazione della carta."
   },
   "preset": {
     "title": "Modelli di stile",
@@ -61,7 +62,9 @@
     "other": "Altra carta"
   },
   "confirm": {
-    "applyPreset": "L'applicazione di questo modello sostituirà irreversibilmente tutto il testo inserito. Continuare?"
+    "applyPreset": "L'applicazione di questo modello sostituirà irreversibilmente tutto il testo inserito. Continuare?",
+    "resetSample": "Ripristinare l'esempio sostituirà tutto il testo inserito. L'operazione non può essere annullata. Continuare?",
+    "clearText": "Svuotare rimuoverà definitivamente tutto il testo inserito. Svuotare?"
   },
   "errors": {
     "exportFailed": "Esportazione dell'immagine non riuscita, riprova",
@@ -356,7 +359,9 @@
       "underline": "[u]chiave[/u]",
       "circle": "[circle]chiave[/circle]",
       "box": "[box]chiave[/box]"
-    }
+    },
+    "customBgLargeHint": "Questa immagine di sfondo è grande e viene mantenuta solo per questa sessione; dopo il ricaricamento dovrai caricarla di nuovo.",
+    "importedFontSessionHint": "I font importati valgono solo per questa sessione; dopo il ricaricamento dovrai importarli di nuovo."
   },
   "file": {
     "baseName": "manoscritto",

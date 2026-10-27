@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { PRESET_TEMPLATES, type PresetTemplate } from '../engine/presets';
@@ -6,7 +6,8 @@ import { PRESET_TEMPLATES, type PresetTemplate } from '../engine/presets';
 interface PresetModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectPreset: (preset: PresetTemplate) => void;
+  /** 返回 false 表示用户在确认框里取消了，此时不要关闭弹窗。 */
+  onSelectPreset: (preset: PresetTemplate) => boolean | void;
   activePresetId?: string;
 }
 
@@ -17,7 +18,9 @@ export const PresetModal: React.FC<PresetModalProps> = ({
   activePresetId,
 }) => {
   const { t } = useTranslation();
-  // Esc 关闭 + 打开时把焦点移入弹窗，关闭后回到触发按钮附近。
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  // Esc 关闭 + 打开时把焦点移入弹窗并限制在弹窗内，关闭后回到触发按钮附近。
   // 之前弹窗只能点遮罩或点 X 关闭，纯键盘用户完全无法操作。
   useEffect(() => {
     if (!isOpen) return;
@@ -28,10 +31,33 @@ export const PresetModal: React.FC<PresetModalProps> = ({
       if (e.key === 'Escape') {
         e.stopPropagation();
         onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(
+        dialog.querySelectorAll<HTMLElement>('button, [role="button"][tabindex="0"]')
+      ).filter((el) => !el.hasAttribute('disabled') && el.tabIndex !== -1);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (!dialog.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown, true);
+    closeButtonRef.current?.focus();
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
       previouslyFocused?.focus?.();
@@ -42,13 +68,14 @@ export const PresetModal: React.FC<PresetModalProps> = ({
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('preset.title')}>
+      <div className="modal-card" ref={dialogRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('preset.title')}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff' }}>{t('preset.title')}</h3>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t('preset.subtitle')}</span>
           </div>
           <button
+            ref={closeButtonRef}
             style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
             onClick={onClose}
             title={t('preset.closeTitle')}
@@ -69,14 +96,12 @@ export const PresetModal: React.FC<PresetModalProps> = ({
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    onSelectPreset(preset);
-                    onClose();
+                    if (onSelectPreset(preset) !== false) onClose();
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      onSelectPreset(preset);
-                      onClose();
+                      if (onSelectPreset(preset) !== false) onClose();
                     }
                   }}
                   aria-label={t('preset.applyAria', { name: t(`presetData.${preset.id}.name`, { defaultValue: preset.name }) })}

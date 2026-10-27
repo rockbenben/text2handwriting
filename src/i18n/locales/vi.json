@@ -39,7 +39,8 @@
     "progress": "Đã hoàn thành {{current}} / {{total}} trang",
     "doodlePen": "Bút vẽ (vẽ mũi tên và ghi chú)",
     "doodleEraser": "Tẩy (xóa hình vẽ)",
-    "doodleClear": "Xóa toàn bộ hình vẽ trên trang này"
+    "doodleClear": "Xóa toàn bộ hình vẽ trên trang này",
+    "doodleSessionHint": "Nét vẽ chỉ được giữ trong phiên này; có thể mất sau khi tải lại hoặc khi văn bản hoặc bố cục giấy thay đổi."
   },
   "preset": {
     "title": "Mẫu Phong Cách",
@@ -61,7 +62,9 @@
     "other": "Giấy khác"
   },
   "confirm": {
-    "applyPreset": "Áp dụng mẫu này sẽ thay thế hoàn toàn văn bản hiện tại của bạn. Bạn có muốn tiếp tục?"
+    "applyPreset": "Áp dụng mẫu này sẽ thay thế hoàn toàn văn bản hiện tại của bạn. Bạn có muốn tiếp tục?",
+    "resetSample": "Đặt lại mẫu sẽ thay thế toàn bộ văn bản bạn đã nhập và không thể hoàn tác. Tiếp tục?",
+    "clearText": "Xóa sẽ gỡ vĩnh viễn toàn bộ văn bản bạn đã nhập. Xóa chứ?"
   },
   "errors": {
     "exportFailed": "Xuất ảnh thất bại, vui lòng thử lại",
@@ -356,7 +359,9 @@
       "underline": "[u]từ khóa[/u]",
       "circle": "[circle]từ khóa[/circle]",
       "box": "[box]từ khóa[/box]"
-    }
+    },
+    "customBgLargeHint": "Ảnh nền này khá lớn nên chỉ được giữ trong phiên này; bạn sẽ cần tải lại ảnh sau khi làm mới trang.",
+    "importedFontSessionHint": "Phông chữ đã nhập chỉ có hiệu lực trong phiên này; bạn sẽ cần nhập lại sau khi làm mới trang."
   },
   "file": {
     "baseName": "chuviet_tay",

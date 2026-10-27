@@ -39,7 +39,8 @@
     "progress": "{{current}} / {{total}} páginas completadas",
     "doodlePen": "Bolígrafo (dibujar flechas y esquemas libres)",
     "doodleEraser": "Borrador (borrar dibujos)",
-    "doodleClear": "Borrar todos los dibujos de esta página"
+    "doodleClear": "Borrar todos los dibujos de esta página",
+    "doodleSessionHint": "Los dibujos solo se conservan durante esta sesión; pueden perderse al recargar o al cambiar el texto o la disposición del papel."
   },
   "preset": {
     "title": "Plantillas de estilo",
@@ -61,7 +62,9 @@
     "other": "Otro papel"
   },
   "confirm": {
-    "applyPreset": "Al aplicar esta plantilla se reemplazará todo el texto ingresado actualmente de manera irreversible. ¿Deseas continuar?"
+    "applyPreset": "Al aplicar esta plantilla se reemplazará todo el texto ingresado actualmente de manera irreversible. ¿Deseas continuar?",
+    "resetSample": "Restablecer el ejemplo reemplazará todo el texto que hayas introducido. Esta acción no se puede deshacer. ¿Continuar?",
+    "clearText": "Borrar eliminará permanentemente todo el texto que hayas introducido. ¿Borrar?"
   },
   "errors": {
     "exportFailed": "Error al exportar, inténtalo de nuevo",
@@ -356,7 +359,9 @@
       "underline": "[u]clave[/u]",
       "circle": "[circle]clave[/circle]",
       "box": "[box]clave[/box]"
-    }
+    },
+    "customBgLargeHint": "Esta imagen de fondo es grande y solo se conserva durante esta sesión; tendrás que subirla de nuevo al recargar.",
+    "importedFontSessionHint": "Las fuentes importadas solo duran esta sesión; tendrás que importarlas de nuevo al recargar."
   },
   "file": {
     "baseName": "manuscrito",
