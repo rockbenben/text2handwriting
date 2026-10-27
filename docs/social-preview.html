@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1280px; height: 640px; overflow: hidden; }
+
+  .card {
+    width: 1280px; height: 640px;
+    background: #f7f3e8;
+    background-image:
+      radial-gradient(circle at 85% 15%, rgba(193,166,116,0.18) 0%, transparent 45%),
+      radial-gradient(circle at 10% 90%, rgba(193,166,116,0.14) 0%, transparent 40%);
+    position: relative;
+    font-family: "Kaiti SC", "KaiTi", "STKaiti", "楷体", serif;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 横线本背景（右侧留白区） */
+  .lines {
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 63px,
+      rgba(120,144,178,0.35) 63px, rgba(120,144,178,0.35) 64px
+    );
+    background-position: 0 90px;
+  }
+
+  /* 左侧红竖线，像作业本 */
+  .margin-line {
+    position: absolute; top: 0; bottom: 0; left: 92px;
+    width: 2px; background: rgba(214,86,80,0.55);
+  }
+
+  .content {
+    position: relative;
+    padding-left: 150px;
+    z-index: 2;
+  }
+
+  .title {
+    font-size: 96px;
+    font-weight: 700;
+    color: #2b2b2b;
+    letter-spacing: 6px;
+    line-height: 1.15;
+  }
+  .title .accent { color: #1f6feb; }
+
+  .subtitle {
+    margin-top: 28px;
+    font-size: 40px;
+    color: #4a4a44;
+    letter-spacing: 2px;
+  }
+
+  .badges {
+    margin-top: 40px;
+    display: flex;
+    gap: 18px;
+  }
+  .badge {
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 24px;
+    padding: 8px 22px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(43,43,43,0.35);
+    color: #3a3a35;
+    background: rgba(255,255,255,0.6);
+  }
+  .badge.free { border-color: rgba(46,125,50,0.6); color: #2e7d32; }
+
+  /* 右侧手写感示例字 */
+  .hand-sample {
+    position: absolute;
+    right: 100px; top: 130px;
+    width: 330px;
+    z-index: 2;
+    transform: rotate(-2deg);
+  }
+  .hand-sample .word {
+    font-size: 58px;
+    color: #23408e;
+    line-height: 64px;
+    letter-spacing: 4px;
+  }
+  .hand-sample .striked {
+    position: relative;
+    color: #b03a3a;
+  }
+  .hand-sample .striked::after {
+    content: "";
+    position: absolute; left: -4px; right: -4px; top: 50%;
+    height: 3px;
+    background: #b03a3a;
+    transform: rotate(-4deg);
+  }
+  .hand-sample .fix {
+    font-size: 30px;
+    color: #b03a3a;
+    position: absolute;
+    top: -34px; right: 6px;
+  }
+  .underline-wave {
+    text-decoration: underline wavy rgba(181,137,0,0.8) 3px;
+    text-underline-offset: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="lines"></div>
+  <div class="margin-line"></div>
+
+  <div class="content">
+    <div class="title">文字转<span class="accent">手写</span>文稿</div>
+    <div class="subtitle">像人写的作业与笔记 · 纯浏览器本地渲染</div>
+    <div class="badges">
+      <span class="badge free">免费 · 不上传</span>
+      <span class="badge">多页 PDF / PNG</span>
+    </div>
+  </div>
+
+  <div class="hand-sample">
+    <div class="word">今天<span class="striked">放学<sup class="fix">假期</sup></span>后<span class="underline-wave">认真</span>复习。</div>
+  </div>
+</div>
+</body>
+</html>
