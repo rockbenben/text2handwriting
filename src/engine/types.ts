@@ -30,6 +30,11 @@ export interface PaperConfig {
   vignette?: boolean;
 }
 
+export type PaperLayoutConfig = Pick<PaperConfig,
+  'type' | 'width' | 'height' | 'marginTop' | 'marginBottom' | 'marginLeft' | 'marginRight' |
+  'lineSpacing' | 'gridCols' | 'gridRows'
+>;
+
 export interface HandwritingConfig {
   fontFamily: string;
   fontSize: number;
@@ -107,7 +112,7 @@ export interface RenderChar {
   scratchOut?: {
     style: ScratchOutConcreteStyle;
     color: string;
-    correctionChar?: string;
+    correctionChar?: string; // May contain multiple characters for an explicit correction.
     correctionColor?: string;
     showCaret?: boolean;
     position?: 'top_right' | 'top';
@@ -129,10 +134,31 @@ export interface RenderChar {
   };
 }
 
+export type TextDirection = 'rtl' | 'ltr';
+
+export interface ShapedMark {
+  start: number;
+  end: number;
+  style: 'scratch' | 'underline_wavy' | 'circle' | 'box' | 'caret_insert';
+  correction?: string;
+}
+
+/** One logical line. Canvas resolves bidi order and shapes the complete text. */
+export interface ShapedLine {
+  text: string;
+  x: number;
+  y: number;
+  maxWidth: number;
+  direction: TextDirection;
+  align: 'left' | 'right';
+  marks?: ShapedMark[];
+}
+
 export interface PageLayout {
   pageIndex: number;
   chars: RenderChar[];
   lineCount: number;
+  shapedLines?: ShapedLine[];
   splatters?: { x: number; y: number; radius: number; opacity: number }[];
 }
 

@@ -1,5 +1,7 @@
-import type { PaperConfig, HandwritingConfig, RenderChar, PageLayout, TypesetResult, ScratchOutConcreteStyle } from './types';
+import type { PaperLayoutConfig, HandwritingConfig, RenderChar, PageLayout, TypesetResult, ScratchOutConcreteStyle, ShapedLine, ShapedMark } from './types';
+import { hasArabicLetters, paragraphDirection, wrapArabicParagraph, type MeasureShapedText } from './arabicLayout';
 import { SeededRandom } from './random';
+import { getGridCells } from './paperGeometry';
 import { getTypoForChar } from './typoEngine';
 
 // Chinese typography punctuation rules (避头尾规则)
@@ -72,6 +74,10 @@ export interface CharToken {
   };
 }
 
+function isLayoutWhitespace(char: string): boolean {
+  return char === ' ' || char === '\t' || char === '\u3000';
+}
+
 /**
  * Parses inline tags for targeted handwriting markings:
  * - ~~text~~ or [del]text[/del] -> manual strike-through
@@ -109,16 +115,23 @@ export function parseParagraphTokens(text: string): CharToken[] {
       }
     } else if (match[3] !== undefined && match[4] !== undefined) {
       // [del:correct]typo[/del]
-      const corr = match[3];
-      const typo = match[4];
-      const typoChars = Array.from(typo);
-      const corrChars = Array.from(corr);
+      const typoChars = Array.from(match[4]);
+      const corrChars = Array.from(match[3]);
+      const lastAnchor = typoChars.findLastIndex(char => !isLayoutWhitespace(char));
+      let correctionIndex = 0;
       for (let i = 0; i < typoChars.length; i++) {
+        const char = typoChars[i];
+        let correctionChar: string | undefined;
+        if (!isLayoutWhitespace(char)) {
+          // Keep the existing character-by-character placement, then attach
+          // the remaining correction text to the last drawable character.
+          correctionChar = i === lastAnchor
+            ? corrChars.slice(correctionIndex).join('') || undefined
+            : corrChars[correctionIndex++];
+        }
         tokens.push({
-          char: typoChars[i],
-          explicitScratchOut: {
-            correctionChar: corrChars[i] ?? (i === 0 ? corr : undefined),
-          },
+          char,
+          explicitScratchOut: { correctionChar },
         });
       }
     } else if (match[5] !== undefined) {
@@ -182,30 +195,31 @@ function isDateOnlyLine(text: string): boolean {
  */
 export function typesetText(
   text: string,
-  paper: PaperConfig,
-  config: HandwritingConfig
+  paper: PaperLayoutConfig,
+  config: HandwritingConfig,
+  measureShapedText?: MeasureShapedText,
 ): TypesetResult {
   const rng = new SeededRandom(config.seed);
 
-  // Default page bounds
-  const contentWidth = Math.max(100, paper.width - paper.marginLeft - paper.marginRight);
+  const grid = paper.type === 'grid' ? getGridCells(paper) : null;
+  const isGrid = grid !== null;
+  const contentWidth = grid
+    ? grid.cols * grid.cellWidth
+    : Math.max(100, paper.width - paper.marginLeft - paper.marginRight);
   const contentHeight = Math.max(100, paper.height - paper.marginTop - paper.marginBottom);
 
   // Line spacing
-  const lineSpacing = config.alignToLines && paper.lineSpacing > 0
+  const lineSpacing = grid?.cellHeight ?? (config.alignToLines && paper.lineSpacing > 0
     ? paper.lineSpacing
-    : config.lineHeight;
+    : config.lineHeight);
 
   // Maximum lines per page
-  const maxLinesPerPage = Math.max(1, Math.floor(contentHeight / lineSpacing));
-
-  // If grid mode (作文稿纸 / 方格纸)
-  const isGrid = paper.type === 'grid' && (paper.gridCols || 0) > 0;
-  const gridCols = isGrid ? paper.gridCols! : Math.floor(contentWidth / (config.fontSize + config.letterSpacing));
-  const cellWidth = isGrid ? contentWidth / gridCols : config.fontSize + config.letterSpacing;
+  const maxLinesPerPage = grid?.rows ?? Math.max(1, Math.floor(contentHeight / lineSpacing));
+  const cellWidth = grid?.cellWidth ?? (config.fontSize + config.letterSpacing);
 
   const pages: PageLayout[] = [];
   let currentPageChars: RenderChar[] = [];
+  let shapedLines: ShapedLine[] = [];
   let currentPageSplatters: { x: number; y: number; radius: number; opacity: number }[] = [];
   let currentPageIndex = 0;
   let currentLineIndex = 0;
@@ -215,10 +229,12 @@ export function typesetText(
       pageIndex: currentPageIndex,
       chars: currentPageChars,
       lineCount: currentLineIndex,
+      ...(shapedLines.length ? { shapedLines } : {}),
       splatters: currentPageSplatters,
     });
     currentPageIndex++;
     currentPageChars = [];
+    shapedLines = [];
     currentPageSplatters = [];
     currentLineIndex = 0;
   }
@@ -255,10 +271,7 @@ export function typesetText(
 
     // Empty paragraph line
     if (rawParagraph.length === 0) {
-      currentLineIndex++;
-      if (currentLineIndex >= maxLinesPerPage) {
-        flushPage();
-      }
+      advanceLine();
       continue;
     }
 
@@ -286,11 +299,26 @@ export function typesetText(
     let currentLineWidth = 0;
 
     // Apply paragraph indent (signatures have 0 indent)
-    const indentWidth = shouldRightAlign ? 0 : config.paragraphIndent * (isGrid ? cellWidth : (config.fontSize + config.letterSpacing));
+    const indent = shouldRightAlign ? 0 : config.paragraphIndent;
+    const indentCells = grid ? Math.max(0, Math.min(grid.cols - 1, Math.floor(indent))) : 0;
+    const indentWidth = (grid ? indentCells : indent) * cellWidth;
     let isFirstLineOfParagraph = true;
-    let availableWidth = contentWidth - (isFirstLineOfParagraph ? indentWidth : 0);
+    let availableWidth = contentWidth - indentWidth;
+
+    const lineStartX = (charCount: number, lineWidth: number): number => {
+      if (!shouldRightAlign) return isFirstLineOfParagraph ? indentWidth : 0;
+      if (grid) return (grid.cols - charCount) * cellWidth;
+      return Math.max(0, contentWidth - lineWidth - 20);
+    };
 
     const tokens = parseParagraphTokens(cleanedParagraph);
+    if (hasArabicLetters(cleanedParagraph)) {
+      const paragraphText = tokens.map(token => token.char).join('');
+      if (hasArabicLetters(paragraphText)) {
+        layoutShapedParagraph(paragraphText, tokens, indentWidth, shouldRightAlign);
+        continue;
+      }
+    }
 
     for (let cIdx = 0; cIdx < tokens.length; cIdx++) {
       const token = tokens[cIdx];
@@ -326,7 +354,12 @@ export function typesetText(
       }
 
       // Check if adding char exceeds line width
-      if (!canHangPunctuation && !canSqueezeLastChar && currentLineWidth + charWidth > availableWidth && lineChars.length > 0) {
+      // Count whole cells on grid paper to avoid fractional cell widths
+      // causing premature wraps when the column count changes.
+      const lineIsFull = grid
+        ? lineChars.length >= grid.cols - (isFirstLineOfParagraph ? indentCells : 0)
+        : currentLineWidth + charWidth > availableWidth;
+      if (!canHangPunctuation && !canSqueezeLastChar && lineIsFull && lineChars.length > 0) {
         // Check 避头尾: if char cannot start line, or previous char cannot end line
         let breakIndex = lineChars.length;
 
@@ -367,7 +400,7 @@ export function typesetText(
 
         // Layout the line toEmit
         const emitWidth = toEmit.reduce((sum, item) => sum + item.width, 0);
-        const startX = shouldRightAlign ? Math.max(0, contentWidth - emitWidth - 20) : (isFirstLineOfParagraph ? indentWidth : 0);
+        const startX = lineStartX(toEmit.length, emitWidth);
         layoutLine(toEmit, startX);
 
         // Reset line buffer
@@ -375,10 +408,7 @@ export function typesetText(
         currentLineWidth = lineChars.reduce((sum, item) => sum + item.width, 0);
 
         // Advance to next line
-        currentLineIndex++;
-        if (currentLineIndex >= maxLinesPerPage) {
-          flushPage();
-        }
+        advanceLine();
 
         isFirstLineOfParagraph = false;
         availableWidth = contentWidth;
@@ -390,18 +420,73 @@ export function typesetText(
 
     // Flush remaining chars in paragraph
     if (lineChars.length > 0) {
-      const startX = shouldRightAlign ? Math.max(0, contentWidth - currentLineWidth - 20) : (isFirstLineOfParagraph ? indentWidth : 0);
+      const startX = lineStartX(lineChars.length, currentLineWidth);
       layoutLine(lineChars, startX);
-      currentLineIndex++;
-      if (currentLineIndex >= maxLinesPerPage) {
-        flushPage();
-      }
+      advanceLine();
     }
   }
 
   // Flush last page if it has content or if no pages emitted yet
-  if (currentPageChars.length > 0 || pages.length === 0) {
+  if (currentPageChars.length > 0 || shapedLines.length > 0 || pages.length === 0) {
     flushPage();
+  }
+
+  /**
+   * 阿拉伯语等连笔双向段落的整形排版：
+   * 1. 判定段落方向（RTL / LTR），未提供 measureShapedText 时按估算字宽回退。
+   * 2. 调用 wrapArabicParagraph 执行成对标点保留折行。
+   * 3. 收集该行内的划改（scratch）与标注（annotation）标记，保留纠正字。
+   * 4. 生成 ShapedLine 记录整行文本、对齐方式、X/Y 坐标与视觉标记范围。
+   */
+  function layoutShapedParagraph(
+    paragraph: string,
+    tokens: CharToken[],
+    indentWidth: number,
+    rightAlign: boolean,
+  ) {
+    const direction = paragraphDirection(paragraph);
+    const measure = (value: string) => measureShapedText
+      ? measureShapedText(value, direction)
+      : Array.from(value).reduce((width, char) => width + estimateCharWidth(char, config.fontSize), 0);
+    const alignRight = rightAlign || direction === 'rtl';
+    let offset = 0;
+    let tokenIndex = 0;
+    for (const span of wrapArabicParagraph(paragraph, Math.max(1, contentWidth - indentWidth), contentWidth, measure)) {
+      const lineMarks: ShapedMark[] = [];
+      while (tokenIndex < tokens.length && offset < span.end) {
+        const token = tokens[tokenIndex++];
+        const start = offset - span.start;
+        offset += token.char.length;
+        if (start < 0) continue;
+        if (!isLayoutWhitespace(token.char)) totalCharsCount++;
+        const style = token.explicitScratchOut ? 'scratch' : token.explicitAnnotation?.style;
+        if (!style) continue;
+        const correction = token.explicitScratchOut?.correctionChar;
+        const previous = lineMarks.at(-1);
+        if (previous?.style === style && previous.end === start) {
+          previous.end = offset - span.start;
+          if (correction) previous.correction = (previous.correction ?? '') + correction;
+        } else {
+          lineMarks.push({ start, end: offset - span.start, style, correction });
+        }
+      }
+      const inset = contentWidth - span.maxWidth;
+      shapedLines.push({
+        text: paragraph.slice(span.start, span.end),
+        direction,
+        align: alignRight ? 'right' : 'left',
+        x: alignRight ? paper.marginLeft + contentWidth - inset : paper.marginLeft + inset,
+        y: paper.marginTop + (currentLineIndex + 0.72) * lineSpacing,
+        maxWidth: span.maxWidth,
+        ...(lineMarks.length ? { marks: lineMarks } : {}),
+      });
+      advanceLine();
+    }
+  }
+
+  function advanceLine() {
+    currentLineIndex++;
+    if (currentLineIndex >= maxLinesPerPage) flushPage();
   }
 
   function layoutLine(items: (CharToken & { width: number })[], startXOffset: number) {
@@ -432,7 +517,7 @@ export function typesetText(
       const char = item.char;
 
       // Skip whitespace chars from rendering, but advance X
-      if (char === ' ' || char === '\t' || char === '\u3000') {
+      if (isLayoutWhitespace(char)) {
         currentX += item.width;
         continue;
       }
@@ -581,16 +666,11 @@ export function typesetText(
       // Check for handwritten scratch-out (错字涂改: 划除错字并在上方补写正确字)
       let scratchOut: RenderChar['scratchOut'] | undefined;
       const isExplicitScratch = item.explicitScratchOut !== undefined;
+      const isExplicitAnnot = item.explicitAnnotation !== undefined;
       const scratchProb = config.scratchOutProbability ?? 0;
-      const isEligibleForScratch = 
-        char !== ' ' &&
-        char !== '\t' &&
-        char !== '\u3000' &&
-        (isExplicitScratch || (
-          scratchProb > 0 &&
-          !isHeadForbidden(char) &&
-          !isTailForbidden(char)
-        ));
+      const isEligibleForScratch = isExplicitScratch || (
+        !isExplicitAnnot && scratchProb > 0 && !isHeadForbidden(char) && !isTailForbidden(char)
+      );
 
       if (isEligibleForScratch) {
         const isFollower = pendingCompoundFollower !== null;
@@ -640,10 +720,11 @@ export function typesetText(
             const nextItem = i + 1 < items.length ? items[i + 1] : undefined;
             const nextChar = nextItem?.char;
             const canFormCompound = nextChar &&
-              nextChar !== ' ' && nextChar !== '\t' && nextChar !== '\u3000' &&
+              !isLayoutWhitespace(nextChar) &&
               (isExplicitScratch
                 ? nextItem?.explicitScratchOut !== undefined
-                : (!nextItem?.explicitScratchOut && !isHeadForbidden(nextChar) && !isTailForbidden(nextChar)));
+                : (!nextItem?.explicitScratchOut && !nextItem?.explicitAnnotation &&
+                    !isHeadForbidden(nextChar) && !isTailForbidden(nextChar)));
 
             if (canFormCompound && rng.next() < 0.35) {
               compoundTotal = 2;
@@ -772,14 +853,10 @@ export function typesetText(
 
       // Check for document annotation (文件手写重点勾画: 重点波浪下划线、圈画、插入符、划框)
       let annotation: RenderChar['annotation'] | undefined;
-      const isExplicitAnnot = item.explicitAnnotation !== undefined;
       const annotProb = config.annotationProbability ?? 0;
       if (
         (isExplicitAnnot || annotProb > 0) &&
         !scratchOut &&
-        char !== ' ' &&
-        char !== '\t' &&
-        char !== '\u3000' &&
         (isExplicitAnnot || (!isHeadForbidden(char) && !isTailForbidden(char)))
       ) {
         if (isExplicitAnnot || rng.next() < annotProb) {
@@ -831,7 +908,9 @@ export function typesetText(
 
       totalCharsCount++;
       const dSpacing = Math.max(-1.5, Math.min(1.5, rng.gaussian(0, config.letterSpacingVariance)));
-      currentX += Math.max(item.width * 0.65, item.width - edgeSpacingReduction) + dSpacing + fatigueSpacing;
+      currentX += isGrid
+        ? item.width
+        : Math.max(item.width * 0.65, item.width - edgeSpacingReduction) + dSpacing + fatigueSpacing;
     }
   }
 

@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { drawScratchOut } from '../paper';
+import { PRESET_TEMPLATES } from '../presets';
 import { parseParagraphTokens, typesetText } from '../typeset';
 import type { PaperConfig, HandwritingConfig } from '../types';
 
@@ -102,6 +104,62 @@ describe('Stage 3: Explicit Inline Tags for Handwriting Markings', () => {
 
     const quanChar = chars.find(c => c.char === '圈');
     expect(quanChar?.annotation?.style).toBe('circle');
+  });
+
+  it('protects explicit annotations at the maximum random scratch-out rate offered by the editor', () => {
+    const { paper, handwriting } = PRESET_TEMPLATES[0];
+    const result = typesetText('甲[circle]' + '田'.repeat(80) + '[/circle][u]划线[/u][box]方框[/box]', paper, {
+      ...handwriting, scratchOutProbability: 0.05, annotationProbability: 0.08,
+    });
+    const [, ...marked] = result.pages.flatMap(page => page.chars);
+    expect(marked.map(char => char.annotation?.style)).toEqual([
+      ...Array(80).fill('circle'), 'underline_wavy', 'underline_wavy', 'box', 'box',
+    ]);
+    expect(marked.every(char => !char.scratchOut)).toBe(true);
+  });
+
+  it('keeps a random scratch-out from spanning into an explicitly marked neighbor', () => {
+    const { paper, handwriting } = PRESET_TEMPLATES[0];
+    const config = { ...handwriting, seed: 1, scratchOutProbability: 1 };
+    const [unmarked] = typesetText('甲乙', paper, config).pages[0].chars;
+    expect(unmarked.scratchOut?.compoundTotal).toBe(2);
+
+    const [first, marked] = typesetText('甲[circle]乙[/circle]', paper, config).pages[0].chars;
+    expect(first.scratchOut?.compoundTotal).toBe(1);
+    expect(marked.char).toBe('乙');
+    expect(marked.annotation?.style).toBe('circle');
+    expect(marked.scratchOut).toBeUndefined();
+  });
+
+  it('draws the whole correction when the marked typo has fewer characters', () => {
+    const result = typesetText('[del:正确]错[/del]', defaultPaper, {
+      ...defaultHandwriting, scratchOutStyle: 'single_line',
+    });
+    const [item] = result.pages[0].chars;
+    const corrections: string[] = [];
+    const ctx = {
+      save() {},
+      restore() {},
+      beginPath() {},
+      moveTo() {},
+      lineTo() {},
+      quadraticCurveTo() {},
+      stroke() {},
+      translate() {},
+      rotate() {},
+      fillText(text: string) { corrections.push(text); },
+    } as unknown as CanvasRenderingContext2D;
+    drawScratchOut(ctx, item);
+    expect(item.char).toBe('错');
+    expect(corrections).toEqual(['正确']);
+  });
+
+  it('preserves a longer correction across line breaks and spaces in the marked typo', () => {
+    const paper = { ...defaultPaper, type: 'grid' as const, gridCols: 2, gridRows: 1 };
+    const result = typesetText('[del:完整的纠正词]错 字[/del]', paper, defaultHandwriting);
+    const chars = result.pages.flatMap(page => page.chars);
+    expect(chars.map(char => char.char)).toEqual(['错', '字']);
+    expect(chars.map(char => char.scratchOut?.correctionChar).join('')).toBe('完整的纠正词');
   });
 
   it('accepts the Chinese aliases [圈]…[/圈] and [框]…[/框]', () => {

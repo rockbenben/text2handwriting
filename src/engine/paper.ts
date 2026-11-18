@@ -1,4 +1,8 @@
-import type { PaperConfig, PaperSize, PageLayout, HandwritingConfig, RenderChar } from './types';
+import type { PaperConfig, PaperSize, PageLayout, HandwritingConfig, RenderChar, ShapedLine } from './types';
+import { paragraphDirection, type MeasureShapedText } from './arabicLayout';
+import { getGridCells } from './paperGeometry';
+
+export { getGridCells } from './paperGeometry';
 
 export function getPaperDimensions(size: PaperSize, scale = 1.0): { width: number; height: number } {
   let baseWidth = 1200;
@@ -245,18 +249,6 @@ export function getVerticalMarginLineX(paper: PaperConfig): number | null {
   return Math.min(104, paper.marginLeft - 16);
 }
 
-export function getGridCells(paper: PaperConfig): { cols: number; rows: number; cellWidth: number; cellHeight: number } {
-  const contentWidth = paper.width - paper.marginLeft - paper.marginRight;
-  const contentHeight = paper.height - paper.marginTop - paper.marginBottom;
-
-  const cols = paper.gridCols && paper.gridCols > 0 ? paper.gridCols : 20;
-  const cellWidth = contentWidth / cols;
-  const rows = paper.gridRows && paper.gridRows > 0 ? paper.gridRows : Math.floor(contentHeight / cellWidth);
-  const cellHeight = cellWidth; // square grid
-
-  return { cols, rows, cellWidth, cellHeight };
-}
-
 /**
  * Calculates optimal recommended font size based on current paper type and geometry
  */
@@ -350,10 +342,8 @@ export function renderPaperBackground(
     drawPaperGuidelines(ctx, paper);
   }
 
-  // 3. Realistic Photo / Ambient lighting effects
-  if (paper.paperTexture === 'photo' || paper.vignette) {
-    renderPhotoLightingEffects(ctx, paper);
-  }
+  // 3. Paper texture and optional edge shading
+  drawPaperEffects(ctx, paper);
 }
 
 function drawPaperGuidelines(ctx: CanvasRenderingContext2D, paper: PaperConfig): void {
@@ -478,44 +468,39 @@ function drawPaperGuidelines(ctx: CanvasRenderingContext2D, paper: PaperConfig):
   ctx.restore();
 }
 
-function renderPhotoLightingEffects(ctx: CanvasRenderingContext2D, paper: PaperConfig): void {
-  const { width, height } = paper;
+/**
+ * 绘制真实纸张光影质感与环境滤镜特效：
+ * 1. photo: 左上角主光源照射、右下角微暗的环境光漫反射渐变。
+ * 2. vintage: 岁月泛黄与纸边氧化的复古怀旧色阶。
+ * 3. creased: 纸张中部轻微对折折痕明暗交界线。
+ * 4. vignette: 四角暗角过渡，营造实物镜头拍摄感。
+ */
+function drawPaperEffects(ctx: CanvasRenderingContext2D, paper: PaperConfig): void {
+  const { width, height, paperTexture, vignette } = paper;
+  if ((!paperTexture || paperTexture === 'clean') && !vignette) return;
   const intensity = paper.shadowIntensity ?? 0.25;
 
   ctx.save();
 
-  // 1. Ambient lighting gradient: Light coming from top-left, gentle shadow on bottom-right
-  const lightGrad = ctx.createRadialGradient(
-    width * 0.25,
-    height * 0.15,
-    width * 0.1,
-    width * 0.5,
-    height * 0.6,
-    Math.max(width, height) * 0.85
-  );
-  lightGrad.addColorStop(0, `rgba(255, 255, 255, ${intensity * 0.4})`);
-  lightGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-  lightGrad.addColorStop(1, `rgba(15, 23, 42, ${intensity * 0.55})`);
-  ctx.fillStyle = lightGrad;
-  ctx.fillRect(0, 0, width, height);
-
-  // 2. Corner Vignette
-  const vignette = ctx.createRadialGradient(
-    width / 2,
-    height / 2,
-    Math.min(width, height) * 0.4,
-    width / 2,
-    height / 2,
-    Math.max(width, height) * 0.75
-  );
-  vignette.addColorStop(0, 'rgba(0,0,0,0)');
-  vignette.addColorStop(1, `rgba(30, 20, 10, ${intensity * 0.4})`);
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, width, height);
-
-  // 3. Subtle paper crease / fold shadow across middle
-  if (paper.paperTexture === 'creased') {
-    ctx.beginPath();
+  if (paperTexture === 'photo') {
+    // Top-left ambient light and a gentle shadow toward the bottom right.
+    const light = ctx.createRadialGradient(
+      width * 0.25, height * 0.15, width * 0.1,
+      width * 0.5, height * 0.6, Math.max(width, height) * 0.85,
+    );
+    light.addColorStop(0, `rgba(255, 255, 255, ${intensity * 0.4})`);
+    light.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
+    light.addColorStop(1, `rgba(15, 23, 42, ${intensity * 0.55})`);
+    ctx.fillStyle = light;
+    ctx.fillRect(0, 0, width, height);
+  } else if (paperTexture === 'vintage') {
+    const age = ctx.createLinearGradient(0, 0, width, height);
+    age.addColorStop(0, 'rgba(236, 200, 133, 0.32)');
+    age.addColorStop(0.55, 'rgba(236, 200, 133, 0.16)');
+    age.addColorStop(1, 'rgba(184, 129, 60, 0.28)');
+    ctx.fillStyle = age;
+    ctx.fillRect(0, 0, width, height);
+  } else if (paperTexture === 'creased') {
     const creaseGrad = ctx.createLinearGradient(0, height * 0.48, 0, height * 0.52);
     creaseGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
     creaseGrad.addColorStop(0.48, 'rgba(0, 0, 0, 0.08)');
@@ -523,6 +508,17 @@ function renderPhotoLightingEffects(ctx: CanvasRenderingContext2D, paper: PaperC
     creaseGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = creaseGrad;
     ctx.fillRect(0, height * 0.45, width, height * 0.1);
+  }
+
+  if (vignette) {
+    const edgeShade = ctx.createRadialGradient(
+      width / 2, height / 2, Math.min(width, height) * 0.4,
+      width / 2, height / 2, Math.max(width, height) * 0.75,
+    );
+    edgeShade.addColorStop(0, 'rgba(0,0,0,0)');
+    edgeShade.addColorStop(1, `rgba(30, 20, 10, ${intensity * 0.4})`);
+    ctx.fillStyle = edgeShade;
+    ctx.fillRect(0, 0, width, height);
   }
 
   ctx.restore();
@@ -563,8 +559,202 @@ export function buildCanvasFont(fontSize: number, fontFamily: string): string {
 }
 
 /**
- * Main rendering function for drawing a complete handwriting page to HTMLCanvasElement
+ * 为离屏和屏幕画布配置统一的阿拉伯语与通用字体兜底，优先保留用户选定字体的字形。
  */
+function setShapedCanvasFont(ctx: CanvasRenderingContext2D, fontSize: number, fontFamily: string): void {
+  // Give on-screen and detached canvases the same Arabic-capable fallback.
+  // The user-selected face still takes precedence for glyphs it provides.
+  if ('lang' in ctx) ctx.lang = 'ar';
+  ctx.font = `${Math.round(fontSize)}px ${formatFontFamilyForCanvas(fontFamily)}, Arial, sans-serif`;
+}
+
+/**
+ * 创建整行双向文本（BiDi / 阿拉伯语）测量器。
+ * 使用离屏 Canvas 结合文字排版方向（direction）测量整形后（Shaped）的真实物理像素宽度。
+ */
+export function createShapedTextMeasurer(fontSize: number, fontFamily: string): MeasureShapedText | undefined {
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return;
+  setShapedCanvasFont(ctx, fontSize, fontFamily);
+  return (text, direction) => {
+    ctx.direction = direction;
+    return ctx.measureText(text).width;
+  };
+}
+
+function drawInk(
+  ctx: CanvasRenderingContext2D,
+  item: Pick<RenderChar, 'char' | 'opacity' | 'strokeWidth' | 'color'>,
+  config: HandwritingConfig,
+  maxWidth?: number,
+): void {
+  const paint = (x: number, y: number) => {
+    if (maxWidth === undefined) ctx.fillText(item.char, x, y);
+    else ctx.fillText(item.char, x, y, maxWidth);
+  };
+  const stroke = () => {
+    if (maxWidth === undefined) ctx.strokeText(item.char, 0, 0);
+    else ctx.strokeText(item.char, 0, 0, maxWidth);
+  };
+  // Physical Pen Inking Simulation (四种真实书写笔具物理模拟)
+  const penType = config.penType ?? 'gel';
+
+  if (penType === 'pencil') {
+    // 铅笔：石墨哑光、无墨水渗纸晕染、微颗粒触感
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = item.opacity * 0.88;
+    paint(0, 0);
+
+    // Graphite grain deposition pass (石墨微粉层)
+    ctx.save();
+    ctx.globalAlpha = item.opacity * 0.22;
+    paint(0.25, 0.2);
+    ctx.restore();
+  } else if (penType === 'fountain') {
+    // 钢笔：水性墨水深浅浓淡过渡（Shading）、笔尖下墨层次
+    const inkBleedVal = (config.inkBleed ?? 0.35) * 1.1;
+    ctx.shadowColor = item.color;
+    ctx.shadowBlur = Math.max(0.4, item.strokeWidth * 0.8 + inkBleedVal * 0.8);
+
+    // Base fluid ink pass (底色水墨)
+    ctx.globalAlpha = item.opacity * 0.84;
+    paint(0, 0);
+
+    // Concentrated nib contact core (钢笔下墨中心浓重处)
+    ctx.save();
+    ctx.globalAlpha = item.opacity * 0.55;
+    ctx.lineWidth = Math.max(0.4, item.strokeWidth * 0.6);
+    ctx.strokeStyle = item.color;
+    stroke();
+    ctx.restore();
+  } else if (penType === 'ballpoint') {
+    // 圆珠笔：油性油墨、边缘干脆、极低渗透、转折处偶有油墨微聚
+    const inkBleedVal = (config.inkBleed ?? 0.35) * 0.25;
+    if (inkBleedVal > 0.05) {
+      ctx.shadowColor = item.color;
+      ctx.shadowBlur = inkBleedVal * 0.5;
+    } else {
+      ctx.shadowBlur = 0;
+    }
+    ctx.globalAlpha = item.opacity * 0.94;
+    paint(0, 0);
+
+    if (item.strokeWidth > 0.3) {
+      ctx.lineWidth = Math.min(0.8, (item.strokeWidth - 0.2) * 0.4);
+      ctx.strokeStyle = item.color;
+      stroke();
+    }
+  } else {
+    // 中性笔（gel）：晨光/百乐 0.5mm 经典饱满墨色与自然纸纤维微渗
+    const inkBleedVal = config.inkBleed ?? 0.35;
+    if (item.strokeWidth > 0.1 || inkBleedVal > 0) {
+      ctx.shadowColor = item.color;
+      ctx.shadowBlur = Math.max(0.35, item.strokeWidth * 0.7 + inkBleedVal * 0.75);
+    }
+    ctx.globalAlpha = item.opacity;
+    paint(0, 0);
+
+    // Subtle core pass for heavy pen pressure inking
+    if (item.strokeWidth > 0.35) {
+      ctx.lineWidth = Math.min(1.0, (item.strokeWidth - 0.35) * 0.5);
+      ctx.strokeStyle = item.color;
+      stroke();
+    }
+  }
+}
+
+function drawShapedLine(ctx: CanvasRenderingContext2D, line: ShapedLine, config: HandwritingConfig): void {
+  ctx.save();
+  ctx.translate(line.x, line.y);
+  setShapedCanvasFont(ctx, config.fontSize, config.fontFamily);
+  ctx.fillStyle = config.inkColor;
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = line.align;
+  ctx.direction = line.direction;
+  const item: RenderChar = {
+    char: line.text,
+    x: line.x,
+    y: line.y,
+    fontSize: config.fontSize,
+    color: config.inkColor,
+    rotation: 0,
+    opacity: 1,
+    strokeWidth: 0.1,
+  };
+  drawInk(ctx, item, config, line.maxWidth);
+  if (line.marks?.length) drawShapedMarks(ctx, line, item, config);
+  ctx.restore();
+}
+
+/**
+ * 绘制包含涂改、下划线、圈画标记的整行整形文本（如阿拉伯语）。
+ *
+ * 阿拉伯文等复杂文字具有连笔整形规则（Cursive Joining）：若像单字排版那样拆成单个字符绘制，
+ * 会导致连笔断开。因此文字整行连贯绘制，涂改/标注层通过离屏 DOM Range (`getClientRects`)
+ * 准确定位逻辑字符片段的视觉坐标，既保持字形优雅连贯，又支持逼真的手写划改效果。
+ */
+function drawShapedMarks(
+  ctx: CanvasRenderingContext2D,
+  line: ShapedLine,
+  item: RenderChar,
+  config: HandwritingConfig,
+): void {
+  // Range rectangles locate logical spans in a native bidi line. Draw the
+  // marks on top so annotations never split the text into unjoined glyphs.
+  const span = document.createElement('span');
+  span.dir = line.direction;
+  span.lang = 'ar';
+  span.style.cssText = 'position:fixed;top:0;left:0;visibility:hidden;white-space:pre;width:max-content';
+  span.style.font = ctx.font;
+  const text = document.createTextNode(line.text);
+  span.appendChild(text);
+  document.body.appendChild(span);
+  try {
+    const bounds = span.getBoundingClientRect();
+    const width = Math.min(ctx.measureText(line.text).width, line.maxWidth);
+    const scaleX = width / Math.max(1, bounds.width);
+    const left = line.align === 'right' ? -width : 0;
+    const range = document.createRange();
+    for (const mark of line.marks ?? []) {
+      range.setStart(text, mark.start);
+      range.setEnd(text, mark.end);
+      let correction = mark.correction;
+      for (const rect of range.getClientRects()) {
+        if (!rect.width) continue;
+        const markWidth = rect.width * scaleX;
+        ctx.save();
+        ctx.translate(left + (rect.left - bounds.left) * scaleX, 0);
+        if (mark.style === 'scratch') {
+          ctx.textAlign = 'left';
+          if (correction) ctx.direction = paragraphDirection(correction);
+          drawScratchOut(ctx, {
+            ...item,
+            scratchOut: {
+              style: config.scratchOutStyle === 'all' ? 'single_line' : config.scratchOutStyle ?? 'single_line',
+              color: config.inkColor,
+              correctionChar: correction,
+              correctionColor: config.scratchOutCorrectionColor,
+              showCaret: config.scratchOutUseCaret !== false,
+              position: 'top',
+              compoundWidth: markWidth,
+            },
+          });
+          correction = undefined;
+        } else {
+          drawAnnotation(ctx, { ...item, annotation: {
+            color: config.annotationColor || config.inkColor,
+            style: mark.style,
+          } }, markWidth);
+        }
+        ctx.restore();
+      }
+    }
+  } finally {
+    span.remove();
+  }
+}
+
+/** Draw a complete handwriting page, including native shaping for mixed Arabic lines. */
 export function renderHandwritingPageToCanvas(
   canvas: HTMLCanvasElement,
   pageLayout: PageLayout,
@@ -592,8 +782,11 @@ export function renderHandwritingPageToCanvas(
 
   // 1. Draw Paper Background
   renderPaperBackground(ctx, paper, customImage);
+  for (const line of pageLayout.shapedLines ?? []) drawShapedLine(ctx, line, config);
 
   // 2. Draw Handwritten Text Characters
+  ctx.direction = 'ltr';
+  ctx.textAlign = 'left';
   for (const item of pageLayout.chars) {
     ctx.save();
 
@@ -620,71 +813,7 @@ export function renderHandwritingPageToCanvas(
     ctx.fillStyle = item.color;
     ctx.textBaseline = 'alphabetic';
 
-    // Physical Pen Inking Simulation (四种真实书写笔具物理模拟)
-    const penType = config.penType ?? 'gel';
-
-    if (penType === 'pencil') {
-      // 铅笔：石墨哑光、无墨水渗纸晕染、微颗粒触感
-      ctx.shadowBlur = 0;
-      ctx.globalAlpha = item.opacity * 0.88;
-      ctx.fillText(item.char, 0, 0);
-
-      // Graphite grain deposition pass (石墨微粉层)
-      ctx.save();
-      ctx.globalAlpha = item.opacity * 0.22;
-      ctx.fillText(item.char, 0.25, 0.2);
-      ctx.restore();
-    } else if (penType === 'fountain') {
-      // 钢笔：水性墨水深浅浓淡过渡（Shading）、笔尖下墨层次
-      const inkBleedVal = (config.inkBleed ?? 0.35) * 1.1;
-      ctx.shadowColor = item.color;
-      ctx.shadowBlur = Math.max(0.4, item.strokeWidth * 0.8 + inkBleedVal * 0.8);
-
-      // Base fluid ink pass (底色水墨)
-      ctx.globalAlpha = item.opacity * 0.84;
-      ctx.fillText(item.char, 0, 0);
-
-      // Concentrated nib contact core (钢笔下墨中心浓重处)
-      ctx.save();
-      ctx.globalAlpha = item.opacity * 0.55;
-      ctx.lineWidth = Math.max(0.4, item.strokeWidth * 0.6);
-      ctx.strokeStyle = item.color;
-      ctx.strokeText(item.char, 0, 0);
-      ctx.restore();
-    } else if (penType === 'ballpoint') {
-      // 圆珠笔：油性油墨、边缘干脆、极低渗透、转折处偶有油墨微聚
-      const inkBleedVal = (config.inkBleed ?? 0.35) * 0.25;
-      if (inkBleedVal > 0.05) {
-        ctx.shadowColor = item.color;
-        ctx.shadowBlur = inkBleedVal * 0.5;
-      } else {
-        ctx.shadowBlur = 0;
-      }
-      ctx.globalAlpha = item.opacity * 0.94;
-      ctx.fillText(item.char, 0, 0);
-
-      if (item.strokeWidth > 0.3) {
-        ctx.lineWidth = Math.min(0.8, (item.strokeWidth - 0.2) * 0.4);
-        ctx.strokeStyle = item.color;
-        ctx.strokeText(item.char, 0, 0);
-      }
-    } else {
-      // 中性笔（gel）：晨光/百乐 0.5mm 经典饱满墨色与自然纸纤维微渗
-      const inkBleedVal = config.inkBleed ?? 0.35;
-      if (item.strokeWidth > 0.1 || inkBleedVal > 0) {
-        ctx.shadowColor = item.color;
-        ctx.shadowBlur = Math.max(0.35, item.strokeWidth * 0.7 + inkBleedVal * 0.75);
-      }
-      ctx.globalAlpha = item.opacity;
-      ctx.fillText(item.char, 0, 0);
-
-      // Subtle core pass for heavy pen pressure inking
-      if (item.strokeWidth > 0.35) {
-        ctx.lineWidth = Math.min(1.0, (item.strokeWidth - 0.35) * 0.5);
-        ctx.strokeStyle = item.color;
-        ctx.strokeText(item.char, 0, 0);
-      }
-    }
+    drawInk(ctx, item, config);
 
     // Realistic handwritten scratch-out (错字划掉/涂改及上方补写正确字)
     if (item.scratchOut) {
@@ -969,9 +1098,9 @@ export function drawScratchOut(ctx: CanvasRenderingContext2D, item: RenderChar, 
   }
   } // end if (isLeader)
 
-  // 8. If correction character is present, write the correct character above/top-right the struck-through mistake
+  // 8. Write the correction text above or to the top right of the struck-through mistake.
   if (item.scratchOut.correctionChar) {
-    const corrChar = item.scratchOut.correctionChar;
+    const correctionText = item.scratchOut.correctionChar;
     const corrColor = item.scratchOut.correctionColor || color;
     const isFirstLine = !!item.scratchOut.isFirstLine;
     const corrFontSize = Math.max(12, Math.round(size * (isFirstLine ? 0.62 : 0.68)));
@@ -1000,7 +1129,7 @@ export function drawScratchOut(ctx: CanvasRenderingContext2D, item: RenderChar, 
       ctx.restore();
     }
 
-    // Draw the correction character in the designated position (top-right or top)
+    // Draw the correction in the designated position (top-right or top)
     ctx.save();
     if (fontFamily) {
       ctx.font = buildCanvasFont(corrFontSize, fontFamily);
@@ -1020,7 +1149,7 @@ export function drawScratchOut(ctx: CanvasRenderingContext2D, item: RenderChar, 
     ctx.translate(corrX, corrY);
     ctx.rotate(tilt);
     if (typeof ctx.fillText === 'function') {
-      ctx.fillText(corrChar, 0, 0);
+      ctx.fillText(correctionText, 0, 0);
     }
     ctx.restore();
   }
@@ -1031,12 +1160,11 @@ export function drawScratchOut(ctx: CanvasRenderingContext2D, item: RenderChar, 
 /**
  * Renders hand-drawn document markings (underlines, circles, caret inserts, boxes)
  */
-export function drawAnnotation(ctx: CanvasRenderingContext2D, item: RenderChar): void {
+export function drawAnnotation(ctx: CanvasRenderingContext2D, item: RenderChar, width = item.fontSize * 0.95): void {
   if (!item.annotation) return;
   const style = item.annotation.style;
   const color = item.annotation.color;
   const size = item.fontSize;
-  const width = size * 0.95;
 
   ctx.save();
   ctx.strokeStyle = color;

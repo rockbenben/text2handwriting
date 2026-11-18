@@ -38,9 +38,8 @@ export async function parseDocumentFile(file: File): Promise<string> {
   // 且旧实现不报错，整篇被乱码覆盖且无法恢复。
   const bytes = new Uint8Array(await file.arrayBuffer());
   try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes).trim();
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
   } catch {
-    const gb18030 = new TextDecoder('gb18030').decode(bytes);
-    return gb18030.trim();
+    return new TextDecoder('gb18030').decode(bytes);
   }
 }

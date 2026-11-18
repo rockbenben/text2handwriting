@@ -2,8 +2,21 @@ import type { PaperConfig, PaperSize, PageLayout, HandwritingConfig, DoodleMap }
 import { renderHandwritingPageToCanvas } from './paper';
 import { drawDoodles } from './doodle';
 
-/** 在已按 scale 渲染好的页面画布上叠加该页手绘层 */
-function paintDoodles(canvas: HTMLCanvasElement, scale: number, strokes: DoodleMap[number] | undefined): void {
+export interface PageComposition {
+  readonly paper: PaperConfig;
+  readonly handwriting: HandwritingConfig;
+  readonly scale: number;
+  readonly customImage?: HTMLImageElement | null;
+  readonly doodles: DoodleMap;
+}
+
+export function composeOutputPage(
+  canvas: HTMLCanvasElement,
+  page: PageLayout,
+  { paper, handwriting, scale, customImage, doodles }: PageComposition,
+): void {
+  renderHandwritingPageToCanvas(canvas, page, paper, handwriting, scale, customImage);
+  const strokes = doodles[page.pageIndex];
   if (!strokes || strokes.length === 0) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -139,9 +152,6 @@ export async function exportCanvasAsImage(
   format: 'png' | 'jpeg' = 'png',
   quality = 0.95
 ): Promise<void> {
-  if (typeof document !== 'undefined' && document.fonts) {
-    await document.fonts.ready;
-  }
   const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
   await new Promise<void>((resolve, reject) => {
     canvas.toBlob(
@@ -165,19 +175,12 @@ export async function exportCanvasAsImage(
  * Exports all pages as a ZIP bundle of high-res images
  */
 export async function exportAllPagesAsZip(
-  pages: PageLayout[],
-  paper: PaperConfig,
-  handwriting: HandwritingConfig,
-  scale = 2.0,
-  format: 'png' | 'jpeg' = 'png',
-  customImage?: HTMLImageElement | null,
+  pages: readonly PageLayout[],
+  composition: PageComposition,
   onProgress?: (current: number, total: number) => void,
-  doodles?: DoodleMap,
-  fileBaseName = 'handwriting'
+  fileBaseName = 'handwriting',
+  format: 'png' | 'jpeg' = 'png',
 ): Promise<void> {
-  if (typeof document !== 'undefined' && document.fonts) {
-    await document.fonts.ready;
-  }
   const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
   const offscreenCanvas = document.createElement('canvas');
@@ -185,8 +188,7 @@ export async function exportAllPagesAsZip(
   const ext = format === 'jpeg' ? 'jpg' : 'png';
 
   for (let i = 0; i < pages.length; i++) {
-    renderHandwritingPageToCanvas(offscreenCanvas, pages[i], paper, handwriting, scale, customImage);
-    paintDoodles(offscreenCanvas, scale, doodles?.[pages[i].pageIndex]);
+    composeOutputPage(offscreenCanvas, pages[i], composition);
 
     const blob = await new Promise<Blob>((resolve, reject) => {
       offscreenCanvas.toBlob(
@@ -213,51 +215,4 @@ export async function exportAllPagesAsZip(
 
   const zipBlob = await zip.generateAsync({ type: 'blob' });
   downloadBlob(zipBlob, `${fileBaseName}_all-${pages.length}pages_${Date.now()}.zip`);
-}
-
-/**
- * Exports all pages as a multi-page PDF
- */
-export async function exportAllPagesAsPdf(
-  pages: PageLayout[],
-  paper: PaperConfig,
-  handwriting: HandwritingConfig,
-  scale = 2.0,
-  customImage?: HTMLImageElement | null,
-  onProgress?: (current: number, total: number) => void,
-  doodles?: DoodleMap,
-  fileBaseName = 'handwriting'
-): Promise<void> {
-  if (typeof document !== 'undefined' && document.fonts) {
-    await document.fonts.ready;
-  }
-  const { widthMm, heightMm } = getPdfPageFormat(paper.size, paper.width, paper.height);
-  const orientation = widthMm > heightMm ? 'landscape' : 'portrait';
-  const { default: jsPDF } = await import('jspdf');
-  const pdf = new jsPDF({
-    orientation,
-    unit: 'mm',
-    format: [widthMm, heightMm],
-  });
-
-  const offscreenCanvas = document.createElement('canvas');
-
-  for (let i = 0; i < pages.length; i++) {
-    if (i > 0) {
-      pdf.addPage([widthMm, heightMm], orientation);
-    }
-
-    renderHandwritingPageToCanvas(offscreenCanvas, pages[i], paper, handwriting, scale, customImage);
-    paintDoodles(offscreenCanvas, scale, doodles?.[pages[i].pageIndex]);
-
-    const imgData = offscreenCanvas.toDataURL('image/jpeg', 0.92);
-    pdf.addImage(imgData, 'JPEG', 0, 0, widthMm, heightMm, undefined, 'FAST');
-
-    if (onProgress) {
-      onProgress(i + 1, pages.length);
-    }
-  }
-
-  const pdfBlob = pdf.output('blob');
-  downloadBlob(pdfBlob, `${fileBaseName}_${pages.length}pages_${Date.now()}.pdf`);
 }
