@@ -1,76 +1,84 @@
-# Text2Handwriting - Turn Text into Realistic Handwriting, Fully Local
+# Text2Handwriting
+
+> Turn plain text into realistic handwriting pages, fully offline in your browser.
+
+[简体中文](README.md) · **English** · [繁體中文](docs/i18n/README.zh-Hant.md) · [日本語](docs/i18n/README.ja.md) · [한국어](docs/i18n/README.ko.md) · [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) · [Deutsch](docs/i18n/README.de.md) · [Português](docs/i18n/README.pt.md) · [Русский](docs/i18n/README.ru.md) · [Italiano](docs/i18n/README.it.md) · [العربية](docs/i18n/README.ar.md) · [हिन्दी](docs/i18n/README.hi.md) · [বাংলা](docs/i18n/README.bn.md) · [ไทย](docs/i18n/README.th.md) · [Türkçe](docs/i18n/README.tr.md) · [Tiếng Việt](docs/i18n/README.vi.md) · [Bahasa Indonesia](docs/i18n/README.id.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![365 Open Source Plan #039](https://img.shields.io/badge/365%20Open%20Source%20Plan-%23039-1f6feb)](https://github.com/rockbenben/365opensource)
 
-> Turn plain text into realistic handwriting — fully local in your browser, nothing ever uploaded.
+[▶ Try it online](https://shouxie.newzone.top)
 
-[▶ Try it online](https://shouxie.newzone.top) · [⬇ Source](https://github.com/rockbenben/text2handwriting) · [中文](README.md)
+![UI Preview: paste text on the left, generate handwriting on the right](docs/images/hero-en.png)
 
-![Paste text on the left, get a handwritten page on the right](docs/images/hero-en.png)
+Designed for handwriting homework, reading journals, meeting transcripts, and formal letters. Unlike generic handwriting tools that only swap font faces mechanically, Text2Handwriting applies seed-controlled pseudo-random perturbation to glyph size, rotation, baseline jitter, and ink density. It runs entirely within your browser with zero server uploads or account requirements.
 
-## Requirements
+## Support Matrix
 
-| Item | Details |
-| --- | --- |
-| Runs in | Any modern browser, purely client-side; Chrome / Edge 103+ can enumerate all locally installed fonts, Safari / Firefox fall back to built-in font detection |
-| Import | Paste text, or upload `.txt` / `.md` (UTF-8 / GBK auto-detected), `.docx` |
-| Export | PNG / JPG per page, ZIP of all pages, multi-page PDF, browser printing — three quality tiers up to ~435 DPI |
-| Interface | Simplified Chinese, Traditional Chinese, English |
-| Offline | Installable as a PWA; settings persist locally |
+| Dimension | Details |
+|---|---|
+| Environment | Modern desktop and mobile browsers, 100% client-side (Chrome / Edge 103+ can enumerate all local fonts, Safari / Firefox use built-in detection) |
+| Import formats | Paste text directly, or upload `.txt` / `.md` (strict UTF-8 validation with GB18030 fallback), `.docx` (client-side extraction) |
+| Paper styles | 6 paper presets (ruled notebook, composition grid, blank A4, English four-line, kraft paper, dot grid), plus custom paper photo uploads with auto-fitting |
+| Pen & realism | 4 physical pen physics (gel, fountain, pencil, ballpoint); ambient lighting diffuse, fold crease shadows, corner vignettes, and vintage ageing |
+| Export options | Current page PNG / JPG, all pages ZIP archive, multi-page PDF, hidden iframe real-millimeter lossless printing (up to ~435 DPI) |
+| Typesetting | 18 fully translated UI languages (Simplified Chinese, Traditional Chinese, English, Japanese, Korean, German, Spanish, French, Italian, Portuguese, Russian, Arabic, Hindi, Bengali, Indonesian, Thai, Vietnamese, Turkish); CJK punctuation avoidance rules, English word-wrap protection, Arabic bidirectional layout (BiDi RTL) with native cursive joining |
+| Offline & sync | PWA offline shell installable on desktop and mobile; Web Locks cross-tab concurrency protection, 250ms debounced persistence, and unsaved changes alert |
 
-## What it does
+## What It Does
 
-- **Realistic handwriting**: seed-controlled pseudo-random perturbation — glyph size, rotation, baseline jitter, ink depth and bleed, whole-line drift. Every render is different; keep the seed to reproduce one
-- **CJK typesetting**: line-start / line-end punctuation rules, first-line indent, automatic pagination, right-aligned signature
-- **6 paper styles + custom backgrounds**: ruled notebook, composition grid, A4, four-line English practice sheets, kraft letter paper, dot-grid journal — or upload a photo of your own blank worksheet and it adapts automatically
-- **Any font**: 4 open-source handwriting fonts bundled (works offline); load web fonts, system fonts, or import `.ttf` / `.otf` files — use [Calligraphr](https://www.calligraphr.com/) to turn your own handwriting into a font, and the output is 100% your hand
-- **Realistic corrections**: 13 strikethrough styles (diagonal, wavy, scribble…) appearing with realistic probability; mark wrong characters, write corrections above the line, circle or box highlights — plus a drawing layer for arrows, sketches and formulas right on the paper
-- **Writing personas**: 4 one-click presets (neat student / casual notes / rushed scrawl / formal copy), with pen types for gel / fountain / pencil / ballpoint
+- **Realistic handwriting**: Seed-controlled pseudo-random perturbation across glyph size, letter spacing, baseline drift, stroke width, ink bleed, and writing fatigue. Every render is unique, and saving the seed lets you 100% reproduce identical output.
+- **Smart typesetting & bidirectional text**: 18 languages fully localized out of the box; strict CJK line-start / line-end rules, first-line indent, pagination, and right-aligned signatures; word break prevention for Latin scripts; native cursive joining and paired punctuation protection for Arabic and RTL scripts.
+- **Paper & photo textures**: Customizable line spacing and margins, square grid columns linkage; auto-fit photo uploads into page borders; realistic ambient lighting gradients, center creases, corner vignettes, and aged yellowing.
+- **Any font**: 4 bundled open-source handwriting fonts (100% offline ready); load system fonts, Google Fonts, or drop in `.ttf` / `.otf` files (compatible with Calligraphr to use your own handwriting).
+- **Realistic corrections**: 13 strikethrough styles (single-line, double-line, wavy, scribbled blocks) triggered by configurable probability; strike out wrong characters and write corrections above the line; built-in drawing layer for arrows, sketches, and annotations.
+- **Writing personas**: 4 one-click presets (neat student, casual notes, rushed scrawl, formal copy) that instantly configure pen type, perturbation intensity, and line spacing.
 
-### Markup syntax: manual corrections
+## Markup Syntax
 
-Annotate text directly to control where corrections appear (markup overrides random probability):
+Use inline markup tags directly in your text to specify exact strikethroughs and highlights (markup takes precedence over random probability):
 
-| Syntax | Effect |
-| --- | --- |
-| `~~wrong~~` or `[del]wrong[/del]` | Strike through |
-| `[del:fix]typo[/del]` | Strike through and write the correction above the line |
+| Syntax | Rendered Effect |
+|---|---|
+| `~~wrong~~` or `[del]wrong[/del]` | Strike through text |
+| `[del:correction]typo[/del]` | Strike through and write the correction above the line |
 | `[u]highlight[/u]` | Wavy underline |
-| `[circle]highlight[/circle]` | Circle it |
-| `[box]highlight[/box]` | Box it |
+| `[circle]highlight[/circle]` | Circle around text (alias `[圈]…[/圈]`) |
+| `[box]highlight[/box]` | Box around text (alias `[框]…[/框]`) |
 
-Tags must be properly paired; mismatched ones like `[circle]x[/框]` are rendered as plain text. The same table is available in the app under the "Markup syntax" hint below the text box.
+## Quick Start
 
----
+1. Open the [online demo](https://shouxie.newzone.top) or import a text file (`.txt` / `.docx` / `.md`).
+2. Pick a paper style, handwriting font, and writing persona from the left panel, and adjust perturbation or photo lighting.
+3. Click "Export" in the top header to download high-resolution images, multi-page PDF, or send directly to the printer.
 
-## Known limitations
+## Limitations
 
-- Line breaking uses estimated glyph widths, not `ctx.measureText`. With fonts whose widths deviate far from the estimate (e.g. Kaiti variants, imported .ttf files), line endings may slightly overshoot or undershoot.
-- Browser printing outputs the current page only; use PDF export for all pages.
-- Safari below 16 lacks `ctx.filter`, so brightness / contrast adjustments for paper backgrounds have no effect there.
-- The drawing layer is bound to page numbers and not persisted; re-pagination after editing may misalign existing drawings.
-- Imported font files live in session memory only and must be re-imported after a page refresh.
+- CJK and Latin typesetting use estimated glyph widths for sub-second pagination performance on 100+ page documents (Arabic bidirectional typesetting uses native Canvas font measurement); with handwritten fonts whose glyph metrics deviate significantly from standard ratios, line endings may slightly overshoot or undershoot.
+- Browser printing prints the current page only; use PDF export to print the entire multi-page document.
+- Safari below version 16 lacks `ctx.filter` support, meaning paper brightness and contrast adjustments have no effect there.
+- The drawing layer is bound to page indices in memory; major text edits that re-paginate the document may cause strokes to shift across pages.
+- Locally imported `.ttf` / `.otf` font files are kept only in the current session's memory and must be re-selected after a page refresh.
 
-## Local development
+## Local Development
 
-Requires Node.js **22.12+ / 24+ / 26+** (Vitest 5's supported range; CI builds on Node 26).
+Requires Node.js **22.12+ / 24+ / 26+** (CI builds on Node 26):
 
 ```bash
 npm install
-npm run dev        # dev server at http://localhost:5173/
-npm run test       # unit tests (vitest)
-npm run lint       # oxlint
+npm run dev        # start local development server at http://localhost:5173/
+npm test           # run Vitest unit test suite
+npm run lint       # static code analysis (oxlint)
 npm run build      # production build (tsc + vite)
 ```
 
-The build output uses relative paths (`base: './'`), so `dist/` deploys directly to GitHub Pages, intranets, or any static server. Deployment details, chunk-splitting strategy, project structure, and the i18n guide live in [docs/development.md](docs/development.md).
+The build output in `dist/` uses relative paths (`base: './'`) and can be hosted on GitHub Pages or any intranet web server. See [docs/development.md](docs/development.md) for chunk-splitting details, engine architecture, and adding new languages.
 
 ## License
 
-- **Code**: MIT, see `LICENSE`
-- **Fonts**: the 4 fonts in `public/fonts/` are under the SIL Open Font License (OFL), see `LICENSE-FONTS.md`
+- **Code**: MIT License, see [LICENSE](LICENSE)
+- **Fonts**: Bundled fonts under `public/fonts/` are licensed under the SIL Open Font License (OFL), see [LICENSE-FONTS.md](LICENSE-FONTS.md)
 
-This is an independent implementation with no affiliation to AutoHanding or its operator; only the design approach was referenced.
+This project is an independent implementation and has no affiliation with third-party handwriting tools.
 
 ## About the 365 Open Source Plan
 
