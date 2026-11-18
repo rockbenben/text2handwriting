@@ -62,11 +62,14 @@
     "other": "Outro papel"
   },
   "confirm": {
+    "replaceDoodles": "As anotações desenhadas à mão em todas as páginas também serão removidas.",
     "applyPreset": "A aplicação deste modelo substituirá todo o texto inserido de forma irreversível. Deseja continuar?",
     "resetSample": "Restaurar o exemplo substituirá todo o texto que você inseriu. Isso não pode ser desfeito. Continuar?",
     "clearText": "Limpar removerá permanentemente todo o texto que você inseriu. Limpar?"
   },
   "errors": {
+    "draftConflict": "Outra aba salvou um texto diferente. Suas alterações continuam aqui. Copie-as antes de sair.",
+    "draftSaveFailed": "Não foi possível salvar as alterações neste dispositivo. Mantenha a aba aberta e copie o texto antes de sair.",
     "exportFailed": "Falha ao exportar imagem, tente novamente",
     "zipExportFailed": "Falha na exportação em lote ZIP, tente novamente",
     "pdfExportFailed": "Falha na exportação para PDF, tente novamente",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "Redefinir iluminação e textura de foto",
     "textureMode": "Modo de textura",
     "tex_clean": "Impressão limpa (sem sombras)",
-    "tex_photo": "Foto em mesa real (com vinheta e iluminação ambiente)",
+    "tex_photo": "Foto em mesa real (com iluminação ambiente)",
     "tex_creased": "Folha dobrada com vincos naturais",
     "tex_vintage": "Vintage envelhecido (papel amarelado)",
     "shadowIntensity": "Intensidade da sombra (Shadow)",

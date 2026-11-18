@@ -62,11 +62,14 @@
     "other": "其他紙張"
   },
   "confirm": {
+    "replaceDoodles": "所有頁面上的手繪註記也會被清除。",
     "applyPreset": "應用該模板會清空當前已輸入的全部文字，且無法撤銷。確定繼續嗎？",
     "resetSample": "重設範例會取代目前輸入的全部文字，且無法復原。確定要繼續嗎？",
     "clearText": "清空後目前輸入的全部文字將無法復原。確定要清空嗎？"
   },
   "errors": {
+    "draftConflict": "另一個分頁已儲存不同的正文。此頁的編輯仍在，請在離開前複製。",
+    "draftSaveFailed": "變更無法儲存到此裝置。請保留此分頁，並在離開前複製正文。",
     "exportFailed": "匯出失敗，請重試",
     "zipExportFailed": "批次打包匯出失敗，請重試",
     "pdfExportFailed": "PDF 匯出失敗，請重試",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "重置相機光影與質感為預設值",
     "textureMode": "實拍質感模式",
     "tex_clean": "高畫質列印模式 (純淨底色)",
-    "tex_photo": "真實桌面實拍 (帶環境光暗角)",
+    "tex_photo": "真實桌面實拍 (環境光影)",
     "tex_creased": "微摺痕真實手札 (自然摺痕)",
     "tex_vintage": "復古微黃歲月感",
     "shadowIntensity": "環境光影強度 (Shadow/Vignette)",

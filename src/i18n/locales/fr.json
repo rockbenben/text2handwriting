@@ -62,11 +62,14 @@
     "other": "Autre papier"
   },
   "confirm": {
+    "replaceDoodles": "Les annotations dessinées à la main seront également supprimées sur toutes les pages.",
     "applyPreset": "L'application de ce modèle remplacera tout le texte saisi actuellement. Continuer ?",
     "resetSample": "Réinitialiser l'exemple remplacera tout le texte saisi. Cette action est irréversible. Continuer ?",
     "clearText": "Effacer supprimera définitivement tout le texte saisi. Effacer ?"
   },
   "errors": {
+    "draftConflict": "Un autre onglet a enregistré un texte différent. Vos modifications sont toujours ici. Copiez-les avant de quitter la page.",
+    "draftSaveFailed": "Vos modifications n’ont pas pu être enregistrées sur cet appareil. Gardez cet onglet ouvert et copiez votre texte avant de quitter la page.",
     "exportFailed": "Échec de l'exportation, veuillez réessayer",
     "zipExportFailed": "Échec de l'exportation ZIP par lots, veuillez réessayer",
     "pdfExportFailed": "Échec de l'exportation PDF, veuillez réessayer",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "Réinitialiser l'éclairage et la texture de caméra",
     "textureMode": "Mode de texture",
     "tex_clean": "Impression nette (sans ombres)",
-    "tex_photo": "Photo sur bureau réel (avec vignetage et éclairage ambiant)",
+    "tex_photo": "Photo sur bureau réel (avec éclairage ambiant)",
     "tex_creased": "Feuille pliée avec pliures naturelles",
     "tex_vintage": "Vintage vieilli (papier jauni)",
     "shadowIntensity": "Intensité de l'ombre (Shadow)",

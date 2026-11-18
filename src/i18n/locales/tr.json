@@ -62,11 +62,14 @@
     "other": "Diğer kağıt"
   },
   "confirm": {
+    "replaceDoodles": "Tüm sayfalardaki elle çizilmiş notlar da silinecek.",
     "applyPreset": "Bu şablonu uygulamak, girdiğiniz tüm metnin kalıcı olarak üzerine yazacaktır. Devam etmek istiyor musunuz?",
     "resetSample": "Örneği sıfırlamak, girdiğiniz tüm metnin yerine geçer ve bu işlem geri alınamaz. Devam edilsin mi?",
     "clearText": "Temizleme, girdiğiniz tüm metni kalıcı olarak siler. Temizlensin mi?"
   },
   "errors": {
+    "draftConflict": "Başka bir sekme farklı bir metin kaydetti. Düzenlemeleriniz bu sekmede duruyor. Ayrılmadan önce kopyalayın.",
+    "draftSaveFailed": "Değişiklikler bu cihaza kaydedilemedi. Bu sekmeyi açık tutun ve ayrılmadan önce metni kopyalayın.",
     "exportFailed": "Resim dışa aktarılamadı, lütfen tekrar deneyin",
     "zipExportFailed": "Toplu ZIP dışa aktarımı başarısız oldu, lütfen tekrar deneyin",
     "pdfExportFailed": "PDF dışa aktarımı başarısız oldu, lütfen tekrar deneyin",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "Işık ve kamera efektlerini sıfırla",
     "textureMode": "Doku modu",
     "tex_clean": "Temiz baskı (gölgesiz)",
-    "tex_photo": "Gerçek masa fotoğrafı (vinyet ve doğal ortam ışığı ile)",
+    "tex_photo": "Gerçek masa fotoğrafı (doğal ortam ışığı ile)",
     "tex_creased": "Doğal katlama izleri olan katlanmış kağıt",
     "tex_vintage": "Nostaljik eskitme (sararmış kağıt)",
     "shadowIntensity": "Gölge yoğunluğu (Shadow)",

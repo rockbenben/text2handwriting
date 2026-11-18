@@ -62,11 +62,14 @@
     "other": "Kertas lainnya"
   },
   "confirm": {
+    "replaceDoodles": "Anotasi yang digambar dengan tangan di semua halaman juga akan dihapus.",
     "applyPreset": "Menerapkan template ini akan menimpa seluruh teks yang Anda ketik secara permanen. Lanjutkan?",
     "resetSample": "Mereset contoh akan mengganti semua teks yang sudah Anda masukkan dan tidak dapat dibatalkan. Lanjutkan?",
     "clearText": "Menghapus akan menghilangkan semua teks yang sudah Anda masukkan secara permanen. Hapus?"
   },
   "errors": {
+    "draftConflict": "Tab lain menyimpan teks yang berbeda. Editan Anda masih ada di sini. Salin sebelum keluar.",
+    "draftSaveFailed": "Perubahan tidak dapat disimpan di perangkat ini. Biarkan tab ini terbuka dan salin teks sebelum keluar.",
     "exportFailed": "Gagal mengekspor gambar, silakan coba lagi",
     "zipExportFailed": "Gagal mengekspor ZIP batch, silakan coba lagi",
     "pdfExportFailed": "Gagal mengekspor PDF, silakan coba lagi",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "Atur ulang efek foto dan pencahayaan",
     "textureMode": "Mode tekstur",
     "tex_clean": "Hasil cetak bersih (tanpa bayangan)",
-    "tex_photo": "Foto meja nyata (dengan vinyet dan cahaya alami)",
+    "tex_photo": "Foto meja nyata (dengan cahaya alami)",
     "tex_creased": "Kertas terlipat dengan lipatan alami",
     "tex_vintage": "Vintage antik (kertas menguning)",
     "shadowIntensity": "Intensitas bayangan (Shadow)",

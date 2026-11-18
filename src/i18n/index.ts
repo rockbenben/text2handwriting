@@ -43,13 +43,31 @@ function applyLanguageDocumentAttributes(code: string): void {
   document.documentElement.dir = meta?.rtl ? 'rtl' : 'ltr';
 }
 
+let languageRequest = 0;
+
 /**
  * 切换语言：先按需取回语言包（默认语言已内联，无需请求），
  * 注册后再切换，避免界面先闪一下 key 再出译文。
  * 返回最终生效的语言代码。
  */
 export async function setAppLanguage(code: string): Promise<string> {
+  const request = ++languageRequest;
   const next = isSupportedLanguage(code) ? code : DEFAULT_LANGUAGE;
+
+  // en/zh-CN 已内联；其余语言先按需取回语言包（可能是空占位 {} ，
+  // 此时缺 key 会自动回落到英文，而不是露出 key）
+  if (hasLazyLoader(next) && !i18next.hasResourceBundle(next, 'translation')) {
+    const bundle = await loadLazyBundle(next);
+    if (request !== languageRequest) return i18next.language;
+    if (bundle) {
+      i18next.addResourceBundle(next, 'translation', bundle, true, true);
+    }
+  }
+
+  await i18next.changeLanguage(next);
+  if (request !== languageRequest) return i18next.language;
+  applyLanguageDocumentAttributes(next);
+  syncDocumentMeta();
   try {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
     // 新键已落盘，旧键留着只会让后续读取产生歧义
@@ -57,18 +75,6 @@ export async function setAppLanguage(code: string): Promise<string> {
   } catch {
     // 存储失败不影响本次会话内的切换
   }
-  applyLanguageDocumentAttributes(next);
-
-  // en/zh-CN 已内联；其余语言先按需取回语言包（可能是空占位 {} ，
-  // 此时缺 key 会自动回落到英文，而不是露出 key）
-  if (hasLazyLoader(next) && !i18next.hasResourceBundle(next, 'translation')) {
-    const bundle = await loadLazyBundle(next);
-    if (bundle) {
-      i18next.addResourceBundle(next, 'translation', bundle, true, true);
-    }
-  }
-  await i18next.changeLanguage(next);
-  syncDocumentMeta();
   return next;
 }
 

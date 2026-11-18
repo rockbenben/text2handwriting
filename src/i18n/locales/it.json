@@ -62,11 +62,14 @@
     "other": "Altra carta"
   },
   "confirm": {
+    "replaceDoodles": "Anche le annotazioni disegnate a mano su tutte le pagine verranno rimosse.",
     "applyPreset": "L'applicazione di questo modello sostituirà irreversibilmente tutto il testo inserito. Continuare?",
     "resetSample": "Ripristinare l'esempio sostituirà tutto il testo inserito. L'operazione non può essere annullata. Continuare?",
     "clearText": "Svuotare rimuoverà definitivamente tutto il testo inserito. Svuotare?"
   },
   "errors": {
+    "draftConflict": "Un’altra scheda ha salvato un testo diverso. Le tue modifiche sono ancora qui. Copiale prima di uscire.",
+    "draftSaveFailed": "Impossibile salvare le modifiche su questo dispositivo. Tieni aperta la scheda e copia il testo prima di uscire.",
     "exportFailed": "Esportazione dell'immagine non riuscita, riprova",
     "zipExportFailed": "Esportazione ZIP batch non riuscita, riprova",
     "pdfExportFailed": "Esportazione PDF non riuscita, riprova",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "Ripristina illuminazione e texture",
     "textureMode": "Modalità texture",
     "tex_clean": "Stampa pulita (senza ombre)",
-    "tex_photo": "Foto su scrivania reale (con vignettatura e luce naturale)",
+    "tex_photo": "Foto su scrivania reale (con luce naturale)",
     "tex_creased": "Foglio piegato con pieghe naturali",
     "tex_vintage": "Vintage invecchiato (carta ingiallita)",
     "shadowIntensity": "Intensità ombra (Shadow)",

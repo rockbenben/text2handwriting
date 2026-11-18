@@ -62,11 +62,14 @@
     "other": "其他纸张"
   },
   "confirm": {
+    "replaceDoodles": "所有页面上的手绘批注也会被清除。",
     "applyPreset": "应用该模板会清空当前已输入的全部文字，且无法撤销。确定继续吗？",
     "resetSample": "重置示例会替换当前已输入的全部文字，且无法撤销。确定继续吗？",
     "clearText": "清空后当前已输入的全部文字将无法恢复。确定清空吗？"
   },
   "errors": {
+    "draftConflict": "另一个标签页保存了不同的正文。此页的编辑仍在，请在离开前复制。",
+    "draftSaveFailed": "更改无法保存到本设备。请保留此标签页，并在离开前复制正文。",
     "exportFailed": "导出失败，请重试",
     "zipExportFailed": "批量打包导出失败，请重试",
     "pdfExportFailed": "PDF 导出失败，请重试",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "重置相机光影与质感为默认值",
     "textureMode": "实拍质感模式",
     "tex_clean": "高清打印模式 (纯净底色)",
-    "tex_photo": "真实桌面实拍 (带环境光暗角)",
+    "tex_photo": "真实桌面实拍 (环境光影)",
     "tex_creased": "微折痕真实手札 (自然折痕)",
     "tex_vintage": "复古微黄岁月感",
     "shadowIntensity": "环境光影强度 (Shadow/Vignette)",

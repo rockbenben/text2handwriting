@@ -62,11 +62,14 @@
     "other": "Other paper"
   },
   "confirm": {
+    "replaceDoodles": "Hand-drawn annotations on all pages will also be removed.",
     "applyPreset": "Applying this template will replace all the text you've entered, and this cannot be undone. Continue?",
     "resetSample": "Resetting the sample will replace all the text you've entered, and this can't be undone. Continue?",
     "clearText": "Clearing will permanently remove all the text you've entered. Clear it?"
   },
   "errors": {
+    "draftConflict": "Another tab saved different text. Your edits are still here. Copy them before leaving.",
+    "draftSaveFailed": "Your changes could not be saved on this device. Keep this tab open and copy your text before leaving.",
     "exportFailed": "Export failed, please try again",
     "zipExportFailed": "Batch ZIP export failed, please try again",
     "pdfExportFailed": "PDF export failed, please try again",
@@ -330,7 +333,7 @@
     "photoLightingResetTitle": "Reset camera lighting and texture to defaults",
     "textureMode": "Photo texture mode",
     "tex_clean": "HD print mode (clean base)",
-    "tex_photo": "Real desktop photo (with ambient vignette)",
+    "tex_photo": "Real desktop photo (ambient lighting)",
     "tex_creased": "Slightly creased letter (natural folds)",
     "tex_vintage": "Vintage aged yellow",
     "shadowIntensity": "Ambient lighting strength (shadow/vignette)",

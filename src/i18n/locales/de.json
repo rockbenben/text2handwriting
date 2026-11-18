@@ -62,11 +62,14 @@
     "other": "Anderes Papier"
   },
   "confirm": {
+    "replaceDoodles": "Handgezeichnete Anmerkungen auf allen Seiten werden ebenfalls gelöscht.",
     "applyPreset": "Das Anwenden dieser Vorlage ersetzt Ihren gesamten eingegebenen Text unwiderruflich. Fortfahren?",
     "resetSample": "Beim Zurücksetzen des Beispiels wird der gesamte eingegebene Text ersetzt. Das lässt sich nicht rückgängig machen. Fortfahren?",
     "clearText": "Beim Leeren wird der gesamte eingegebene Text dauerhaft entfernt. Leeren?"
   },
   "errors": {
+    "draftConflict": "Ein anderer Tab hat einen anderen Text gespeichert. Deine Änderungen sind noch hier. Kopiere sie, bevor du die Seite verlässt.",
+    "draftSaveFailed": "Deine Änderungen konnten auf diesem Gerät nicht gespeichert werden. Lass den Tab offen und kopiere deinen Text, bevor du die Seite verlässt.",
     "exportFailed": "Export fehlgeschlagen, bitte erneut versuchen",
     "zipExportFailed": "ZIP-Export fehlgeschlagen, bitte erneut versuchen",
     "pdfExportFailed": "PDF-Export fehlgeschlagen, bitte erneut versuchen",
