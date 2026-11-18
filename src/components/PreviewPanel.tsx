@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ZoomIn, 
@@ -19,11 +19,13 @@ import { drawDoodles, eraseStrokesAt } from '../engine/doodle';
 
 interface PreviewPanelProps {
   currentPage: PageLayout | null;
+  documentRevision: number;
   currentPageIndex: number;
   totalPages: number;
   onPageChange: (index: number) => void;
   paper: PaperConfig;
   handwriting: HandwritingConfig;
+  customImage: HTMLImageElement | null;
   onExportCurrentPage: (format: 'png' | 'jpeg') => void;
   isExporting: boolean;
   exportProgress?: { current: number; total: number };
@@ -34,11 +36,13 @@ interface PreviewPanelProps {
 
 export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   currentPage,
+  documentRevision,
   currentPageIndex,
   totalPages,
   onPageChange,
   paper,
   handwriting,
+  customImage,
   onExportCurrentPage,
   isExporting,
   exportProgress,
@@ -49,7 +53,6 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(0.58); // default comfortable preview zoom
-  const [customImgElement, setCustomImgElement] = useState<HTMLImageElement | null>(null);
   const [showMarginGuides, setShowMarginGuides] = useState(false);
 
   // 预览位图按设备像素比超采样，高分屏放大不糊。封顶 2 控制显存
@@ -65,6 +68,11 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   const doodleColor = handwriting.inkColor;
   const doodlesRef = useRef(doodles);
   doodlesRef.current = doodles;
+
+  useLayoutEffect(() => {
+    drawingRef.current = false;
+    activeStrokeRef.current = null;
+  }, [documentRevision]);
 
   // 手绘线宽 / 橡皮半径都在纸张坐标系定义，导出与预览用同一套数值
   const DOODLE_WIDTH = 2.6;
@@ -145,27 +153,6 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     activeStrokeRef.current = null;
   };
 
-  // Load custom image if URL provided
-  useEffect(() => {
-    let active = true;
-    if (paper.customImageUrl) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        if (active) setCustomImgElement(img);
-      };
-      img.onerror = () => {
-        if (active) setCustomImgElement(null);
-      };
-      img.src = paper.customImageUrl;
-    } else {
-      setCustomImgElement(null);
-    }
-    return () => {
-      active = false;
-    };
-  }, [paper.customImageUrl]);
-
   // Render canvas whenever current page, paper, or handwriting changes
   useEffect(() => {
     let active = true;
@@ -177,7 +164,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         paper,
         handwriting,
         previewDpr,
-        customImgElement
+        customImage
       );
 
       // Draw subtle margin boundary guide lines if enabled.
@@ -196,11 +183,10 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
     render();
 
-    // Re-render immediately when fonts finish asynchronous loading
-    if (typeof document !== 'undefined' && document.fonts) {
-      document.fonts.ready.then(() => {
-        render();
-      });
+    // Drawing can start a font load. Only schedule a second draw if a load
+    // is actually pending after the first one.
+    if (document.fonts?.status === 'loading') {
+      void document.fonts.ready.then(render);
     }
 
     return () => {
@@ -208,7 +194,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     };
     // previewDpr 是挂载时读一次的常量（useRef().current），列进依赖只为满足 exhaustive-deps，
     // 实际永不变化、不会引起重渲染。
-  }, [currentPage, paper, handwriting, customImgElement, showMarginGuides, previewDpr]);
+  }, [currentPage, paper, handwriting, customImage, showMarginGuides, previewDpr]);
 
   // Auto-fit zoom based on container viewport dimensions
   // useCallback 是必需的：下面的 effect 把它当依赖注册 resize 监听，

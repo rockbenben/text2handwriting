@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Header } from './components/Header';
 import { EditorPanel } from './components/EditorPanel';
@@ -7,24 +7,34 @@ import { PresetModal } from './components/PresetModal';
 import { PRESET_TEMPLATES, type PresetTemplate } from './engine/presets';
 import { BUILTIN_FONTS, type FontOption, deduplicateFontList } from './engine/fontLoader';
 import { typesetText } from './engine/typeset';
+import { hasArabicLetters } from './engine/arabicLayout';
+import { createShapedTextMeasurer } from './engine/paper';
 import {
+  composeOutputPage,
   exportCanvasAsImage,
   exportAllPagesAsZip,
-  exportAllPagesAsPdf,
   printPageImage,
   getPdfPageFormat
 } from './engine/exporter';
-import { renderHandwritingPageToCanvas } from './engine/paper';
-import { drawDoodles } from './engine/doodle';
 import type { DoodleMap, DoodleStroke } from './engine/types';
 import type { PaperConfig, HandwritingConfig } from './engine/types';
 import {
   loadStoredSettings,
-  saveStoredSettings,
   loadStoredCustomFonts,
   saveStoredCustomFonts,
-  hasStoredText,
 } from './engine/storage';
+import { useDraftPersistence } from './useDraftPersistence';
+import { usePaperBackground } from './usePaperBackground';
+
+type OutputFormat = 'png' | 'jpeg' | 'zip' | 'pdf' | 'print';
+
+const outputErrors = {
+  png: 'errors.exportFailed',
+  jpeg: 'errors.exportFailed',
+  zip: 'errors.zipExportFailed',
+  pdf: 'errors.pdfExportFailed',
+  print: 'errors.printFailed',
+} as const;
 
 export function App() {
   const { t } = useTranslation();
@@ -34,7 +44,7 @@ export function App() {
 
   const [text, setText] = useState<string>(() => {
     // 首次访问（从未存过正文）跟随界面语言显示对应示例；老用户保留已存内容
-    if (hasStoredText()) return initialSettings.text;
+    if (initialSettings.storedText !== null) return initialSettings.text;
     return t(`samples.${PRESET_TEMPLATES[0].id}`, { defaultValue: initialSettings.text });
   });
   const [paper, setPaper] = useState<PaperConfig>(() => initialSettings.paper);
@@ -57,6 +67,7 @@ export function App() {
   // 手绘层：按页码索引保存笔画。手绘只在当前会话存在，不写 localStorage ——
   // 一旦编辑正文导致分页变化，按页号挂的笔迹会错位，持久化反而误导。
   const [doodles, setDoodles] = useState<DoodleMap>({});
+  const [documentRevision, setDocumentRevision] = useState(0);
   const handleDoodlesChange = (pageIndex: number, strokes: DoodleStroke[]) => {
     setDoodles((prev) => {
       const next = { ...prev };
@@ -69,68 +80,40 @@ export function App() {
     });
   };
 
-  const customImgRef = useRef<HTMLImageElement | null>(null);
+  const draft = useMemo(() => ({
+    text, paper, handwriting, exportScale, activePresetId,
+  }), [text, paper, handwriting, exportScale, activePresetId]);
+  const draftStatus = useDraftPersistence(draft, initialSettings.storedText);
 
-  // Auto-persist settings to localStorage.
-  // 防抖是必要的：text 每次击键都变，而 paper 里可能挂着几 MB 的 base64 底图，
-  // 不防抖的话每次击键都要 JSON.stringify 一整块大字符串再写四次 localStorage。
+  const { load: loadBackground, image: customImage } = usePaperBackground(paper.customImageUrl);
+
+  const shapesText = useMemo(() => hasArabicLetters(text), [text]);
+  const [fontRevision, setFontRevision] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      saveStoredSettings({
-        text,
-        paper,
-        handwriting,
-        exportScale,
-        activePresetId,
-      });
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [text, paper, handwriting, exportScale, activePresetId]);
+    if (!shapesText || !document.fonts) return;
+    const refreshFontMetrics = () => setFontRevision(revision => revision + 1);
+    document.fonts.addEventListener('loadingdone', refreshFontMetrics);
+    return () => document.fonts.removeEventListener('loadingdone', refreshFontMetrics);
+  }, [shapesText]);
+  const measureShapedText = useMemo(() => {
+    // Recreate the context after a face loads so wrapping uses the new metrics.
+    if (shapesText) return createShapedTextMeasurer(handwriting.fontSize, handwriting.fontFamily);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Loaded font metrics can change without changing the CSS font string.
+  }, [shapesText, handwriting.fontSize, handwriting.fontFamily, fontRevision]);
 
-  // 标签页关闭前的最后一次兜底写入（防抖窗口内的内容不会丢）
-  useEffect(() => {
-    const persist = () => {
-      saveStoredSettings({
-        text,
-        paper,
-        handwriting,
-        exportScale,
-        activePresetId,
-      });
-    };
-    window.addEventListener('beforeunload', persist);
-    return () => window.removeEventListener('beforeunload', persist);
-  }, [text, paper, handwriting, exportScale, activePresetId]);
-
-  // Track custom background image
-  useEffect(() => {
-    let active = true;
-    if (paper.customImageUrl) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        if (active) {
-          customImgRef.current = img;
-        }
-      };
-      img.onerror = () => {
-        if (active) {
-          customImgRef.current = null;
-        }
-      };
-      img.src = paper.customImageUrl;
-    } else {
-      customImgRef.current = null;
-    }
-    return () => {
-      active = false;
-    };
-  }, [paper.customImageUrl]);
-
-  // Typeset text whenever text, paper, or handwriting configs change
+  const {
+    type, width, height, marginTop, marginBottom, marginLeft, marginRight, lineSpacing, gridCols, gridRows,
+  } = paper;
+  // Pass just the paper geometry to the layout engine. Preview and export
+  // still receive the full paper configuration for drawing.
   const typesetResult = useMemo(() => {
-    return typesetText(text, paper, handwriting);
-  }, [text, paper, handwriting]);
+    return typesetText(text, {
+      type, width, height, marginTop, marginBottom, marginLeft, marginRight, lineSpacing, gridCols, gridRows,
+    }, handwriting, measureShapedText);
+  }, [
+    text, handwriting, measureShapedText,
+    type, width, height, marginTop, marginBottom, marginLeft, marginRight, lineSpacing, gridCols, gridRows,
+  ]);
 
   // 分页数变少时把页码拉回合法范围。在渲染期直接校正 state，而不是放进 useEffect ——
   // 后者会先提交一帧越界页码（此刻 currentPage 为 null、预览闪空），再触发一次级联渲染。
@@ -154,20 +137,26 @@ export function App() {
   const localizedSample = (preset: PresetTemplate): string =>
     t(`samples.${preset.id}`, { defaultValue: preset.sampleText });
 
+  const replaceDocument = (nextText: string, confirmation: string): boolean => {
+    const hasDoodles = Object.keys(doodles).length > 0;
+    const requiresConfirmation = hasDoodles || (text.trim() !== '' && text !== nextText);
+    const message = hasDoodles ? `${confirmation}\n\n${t('confirm.replaceDoodles')}` : confirmation;
+    if (requiresConfirmation && !window.confirm(message)) return false;
+
+    setText(nextText);
+    setDoodles({});
+    setCurrentPageIndex(0);
+    setDocumentRevision(revision => revision + 1);
+    return true;
+  };
+
   // Apply a preset template. 返回是否真的套用，弹窗据此决定要不要关闭：
   // 用户在确认框里点「取消」时，弹窗必须留着，否则还得重新打开一次。
   const handleSelectPreset = (preset: PresetTemplate): boolean => {
-    // 预设会整篇替换当前文本，而应用里没有撤销栈，所以必须显式确认
-    const sample = localizedSample(preset);
-    if (text.trim() && text !== sample) {
-      const confirmed = window.confirm(t('confirm.applyPreset'));
-      if (!confirmed) return false;
-    }
+    if (!replaceDocument(localizedSample(preset), t('confirm.applyPreset'))) return false;
     setActivePresetId(preset.id);
     setPaper({ ...preset.paper });
     setHandwriting({ ...preset.handwriting });
-    setText(sample);
-    setCurrentPageIndex(0);
     return true;
   };
 
@@ -193,126 +182,61 @@ export function App() {
     });
   };
 
-  // Export current page
-  const handleExportCurrentPage = async (format: 'png' | 'jpeg') => {
+  const runOutput = async (format: OutputFormat) => {
     if (!currentPage || isExporting) return;
-    setIsExporting(true);
+    // Editor updates replace these objects and arrays, so the values captured
+    // here stay valid even if the document is changed while assets load.
+    const snapshot = {
+      page: currentPage,
+      pages: typesetResult.pages,
+      paper,
+      handwriting,
+      scale: exportScale,
+      doodles,
+    };
+    const fileBaseName = t('file.baseName');
+    const trackProgress = (current: number, total: number) => setExportProgress({ current, total });
+    if (format !== 'print') setIsExporting(true);
+    if (format === 'pdf' || format === 'zip') trackProgress(0, snapshot.pages.length);
+
     try {
-      // 必须在画布绘制之前等字体就绪。放在 exportCanvasAsImage 内部等已经晚了：
-      // 那时像素已经用兜底字体画完了，等也只是等一个已经完成的渲染。
-      if (document.fonts) await document.fonts.ready;
+      const [background] = await Promise.all([loadBackground?.(), document.fonts?.ready]);
+      const composition = { ...snapshot, customImage: background };
+      if (format === 'zip') {
+        await exportAllPagesAsZip(snapshot.pages, composition, trackProgress, fileBaseName);
+        return;
+      }
+      if (format === 'pdf') {
+        const { exportAllPagesAsPdf } = await import('./engine/pdfExporter');
+        await exportAllPagesAsPdf(snapshot.pages, composition, trackProgress, fileBaseName);
+        return;
+      }
 
       const offscreen = document.createElement('canvas');
-      renderHandwritingPageToCanvas(
-        offscreen,
-        currentPage,
-        paper,
-        handwriting,
-        exportScale,
-        customImgRef.current
-      );
-      const pageDoodles = doodles[currentPage.pageIndex];
-      if (pageDoodles && pageDoodles.length > 0) {
-        const ctx = offscreen.getContext('2d');
-        if (ctx) {
-          ctx.save();
-          ctx.scale(exportScale, exportScale);
-          drawDoodles(ctx, pageDoodles);
-          ctx.restore();
-        }
+      composeOutputPage(offscreen, snapshot.page, composition);
+      if (format === 'print') {
+        const { size, width, height } = snapshot.paper;
+        const { widthMm, heightMm } = getPdfPageFormat(size, width, height);
+        await printPageImage(offscreen.toDataURL('image/png'), widthMm, heightMm);
+        return;
       }
+
       const ext = format === 'jpeg' ? 'jpg' : 'png';
       const filename = t('file.pageName', {
-        base: t('file.baseName'),
-        page: currentPageIndex + 1,
+        base: fileBaseName,
+        page: snapshot.page.pageIndex + 1,
         timestamp: Date.now(),
         ext,
       });
       await exportCanvasAsImage(offscreen, filename, format, 0.95);
     } catch (err) {
-      console.error('Export error:', err);
-      alert(t('errors.exportFailed'));
+      console.error(`Could not output ${format}:`, err);
+      alert(t(outputErrors[format]));
     } finally {
-      setIsExporting(false);
-    }
-  };
-
-  // Export all pages as ZIP
-  const handleExportAllZip = async () => {
-    if (typesetResult.pages.length === 0 || isExporting) return;
-    setIsExporting(true);
-    setExportProgress({ current: 0, total: typesetResult.pages.length });
-    try {
-      await exportAllPagesAsZip(
-        typesetResult.pages,
-        paper,
-        handwriting,
-        exportScale,
-        'png',
-        customImgRef.current,
-        (current, total) => setExportProgress({ current, total }),
-        doodles,
-        t('file.baseName')
-      );
-    } catch (err) {
-      console.error('ZIP Export error:', err);
-      alert(t('errors.zipExportFailed'));
-    } finally {
-      setIsExporting(false);
-      setExportProgress(undefined);
-    }
-  };
-
-  // Export all pages as PDF
-  const handleExportAllPdf = async () => {
-    if (typesetResult.pages.length === 0 || isExporting) return;
-    setIsExporting(true);
-    setExportProgress({ current: 0, total: typesetResult.pages.length });
-    try {
-      await exportAllPagesAsPdf(
-        typesetResult.pages,
-        paper,
-        handwriting,
-        exportScale,
-        customImgRef.current,
-        (current, total) => setExportProgress({ current, total }),
-        doodles,
-        t('file.baseName')
-      );
-    } catch (err) {
-      console.error('PDF Export error:', err);
-      alert(t('errors.pdfExportFailed'));
-    } finally {
-      setIsExporting(false);
-      setExportProgress(undefined);
-    }
-  };
-
-  // 打印当前页：走与 PNG 导出相同的离屏合成路径（纸面+文字+手绘），
-  // 在隐藏 iframe 里按纸张真实毫米尺寸打印，保证手绘进入快照、不被页边裁切。
-  const handlePrint = async () => {
-    if (!currentPage) return;
-    try {
-      if (document.fonts) await document.fonts.ready;
-      const offscreen = document.createElement('canvas');
-      renderHandwritingPageToCanvas(offscreen, currentPage, paper, handwriting, exportScale, customImgRef.current);
-
-      const pageDoodles = doodles[currentPage.pageIndex];
-      if (pageDoodles && pageDoodles.length > 0) {
-        const ctx = offscreen.getContext('2d');
-        if (ctx) {
-          ctx.save();
-          ctx.scale(exportScale, exportScale);
-          drawDoodles(ctx, pageDoodles);
-          ctx.restore();
-        }
+      if (format !== 'print') {
+        setIsExporting(false);
+        setExportProgress(undefined);
       }
-
-      const { widthMm, heightMm } = getPdfPageFormat(paper.size, paper.width, paper.height);
-      await printPageImage(offscreen.toDataURL('image/png'), widthMm, heightMm);
-    } catch (err) {
-      console.error('Print error:', err);
-      alert(t('errors.printFailed'));
     }
   };
 
@@ -330,21 +254,28 @@ export function App() {
         onShuffleSeed={handleShuffleSeed}
         exportScale={exportScale}
         onSetExportScale={setExportScale}
-        onExportCurrentPage={handleExportCurrentPage}
-        onExportAllZip={handleExportAllZip}
-        onExportAllPdf={handleExportAllPdf}
-        onPrint={handlePrint}
+        onExportCurrentPage={runOutput}
+        onExportAllZip={() => runOutput('zip')}
+        onExportAllPdf={() => runOutput('pdf')}
+        onPrint={() => runOutput('print')}
         isExporting={isExporting}
         totalChars={typesetResult.totalChars}
         totalPages={typesetResult.totalPages}
       />
 
+      {draftStatus && (
+        <div className="draft-save-status" role="status">
+          {t(draftStatus === 'conflict' ? 'errors.draftConflict' : 'errors.draftSaveFailed')}
+        </div>
+      )}
       {/* Main Split Body */}
       <div className="app-main">
         {/* Left Control Panel */}
         <EditorPanel 
           text={text}
           onTextChange={setText}
+          onReplaceDocument={replaceDocument}
+          documentRevision={documentRevision}
           paper={paper}
           onPaperChange={setPaper}
           handwriting={handwriting}
@@ -354,10 +285,7 @@ export function App() {
           onAddMultipleFonts={handleAddMultipleFonts}
           onSelectSampleText={() => {
             const currentPreset = PRESET_TEMPLATES.find((p) => p.id === activePresetId) || defaultPreset;
-            const sample = localizedSample(currentPreset);
-            // 只换回示例文字、不动纸张与笔迹设置，所以确认文案只说替换正文
-            if (text.trim() && text !== sample && !window.confirm(t('confirm.resetSample'))) return;
-            setText(sample);
+            replaceDocument(localizedSample(currentPreset), t('confirm.resetSample'));
           }}
           totalChars={typesetResult.totalChars}
           totalPages={typesetResult.totalPages}
@@ -366,12 +294,14 @@ export function App() {
         {/* Right Live Preview Canvas */}
         <PreviewPanel 
           currentPage={currentPage}
+          documentRevision={documentRevision}
           currentPageIndex={currentPageIndex}
           totalPages={typesetResult.totalPages}
           onPageChange={setCurrentPageIndex}
           paper={paper}
           handwriting={handwriting}
-          onExportCurrentPage={handleExportCurrentPage}
+          customImage={customImage}
+          onExportCurrentPage={runOutput}
           isExporting={isExporting}
           exportProgress={exportProgress}
           doodles={doodles[currentPageIndex] ?? []}

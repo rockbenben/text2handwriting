@@ -244,6 +244,13 @@ body, html {
 }
 
 /* App Main Body: Split View */
+.draft-save-status {
+  padding: 6px 12px;
+  color: #fbbf24;
+  background: var(--bg-sidebar);
+  font-size: 12px;
+}
+
 .app-main {
   flex: 1;
   display: flex;

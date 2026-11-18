@@ -7,6 +7,7 @@ import type { HandwritingConfig } from '../../engine/types';
 interface TextTabProps {
   text: string;
   onTextChange: (text: string) => void;
+  onClearText: () => void;
   handwriting: HandwritingConfig;
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
   onSelectSampleText: () => void;
@@ -24,6 +25,7 @@ interface TextTabProps {
 export const TextTab: React.FC<TextTabProps> = ({
   text,
   onTextChange,
+  onClearText,
   handwriting,
   onHandwritingChange,
   onSelectSampleText,
@@ -56,10 +58,7 @@ export const TextTab: React.FC<TextTabProps> = ({
             </button>
             <button 
               className="btn btn-secondary btn-sm"
-              onClick={() => {
-                if (text.trim() && !window.confirm(t('confirm.clearText'))) return;
-                onTextChange('');
-              }}
+              onClick={onClearText}
               title={t('editor.clearTitle')}
             >
               <span>{t('common.clear')}</span>

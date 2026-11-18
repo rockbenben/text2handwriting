@@ -55,19 +55,27 @@ export function isCustomBackgroundTooLarge(
  * 用户是否真的存过正文。首次访问时 TEXT 与 SETTINGS.text 都不存在，
  * 此时首屏应跟随界面语言放对应语言的示例，而不是写死的中文默认示例。
  */
-export function hasStoredText(storage: Storage = localStorage): boolean {
+export function hasStoredText(storage = getSafeStorage()): boolean {
+  if (!storage) return false;
   migrateLegacyStorage(storage);
   try {
-    if (storage.getItem(STORAGE_KEYS.TEXT) !== null) return true;
-    const rawSettings = storage.getItem(STORAGE_KEYS.SETTINGS);
-    if (rawSettings) {
-      const parsed = JSON.parse(rawSettings);
-      return typeof parsed?.text === 'string';
-    }
+    return readStoredText(storage) !== null;
   } catch {
     // 存储不可读时按「没有存过」处理，回落到本地化示例
   }
   return false;
+}
+
+function readStoredText(storage: Storage): string | null {
+  const text = storage.getItem(STORAGE_KEYS.TEXT) ?? storage.getItem(LEGACY_STORAGE_KEYS.TEXT);
+  if (text != null) return text;
+  const rawSettings = storage.getItem(STORAGE_KEYS.SETTINGS) ?? storage.getItem(LEGACY_STORAGE_KEYS.SETTINGS);
+  try {
+    const text = rawSettings ? JSON.parse(rawSettings)?.text : null;
+    return typeof text === 'string' ? text : null;
+  } catch {
+    return null;
+  }
 }
 
 export const DEFAULT_PAPER_CONFIG: PaperConfig = { ...PRESET_TEMPLATES[0].paper };
@@ -246,11 +254,12 @@ export function migrateLegacyStorage(storage?: Storage | null): boolean {
 /**
  * Load settings from localStorage with deep defaults fallback
  */
-export function loadStoredSettings(): LoadedSettings {
+export function loadStoredSettings(): LoadedSettings & { storedText: string | null } {
   const storage = getSafeStorage();
   if (!storage) {
     return {
       text: DEFAULT_SAMPLE_TEXT,
+      storedText: null,
       paper: { ...DEFAULT_PAPER_CONFIG },
       handwriting: { ...DEFAULT_HANDWRITING_CONFIG },
       exportScale: 2,
@@ -261,7 +270,7 @@ export function loadStoredSettings(): LoadedSettings {
   // 老版本（0.1.0 之前）存的是 autohand_* 键，先搬过来再读
   migrateLegacyStorage(storage);
 
-  let text = DEFAULT_SAMPLE_TEXT;
+  let storedText: string | null = null;
   let exportScale = 2;
   let activePresetId = PRESET_TEMPLATES[0].id;
   let paper = { ...DEFAULT_PAPER_CONFIG };
@@ -281,10 +290,7 @@ export function loadStoredSettings(): LoadedSettings {
 
   // Load text
   try {
-    const rawText = storage.getItem(STORAGE_KEYS.TEXT);
-    if (rawText !== null && rawText !== undefined) {
-      text = rawText;
-    }
+    storedText = readStoredText(storage);
   } catch (e) {
     console.warn('Failed to parse stored text:', e);
   }
@@ -321,7 +327,8 @@ export function loadStoredSettings(): LoadedSettings {
   }
 
   return {
-    text,
+    text: storedText ?? DEFAULT_SAMPLE_TEXT,
+    storedText,
     paper,
     handwriting,
     exportScale,
@@ -355,13 +362,29 @@ function safeSetItem(storage: Storage, key: string, value: string): boolean {
 /**
  * Save current settings to localStorage with quota protection
  */
-export function saveStoredSettings(settings: StoredSettings): void {
+export function saveStoredSettings(
+  settings: StoredSettings,
+  expectedText?: string | null,
+): { saved: StoredSettings; textConflict: boolean } {
+  const saved: StoredSettings = {};
+  const result = { saved, textConflict: false };
   const storage = getSafeStorage();
-  if (!storage) return;
+  if (!storage) return result;
 
   // 文字最重要，先写
   if (settings.text !== undefined) {
-    safeSetItem(storage, STORAGE_KEYS.TEXT, settings.text);
+    try {
+      const currentText = readStoredText(storage);
+      if (settings.text === currentText) {
+        saved.text = settings.text;
+      } else if (expectedText !== undefined && currentText !== expectedText) {
+        result.textConflict = true;
+      } else if (safeSetItem(storage, STORAGE_KEYS.TEXT, settings.text)) {
+        saved.text = settings.text;
+      }
+    } catch (e) {
+      console.warn('Failed to read the current draft before saving:', e);
+    }
   }
 
   if (settings.paper !== undefined) {
@@ -373,38 +396,51 @@ export function saveStoredSettings(settings: StoredSettings): void {
       paperToSave = { ...paperToSave, customImageUrl: undefined };
     }
 
-    if (!safeSetItem(storage, STORAGE_KEYS.PAPER, JSON.stringify(paperToSave))) {
-      // 仍然写不进：最后再退一次，彻底丢弃底图，保住纸张尺寸与排版参数
-      safeSetItem(
+    if (
+      safeSetItem(storage, STORAGE_KEYS.PAPER, JSON.stringify(paperToSave)) ||
+      // 配额不足时重试一次，去掉底图以保留排版参数
+      (paperToSave.customImageUrl !== undefined && safeSetItem(
         storage,
         STORAGE_KEYS.PAPER,
         JSON.stringify({ ...settings.paper, customImageUrl: undefined })
-      );
+      ))
+    ) {
+      saved.paper = settings.paper;
     }
   }
 
-  if (settings.handwriting !== undefined) {
-    safeSetItem(storage, STORAGE_KEYS.HANDWRITING, JSON.stringify(settings.handwriting));
+  if (settings.handwriting !== undefined &&
+      safeSetItem(storage, STORAGE_KEYS.HANDWRITING, JSON.stringify(settings.handwriting))) {
+    saved.handwriting = settings.handwriting;
   }
+
+  if (settings.exportScale === undefined && settings.activePresetId === undefined) return result;
 
   let currentMeta: Record<string, unknown> = {
     exportScale: 2,
     activePresetId: PRESET_TEMPLATES[0].id,
   };
-  const existingRaw = storage.getItem(STORAGE_KEYS.SETTINGS);
-  if (existingRaw) {
-    try {
+  try {
+    const existingRaw = storage.getItem(STORAGE_KEYS.SETTINGS);
+    if (existingRaw) {
       const parsed = JSON.parse(existingRaw);
       if (parsed && typeof parsed === 'object') {
         currentMeta = { ...currentMeta, ...parsed };
       }
-    } catch {}
+    }
+  } catch (e) {
+    // 可以替换损坏的 JSON，但读取被拒绝时不能覆盖其它标签页的设置。
+    if (!(e instanceof SyntaxError)) return result;
   }
 
   if (settings.exportScale !== undefined) currentMeta.exportScale = settings.exportScale;
   if (settings.activePresetId !== undefined) currentMeta.activePresetId = settings.activePresetId;
 
-  safeSetItem(storage, STORAGE_KEYS.SETTINGS, JSON.stringify(currentMeta));
+  if (safeSetItem(storage, STORAGE_KEYS.SETTINGS, JSON.stringify(currentMeta))) {
+    if (settings.exportScale !== undefined) saved.exportScale = settings.exportScale;
+    if (settings.activePresetId !== undefined) saved.activePresetId = settings.activePresetId;
+  }
+  return result;
 }
 
 /**

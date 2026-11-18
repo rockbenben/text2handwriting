@@ -1,6 +1,7 @@
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Upload, RotateCcw } from 'lucide-react';
-import { getPaperDimensions } from '../../engine/paper';
+import { getGridCells, getPaperDimensions } from '../../engine/paper';
 import { SECTION_DEFAULTS, isCustomBackgroundTooLarge } from '../../engine/storage';
 import type { PaperType, PaperSize } from '../../engine/types';
 import type { RefObject } from 'react';
@@ -25,6 +26,8 @@ export const PaperTab: React.FC<PaperTabProps> = ({
   handleBgImageUpload,
 }) => {
   const { t } = useTranslation();
+  const sliderLabelId = useId();
+  const grid = paper.type === 'grid' ? getGridCells(paper) : null;
 
   return (
     <div className="tab-content">
@@ -158,29 +161,33 @@ export const PaperTab: React.FC<PaperTabProps> = ({
 
         <div className="control-item">
           <div className="control-label-row">
-            <span>{t('editor.paperLineSpacing')}</span>
-            <span className="control-value">{paper.lineSpacing} px</span>
+            <span id={`${sliderLabelId}-spacing`}>{t('editor.paperLineSpacing')}</span>
+            <span className="control-value">{grid ? Math.round(grid.cellHeight) : paper.lineSpacing} px</span>
           </div>
-          <input 
-            type="range" 
-            min="35" 
-            max="85" 
-            value={paper.lineSpacing}
-            onChange={(e) => onPaperChange({ ...paper, lineSpacing: Number(e.target.value) })}
-          />
+          {!grid && (
+            <input
+              type="range"
+              aria-labelledby={`${sliderLabelId}-spacing`}
+              min="35"
+              max="85"
+              value={paper.lineSpacing}
+              onChange={(e) => onPaperChange({ ...paper, lineSpacing: Number(e.target.value) })}
+            />
+          )}
         </div>
 
-        {paper.type === 'grid' && (
+        {grid && (
           <div className="control-item">
             <div className="control-label-row">
-              <span>{t('editor.gridCols')}</span>
-              <span className="control-value">{t('editor.colsUnit', { n: paper.gridCols || 20 })}</span>
+              <span id={`${sliderLabelId}-columns`}>{t('editor.gridCols')}</span>
+              <span className="control-value">{t('editor.colsUnit', { n: grid.cols })}</span>
             </div>
             <input 
               type="range" 
+              aria-labelledby={`${sliderLabelId}-columns`}
               min="14" 
               max="28" 
-              value={paper.gridCols || 20}
+              value={grid.cols}
               onChange={(e) => onPaperChange({ ...paper, gridCols: Number(e.target.value) })}
             />
           </div>
@@ -283,11 +290,12 @@ export const PaperTab: React.FC<PaperTabProps> = ({
         {/* Left margin */}
         <div className="control-item">
           <div className="control-label-row">
-            <span>{t('editor.marginLeft')}</span>
+            <span id={`${sliderLabelId}-left`}>{t('editor.marginLeft')}</span>
             <span className="control-value">{paper.marginLeft} px</span>
           </div>
           <input 
             type="range" 
+            aria-labelledby={`${sliderLabelId}-left`}
             min="20" 
             max="350" 
             value={paper.marginLeft}
@@ -298,11 +306,12 @@ export const PaperTab: React.FC<PaperTabProps> = ({
         {/* Right margin */}
         <div className="control-item">
           <div className="control-label-row">
-            <span>{t('editor.marginRight')}</span>
+            <span id={`${sliderLabelId}-right`}>{t('editor.marginRight')}</span>
             <span className="control-value">{paper.marginRight} px</span>
           </div>
           <input 
             type="range" 
+            aria-labelledby={`${sliderLabelId}-right`}
             min="20" 
             max="350" 
             value={paper.marginRight}
@@ -313,11 +322,12 @@ export const PaperTab: React.FC<PaperTabProps> = ({
         {/* Top margin */}
         <div className="control-item">
           <div className="control-label-row">
-            <span>{t('editor.marginTop')}</span>
+            <span id={`${sliderLabelId}-top`}>{t('editor.marginTop')}</span>
             <span className="control-value">{paper.marginTop} px</span>
           </div>
           <input 
             type="range" 
+            aria-labelledby={`${sliderLabelId}-top`}
             min="30" 
             max="350" 
             value={paper.marginTop}
@@ -328,11 +338,12 @@ export const PaperTab: React.FC<PaperTabProps> = ({
         {/* Bottom margin */}
         <div className="control-item">
           <div className="control-label-row">
-            <span>{t('editor.marginBottom')}</span>
+            <span id={`${sliderLabelId}-bottom`}>{t('editor.marginBottom')}</span>
             <span className="control-value">{paper.marginBottom} px</span>
           </div>
           <input 
             type="range" 
+            aria-labelledby={`${sliderLabelId}-bottom`}
             min="30" 
             max="350" 
             value={paper.marginBottom}

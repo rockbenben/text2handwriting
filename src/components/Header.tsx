@@ -106,10 +106,23 @@ export const Header: React.FC<HeaderProps> = ({
   totalChars,
   totalPages,
 }) => {
-  // i18n.language 变化时 react-i18next 会让本组件重渲，所以语言下拉不需要本地状态
   const { t, i18n } = useTranslation();
+  const [pendingLanguage, setPendingLanguage] = useState<{ code: string } | null>(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleLanguageChange = async (code: string) => {
+    // Show the pending choice so the user can also reselect the active language.
+    const selection = { code };
+    setPendingLanguage(selection);
+    try {
+      await setAppLanguage(code);
+    } catch (error) {
+      console.error('Could not change language:', error);
+    } finally {
+      setPendingLanguage(current => current === selection ? null : current);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -140,8 +153,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--bg-input)', padding: '3px 6px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
           <Languages size={13} style={{ color: 'var(--text-subtle)' }} />
           <select
-            value={i18n.language}
-            onChange={(e) => setAppLanguage(e.target.value)}
+            value={pendingLanguage?.code ?? i18n.language}
+            onChange={(e) => void handleLanguageChange(e.target.value)}
             style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '12px', padding: '2px 2px', cursor: 'pointer', outline: 'none', maxWidth: '110px' }}
             title={t('header.languageTitle')}
             aria-label={t('header.languageTitle')}

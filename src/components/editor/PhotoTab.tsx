@@ -266,8 +266,7 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
             value={paper.paperTexture || 'clean'} 
             onChange={(e) => onPaperChange({ 
               ...paper, 
-              paperTexture: e.target.value as 'clean' | 'photo' | 'vintage' | 'creased',
-              vignette: e.target.value === 'photo',
+              paperTexture: e.target.value as PaperConfig['paperTexture'],
             })}
           >
             <option value="clean">{t('editor.tex_clean')}</option>

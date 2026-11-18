@@ -53,6 +53,8 @@ function compressPaperPhoto(img: HTMLImageElement, originalUrl: string): string 
 interface EditorPanelProps {
   text: string;
   onTextChange: (text: string) => void;
+  onReplaceDocument: (text: string, confirmation: string) => boolean;
+  documentRevision: number;
   paper: PaperConfig;
   onPaperChange: (paper: PaperConfig) => void;
   handwriting: HandwritingConfig;
@@ -69,6 +71,8 @@ interface EditorPanelProps {
 export const EditorPanel: React.FC<EditorPanelProps> = ({
   text,
   onTextChange,
+  onReplaceDocument,
+  documentRevision,
   paper,
   onPaperChange,
   handwriting,
@@ -95,25 +99,26 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
 
   // 上传/解析是异步的；用 ref 读取“完成时”的最新状态，避免用发起时的旧值覆盖
   // 用户在这期间输入的正文或改过的字体/纸张设置。
-  const textRef = useRef(text);
+  const replaceDocumentRef = useRef(onReplaceDocument);
   const paperRef = useRef(paper);
   const handwritingRef = useRef(handwriting);
   const docImportSeqRef = useRef(0);
   const fontUploadSeqRef = useRef(0);
   const bgUploadSeqRef = useRef(0);
   useLayoutEffect(() => {
-    textRef.current = text;
+    replaceDocumentRef.current = onReplaceDocument;
     paperRef.current = paper;
     handwritingRef.current = handwriting;
-  }, [text, paper, handwriting]);
+  }, [onReplaceDocument, paper, handwriting]);
 
-  // 让内部所有修改都先同步 ref，再交给父组件渲染：
+  useLayoutEffect(() => {
+    // A confirmed replacement supersedes document reads started for the previous draft.
+    docImportSeqRef.current++;
+  }, [documentRevision]);
+
+  // 配置修改先同步 ref，再交给父组件渲染：
   // 上传解析在 await 后读取 ref 时，拿到的是“用户刚改过”的值，
   // 不依赖 React 何时提交渲染。
-  const handleTextChange = (nextText: string) => {
-    textRef.current = nextText;
-    onTextChange(nextText);
-  };
   const handlePaperChange = (nextPaper: PaperConfig) => {
     paperRef.current = nextPaper;
     onPaperChange(nextPaper);
@@ -126,7 +131,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   const handleInsertTag = (prefix: string, suffix: string, defaultText = '') => {
     const el = textareaRef.current;
     if (!el) {
-      handleTextChange(text + `${prefix}${defaultText}${suffix}`);
+      onTextChange(text + `${prefix}${defaultText}${suffix}`);
       return;
     }
     const start = el.selectionStart ?? text.length;
@@ -134,7 +139,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
     const selected = text.slice(start, end) || defaultText;
     const replacement = `${prefix}${selected}${suffix}`;
     const nextText = text.slice(0, start) + replacement + text.slice(end);
-    handleTextChange(nextText);
+    onTextChange(nextText);
     setTimeout(() => {
       el.focus();
       const newCursor = start + prefix.length + selected.length;
@@ -194,19 +199,14 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
     try {
       const extractedText = await parseDocumentFile(file);
       if (requestId !== docImportSeqRef.current) return;
-      if (!extractedText) {
-        // 只含图片的 docx、空 txt 都会解析成空串。不提示的话用户无法区分"没提取到文字"和"程序卡住了"
+      if (!extractedText.trim()) {
+        // 仅用 trim 判空，导入时保留原文的空白和缩进。
         alert(t('editor.docEmpty', { name: file.name }));
         return;
       }
       // 导入会整篇替换已输入内容，而应用没有撤销栈。用完成时的正文判断：
       // 用户在解析期间新输入的内容也必须触发确认，不能被静默覆盖。
-      const currentText = textRef.current;
-      if (currentText.trim() && currentText !== extractedText) {
-        const confirmed = window.confirm(t('editor.docReplaceConfirm', { name: file.name }));
-        if (!confirmed) return;
-      }
-      handleTextChange(extractedText);
+      replaceDocumentRef.current(extractedText, t('editor.docReplaceConfirm', { name: file.name }));
     } catch (err) {
       if (requestId !== docImportSeqRef.current) return;
       console.error('Failed to parse document:', err);
@@ -324,7 +324,8 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
       {activeTab === 'text' && (
         <TextTab
           text={text}
-          onTextChange={handleTextChange}
+          onTextChange={onTextChange}
+          onClearText={() => onReplaceDocument('', t('confirm.clearText'))}
           handwriting={handwriting}
           onHandwritingChange={handleHandwritingChange}
           onSelectSampleText={onSelectSampleText}

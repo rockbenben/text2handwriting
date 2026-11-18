@@ -160,11 +160,30 @@ describe('Local Storage Persistence and Section Resets', () => {
       text: 'temp',
       paper: DEFAULT_PAPER_CONFIG,
       handwriting: DEFAULT_HANDWRITING_CONFIG,
+      exportScale: 3,
     });
     expect(mockStorage[STORAGE_KEYS.SETTINGS]).toBeDefined();
 
     clearStoredSettings();
     expect(mockStorage[STORAGE_KEYS.SETTINGS]).toBeUndefined();
+  });
+
+  it('recognizes a legacy draft stored in metadata, including empty text', () => {
+    mockStorage[LEGACY_STORAGE_KEYS.SETTINGS] = JSON.stringify({ text: '' });
+    expect(loadStoredSettings().storedText).toBe('');
+    expect(loadStoredSettings().text).toBe('');
+    expect(saveStoredSettings({ text: 'updated draft' }, '').saved.text).toBe('updated draft');
+    expect(loadStoredSettings().text).toBe('updated draft');
+  });
+
+  it('reports a text conflict and saves independently changed paper settings', () => {
+    mockStorage[STORAGE_KEYS.TEXT] = 'saved by another tab';
+    const paper = { ...DEFAULT_PAPER_CONFIG, lineSpacing: 70 };
+    const result = saveStoredSettings({ text: 'local edit', paper }, 'previous text');
+    expect(result).toEqual({ saved: { paper }, textConflict: true });
+    expect(mockStorage[STORAGE_KEYS.TEXT]).toBe('saved by another tab');
+    expect(mockStorage[STORAGE_KEYS.SETTINGS]).toBeUndefined();
+    expect(loadStoredSettings().paper.lineSpacing).toBe(70);
   });
 
   it('never persists file-imported fonts, including stale entries from older versions', () => {
