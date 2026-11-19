@@ -3,7 +3,7 @@
 # 于是「只改了一行」的提交在 macOS / Linux 协作者那里看起来是整文件重写。
 * text=auto eol=lf
 
-# 字体与位图是二进制，禁止任何换行符转换
+# 字体、位图与 PDF 是二进制，禁止任何换行符转换
 *.ttf binary
 *.otf binary
 *.woff binary
@@ -18,4 +18,5 @@
 # 构建产物与依赖不进 diff 统计、不算语言占比
 dist/** linguist-generated=true
 package-lock.json linguist-generated=true
+# 随包字体按第三方资源（vendored）处理，同样不算语言占比
 public/fonts/*.ttf linguist-vendored=true

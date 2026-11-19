@@ -5,10 +5,11 @@
 //
 // 用法：
 //   1) 另开一个终端起 dev server： npm run dev
-//   2) 用远程调试端口启动 Chrome（下面以 Windows 为例）：
-//        "C:/Program Files/Google/Chrome/Application/chrome.exe" \
+//   2) 用远程调试端口启动 Chrome（一条命令；下面是 Unix shell 的 \ 续行写法，
+//      Windows PowerShell 请去掉 \ 写成一行，并把可执行文件换成 chrome.exe）：
+//        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
 //          --headless=new --remote-debugging-port=9333 --user-data-dir=/tmp/t2h-shot about:blank
-//      macOS：/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome 同上参数
+//      Windows：& "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --remote-debugging-port=9333 --user-data-dir=C:\tmp\t2h-shot about:blank
 //   3) node scripts/capture-hero.mjs en docs/images/hero-en.png
 //      node scripts/capture-hero.mjs zh-CN docs/images/hero-zh.png
 //
