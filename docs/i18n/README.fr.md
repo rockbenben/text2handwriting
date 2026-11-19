@@ -16,7 +16,7 @@ Idéal pour les devoirs manuscrits, les fiches de lecture, les comptes-rendus et
 
 | Dimension | Détails |
 |---|---|
-| Environnement | Navigateurs modernes, 100% exécuté côté client (Chrome / Edge 103+ peuvent lister les polices locales, Safari / Firefox utilisent la détection intégrée) |
+| Environnement | Navigateurs de bureau et mobiles modernes, 100% exécuté côté client ; sur les écrans étroits, l'interface passe automatiquement en espace de travail à une colonne édition/aperçu, avec bascule par les boutons segmentés en haut (Chrome / Edge 103+ peuvent lister les polices locales, Safari / Firefox utilisent la détection intégrée) |
 | Formats d'entrée | Saisie directe, import de fichiers `.txt` / `.md` (validation stricte UTF-8 avec repli GB18030) et `.docx` (extraction locale) |
 | Styles de papier | 6 modèles (cahier à lignes, quadrillage, feuille A4 blanche, 4 lignes d'anglais, papier kraft, carnet à points) et photos de papier personnalisées |
 | Stylo et réalisme | 4 styles de stylos physiques (gel, plume, crayon à papier, bille) ; lumière diffuse, plis de papier, ombres d'angles et effet vieilli |
@@ -29,9 +29,9 @@ Idéal pour les devoirs manuscrits, les fiches de lecture, les comptes-rendus et
 - **Réalisme d'écriture** : Perturbations pseudo-aléatoires contrôlées par graine sur la taille des glyphes, la rotation, l'alignement, l'irrégularité des lignes et la fatigue d'écriture. Chaque rendu est unique et réutilisable à l'identique grâce à la graine.
 - **Composition avancée et bidirectionnelle** : Ponctuation de début et fin de ligne, retrait de paragraphe, pagination automatique et alignement des signatures à droite. Prise en charge native de l'arabe avec liaisons cursives fluides et préservation des parenthèses.
 - **Textures de papier et rendu photo** : Ajustement personnalisé de l'interligne et des marges ; quadrillage à carreaux carrés proportionnels ; redimensionnement automatique des photos ; ombrages d'éclairage ambiant, plis centraux et vignetage.
-- **Polices personnalisées** : 4 polices manuscrites libres incluses (100% hors-ligne). Chargez vos polices système, polices Google ou importez des fichiers `.ttf` / `.otf` (compatible avec Calligraphr pour utiliser votre propre écriture).
-- **Ratures et annotations naturelles** : 13 styles de ratures (trait simple, double, vague, hachures) avec probabilité configurable ; biffage et réécriture au-dessus de la ligne ; calque de dessin à main levée pour flèches et formules.
-- **Personnalités d'écriture** : 4 profils prêts à l'emploi (élève soigné, prise de notes, brouillon rapide, copie formelle) avec réglages instantanés de stylo et d'espacement.
+- **Polices personnalisées** : 8 polices manuscrites libres (4 incluses hors-ligne + 4 chargées depuis Google Fonts). Chargez vos polices système, polices Google ou importez des fichiers `.ttf` / `.otf` / `.woff` / `.woff2` (compatible avec Calligraphr pour utiliser votre propre écriture).
+- **Ratures et annotations naturelles** : 13 styles de ratures (trait simple, double, vague, hachures) avec probabilité configurable ; biffage et réécriture au-dessus de la ligne ; la barre d'outils du canevas permet de dessiner à main levée des flèches, des croquis et des cercles, avec gomme, effacement des tracés de la page et repères de marge.
+- **Personnalités d'écriture** : 4 profils (Élève appliqué, Prise de notes spontanée, Écriture précipitée, Devoir réglementaire) qui appliquent en un clic l'intensité des perturbations, la texture d'écriture et la probabilité de rature.
 
 ## Syntaxe de balisage
 
@@ -44,12 +44,13 @@ Ajoutez des balises directement dans votre texte pour forcer des ratures ou des 
 | `[u]important[/u]` | Soulignement ondulé |
 | `[circle]important[/circle]` | Entourer d'un cercle (alias `[圈]…[/圈]`) |
 | `[box]important[/box]` | Encadrer d'un rectangle (alias `[框]…[/框]`) |
+| `[right]signature[/right]` | Aligner toute la ligne à droite (alias `[靠右]…[/靠右]`) pour les signatures et les dates |
 
 ## Démarrage rapide
 
 1. Ouvrez la [démo en ligne](https://shouxie.newzone.top) ou chargez un fichier texte (`.txt` / `.docx` / `.md`).
-2. Choisissez le type de papier, la police et le style d'écriture dans le panneau latéral gauche.
-3. Cliquez sur « Exporter » dans la barre supérieure pour télécharger vos images, votre PDF multipage ou imprimer directement.
+2. Choisissez le type de papier, la police et le style d'écriture dans le panneau latéral gauche, puis ajustez les perturbations ou l'éclairage photo (sur mobile, utilisez les boutons segmentés « Modifier / Aperçu » en haut pour basculer entre les deux colonnes).
+3. Cliquez sur « Exporter » dans la barre supérieure pour télécharger des images haute résolution (PNG / JPG), un ZIP de toutes les pages, un PDF multipage, ou imprimer directement en dimensions réelles millimétrées.
 
 ## Limites connues
 
@@ -57,7 +58,8 @@ Ajoutez des balises directement dans votre texte pour forcer des ratures ou des 
 - L'impression via le navigateur n'imprime que la page en cours ; utilisez l'export PDF pour imprimer l'intégralité du document.
 - Sur Safari inférieur à la version 16, l'absence de `ctx.filter` désactive le réglage de luminosité et de contraste du fond de page.
 - Le calque de dessin manuel est rattaché au numéro de page en mémoire ; d'importantes modifications du texte modifiant la pagination peuvent décaler les annotations.
-- Les fichiers de polices importés localement restent uniquement dans la mémoire de l'onglet actif et doivent être rechargés après actualisation.
+- Parmi les polices intégrées, 4 sont fournies hors-ligne ; les 4 autres (Liu Jian Mao Cao, ZCOOL XiaoWei, Caveat, Kalam) sont chargées depuis Google Fonts à l'exécution et retombent sur les polices système hors connexion ou sur un réseau interne.
+- Les fichiers de polices `.ttf` / `.otf` / `.woff` / `.woff2` importés localement restent uniquement dans la mémoire de l'onglet actif et doivent être rechargés après actualisation.
 
 ## Développement local
 

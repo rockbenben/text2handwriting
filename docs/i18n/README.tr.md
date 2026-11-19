@@ -16,7 +16,7 @@ El yazısı ödevler, okuma notları, toplantı tutanakları ve resmi mektuplar 
 
 | Boyut | Detaylar |
 |---|---|
-| Ortam | Masaüstü ve mobil modern tarayıcılar, %100 istemci tarafı (Chrome ve Edge 103+ yerel fontları listeleyebilir, Safari ve Firefox yerleşik tespiti kullanır) |
+| Ortam | Masaüstü ve mobil modern tarayıcılar, %100 istemci tarafı; dar ekranlarda düzenleme/önizleme için tek sütunlu çalışma alanına otomatik geçilir ve üstteki segment düğmeleriyle geçiş yapılır (Chrome ve Edge 103+ yerel fontları listeleyebilir, Safari ve Firefox yerleşik tespiti kullanır) |
 | İçe aktarma formatları | Doğrudan metin yapıştırma, `.txt` / `.md` yükleme (GB18030 desteği ile katı UTF-8 doğrulaması) veya `.docx` (istemci tarafında çıkarma) |
 | Kağıt stilleri | 6 yerleşik kağıt türü (çizgili defter, kareli, boş A4, 4 çizgili İngilizce kaligrafi, kraft kağıt, noktalı ızgara) ve otomatik sığdırmalı özel kağıt fotoğrafı yükleme |
 | Kalem ve efektler | 4 gerçekçi kalem fiziği (jel kalem, dolma kalem, kurşun kalem, tükenmez kalem); ortam ışığı yayılımı, katlama izi gölgeleri, köşe vinyeti ve eski kağıt efekti |
@@ -29,9 +29,9 @@ El yazısı ödevler, okuma notları, toplantı tutanakları ve resmi mektuplar 
 - **Gerçekçi el yazısı**: Tohum kontrollü sözde rastgele sapmalar karakter boyutu, aralık, eğim, taban çizgisi kayması, çizgi kalınlığı ve yazma yorgunluğunu yönetir. Her çıktı benzersizdir ve tohumu kaydetmek aynı sonucu %100 yeniden üretmenizi sağlar.
 - **Akıllı dizgi ve çift yönlü metin**: 18 dilde tam yerelleştirme; CJK satır başı/sonu kuralları, paragraf girintisi, otomatik sayfalama ve sağa dayalı imza; Latin alfabesi için kelime bölme koruması; parantez korumalı doğal Arapça bitişik el yazısı.
 - **Kağıt dokuları ve fotoğraflar**: Satır aralığı ve kenar boşluklarının hassas ayarı; orantılı kare hücreler; yüklenen fotoğrafların A4 sınırlarına otomatik sığdırılması; gerçekçi katlama gölgeleri ve doğal aydınlatma.
-- **İstediğiniz font**: Yerleşik 4 açık kaynaklı el yazısı yazı tipi (%100 çevrimdışı hazır). Sistem yazı tiplerini, Google Fonts'u yükleyin veya `.ttf` / `.otf` dosyalarını sürükleyip bırakın (kendi el yazınızı kullanmak için Calligraphr uyumludur).
-- **Doğal düzeltmeler ve karalamalar**: Ayarlanabilir olasılıkla tetiklenen 13 üzeri çizme stili (tek çizgi, çift çizgi, dalgalı, karalama); hatalı kelimeleri çizip üstüne düzeltme yazma; oklar ve notlar için dahili serbest çizim katmanı.
-- **Yazı profilleri**: Kalem türünü ve aralıkları anında yapılandıran 4 hazır profil (çalışkan öğrenci, hızlı notlar, acele taslak, resmi kopya).
+- **İstediğiniz font**: Yerleşik 8 açık kaynaklı el yazısı yazı tipi (4'ü paketle çevrimdışı gelir + 4'ü Google Fonts'tan çevrimiçi yüklenir). Sistem yazı tiplerini, Google Fonts'u yükleyin veya `.ttf` / `.otf` / `.woff` / `.woff2` dosyalarını sürükleyip bırakın (kendi el yazınızı kullanmak için Calligraphr uyumludur).
+- **Doğal düzeltmeler ve karalamalar**: Ayarlanabilir olasılıkla tetiklenen 13 üzeri çizme stili (tek çizgi, çift çizgi, dalgalı, karalama); hatalı kelimeleri çizip üstüne düzeltme yazma; tuval araç çubuğu fırçayla ok, eskiz ve daire çizmeyi, silgiyi, bu sayfadaki çizimleri temizlemeyi ve kenar kılavuz çizgilerini destekler.
+- **Yazı profilleri**: Örnek Öğrenci, Doğal Not Tutuş, Acele Yazı ve Standart Okul Ödevi olmak üzere 4 hazır profil; sapma yoğunluğunu, yazı dokusunu ve düzeltme olasılığını tek tıkla uygular.
 
 ## İşaretleme Sözdizimi
 
@@ -44,12 +44,13 @@ El yazısı ödevler, okuma notları, toplantı tutanakları ve resmi mektuplar 
 | `[u]vurgu[/u]` | Dalgalı alt çizgi |
 | `[circle]vurgu[/circle]` | Metni daire içine al (diğer ad `[圈]…[/圈]`) |
 | `[box]vurgu[/box]` | Metni kutu içine al (diğer ad `[框]…[/框]`) |
+| `[right]imza[/right]` | Tüm satırı sağa hizala (diğer ad `[靠右]…[/靠右]`), imzalar ve tarihler için |
 
 ## Hızlı Başlangıç
 
 1. [Çevrimiçi demoyu](https://shouxie.newzone.top) açın veya bir metin dosyası (`.txt` / `.docx` / `.md`) içe aktarın.
-2. Sol panelden kağıt stilini, el yazısı fontunu ve yazı profilini seçin.
-3. Yüksek çözünürlüklü görseller veya PDF indirmek ya da doğrudan yazıcıya göndermek için üst kısımdaki "Dışa Aktar"a tıklayın.
+2. Sol panelden kağıt stilini, el yazısı fontunu ve yazı profilini seçin; gerekirse sapma yoğunluğunu veya fotoğraf aydınlatmasını ayarlayın (telefonda üstteki "Düzenle / Önizleme" segment düğmeleriyle iki sütun arasında geçiş yapın).
+3. Yüksek çözünürlüklü görseller (PNG / JPG), tüm sayfaların ZIP arşivi, çok sayfalı PDF indirmek veya gerçek milimetre boyutunda yazdırmak için üst kısımdaki "Dışa Aktar"a tıklayın.
 
 ## Bilinen Sınırlar
 
@@ -57,7 +58,8 @@ El yazısı ödevler, okuma notları, toplantı tutanakları ve resmi mektuplar 
 - Tarayıcı yazdırma özelliği yalnızca mevcut sayfayı yazdırır; tüm çok sayfalı belgeyi yazdırmak için PDF dışa aktarmayı kullanın.
 - Safari 16 öncesi sürümlerde `ctx.filter` desteği bulunmadığından arka plan parlaklık ve kontrast ayarları çalışmaz.
 - Serbest çizim katmanı bellekte sayfa indekslerine bağlıdır; sayfalama yapısını değiştiren büyük metin düzenlemeleri çizimleri sayfalar arasında kaydırabilir.
-- Yerel olarak içe aktarılan font dosyaları yalnızca mevcut tarayıcı oturumunun belleğinde tutulur ve sayfa yenilendikten sonra yeniden seçilmelidir.
+- Yerleşik fontlardan 4'ü çevrimdışı kullanım için paketle gelir; diğer 4'ü (Liu Jian Mao Cao, ZCOOL XiaoWei, Caveat, Kalam) çalışma anında Google Fonts'tan yüklenir ve çevrimdışıyken veya kurum içi ağlarda sistem fontlarına geri döner.
+- Yerel olarak içe aktarılan `.ttf` / `.otf` / `.woff` / `.woff2` font dosyaları yalnızca mevcut tarayıcı oturumunun belleğinde tutulur ve sayfa yenilendikten sonra yeniden seçilmelidir.
 
 ## Yerel Geliştirme
 

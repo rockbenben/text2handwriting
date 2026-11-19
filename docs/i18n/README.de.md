@@ -16,7 +16,7 @@ Ideal für handschriftliche Hausaufgaben, Lese- und Besprechungsnotizen oder per
 
 | Dimension | Details |
 |---|---|
-| Umgebung | Moderne Browser, 100% clientseitig lokal (Chrome / Edge 103+ erkennen lokale Systemschriften; Safari / Firefox nutzen integrierte Erkennung) |
+| Umgebung | Moderne Desktop- und Mobilbrowser, 100% clientseitig; auf schmalen Bildschirmen automatisch einspaltiger Editor-/Vorschau-Arbeitsbereich mit Umschaltung über die Segmenttasten oben (Chrome / Edge 103+ erkennen lokale Systemschriften; Safari / Firefox nutzen integrierte Erkennung) |
 | Eingabeformate | Direkte Texteingabe, Upload von `.txt` / `.md` (strikte UTF-8-Prüfung mit GB18030-Fallback) und `.docx` (lokale Konvertierung) |
 | Papierstile | 6 Papiermuster (liniert, Karopapier, Blanko A4, Englisch-Schreiblinien, Packpapier, Punktraster) sowie Foto-Uploads mit automatischer Skalierung |
 | Stift und Haptik | 4 physikalische Stiftarten (Gelschreiber, Füllfederhalter, Bleistift, Kugelschreiber); diffuses Raumlicht, Falzlinien, Vignette und Vergilbung |
@@ -29,9 +29,9 @@ Ideal für handschriftliche Hausaufgaben, Lese- und Besprechungsnotizen oder per
 - **Realistische Handschrift**: Seed-gesteuerte Schwankungen bei Schriftgröße, Buchstabenabstand, Grundlinie, Tintenverlauf und Schreibermüdung. Jeder Durchlauf ist einzigartig und über den Seed exakt reproduzierbar.
 - **Intelligenter Schriftsatz und BiDi-Text**: Zeilenumbruch-Regeln, Absatzeinzüge, automatische Paginierung und rechtsbündige Unterschriften. Volle Unterstützung für Arabisch mit nativer Buchstabenverbindung und Schutz von Klammern.
 - **Papiertexturen und Fotorealismus**: Zeilenabstand und Ränder frei wählbar; quadratische Karos mit Spaltenautomatik; automatische Fotoanpassung; realistische Lichtverläufe, Knickfalten und Randabdunkelung.
-- **Freie Schriftartenwahl**: 4 quelloffene Handschriften inklusive (100% offline einsatzbereit). Laden Sie Systemschriften, Google Fonts oder eigene `.ttf` / `.otf`-Dateien (kompatibel mit Calligraphr für die eigene Handschrift).
-- **Authentische Korrekturen**: 13 Durchstreich-Stile (einfach, doppelt, wellig, durchgestrichen) mit wählbarer Wahrscheinlichkeit; Tippfehler streichen und Korrektur darüber schreiben; Zeichenebene für freie Skizzen.
-- **Schreibstil-Profile**: 4 fertige Profile (ordentlicher Schüler, Notizen, schnelle Skizze, formelle Reinschrift) für Stift, Linienabstand und Unregelmäßigkeit.
+- **Freie Schriftartenwahl**: 8 quelloffene Handschriften (4 offline im Paket + 4 aus Google Fonts geladen). Laden Sie Systemschriften, Google Fonts oder eigene `.ttf` / `.otf` / `.woff` / `.woff2`-Dateien (kompatibel mit Calligraphr für die eigene Handschrift).
+- **Authentische Korrekturen**: 13 Durchstreich-Stile (einfach, doppelt, wellig, durchgestrichen) mit wählbarer Wahrscheinlichkeit; Tippfehler streichen und Korrektur darüber schreiben; die Zeichenwerkzeugleiste auf der Leinwand bietet Freihandpfeile, Skizzen und Einkreisungen sowie Radierer, Löschen der Handzeichnungen dieser Seite und Randhilfslinien.
+- **Schreibstil-Profile**: Die 4 Profile Ordentliche Reinschrift, Spontane Notizen, Eiliger Entwurf und Klassische Hausarbeit passen Störungsintensität, Schreibtextur und Korrekturwahrscheinlichkeit mit einem Klick an.
 
 ## Auszeichnungs-Syntax
 
@@ -44,12 +44,13 @@ Mit Tags im Text können Durchstreichungen und Hervorhebungen gezielt gesteuert 
 | `[u]Wichtig[/u]` | Wellige Unterstreichung |
 | `[circle]Wichtig[/circle]` | Text einkreisen (Alias `[圈]…[/圈]`) |
 | `[box]Wichtig[/box]` | Text einrahmen (Alias `[框]…[/框]`) |
+| `[right]Unterschrift[/right]` | Gesamte Zeile rechtsbündig (Alias `[靠右]…[/靠右]`) für Unterschriften und Daten |
 
 ## Schnellstart
 
 1. Öffnen Sie die [Online-Demo](https://shouxie.newzone.top) oder laden Sie eine Textdatei (`.txt` / `.docx` / `.md`) hoch.
-2. Wählen Sie links Papiermuster, Handschrift und Schreibstil aus und passen Sie Licht und Unregelmäßigkeit nach Wunsch an.
-3. Klicken Sie oben auf „Exportieren“, um hochauflösende Bilder, ein PDF herunterzuladen oder die Seite direkt maßstabsgetreu zu drucken.
+2. Wählen Sie links Papiermuster, Handschrift und Schreibstil aus und passen Sie Unregelmäßigkeit oder Fotolicht nach Wunsch an (auf dem Smartphone wechseln Sie oben über die Segmenttasten „Bearbeiten / Vorschau“ zwischen den beiden Spalten).
+3. Klicken Sie oben auf „Exportieren“, um hochauflösende Bilder (PNG / JPG), ein ZIP aller Seiten, ein mehrseitiges PDF herunterzuladen oder in echter Millimetergröße zu drucken.
 
 ## Bekannte Einschränkungen
 
@@ -57,7 +58,8 @@ Mit Tags im Text können Durchstreichungen und Hervorhebungen gezielt gesteuert 
 - Die Druckfunktion des Browsers druckt nur die aktuelle Seite; nutzen Sie den PDF-Export, um das gesamte Dokument mehrseitig zu drucken.
 - Safari unter Version 16 unterstützt kein `ctx.filter`, wodurch Helligkeits- und Kontrasteinstellungen des Hintergrundbilds dort wirkungslos sind.
 - Die Zeichnungsebene ist im Speicher an die jeweilige Seitenzahl gebunden; größere Textänderungen, die den Seitenumbruch verändern, können Zeichnungen verschieben.
-- Lokal importierte `.ttf` / `.otf`-Schriften verbleiben nur im Arbeitsspeicher des aktiven Tabs und müssen nach dem Neuladen neu ausgewählt werden.
+- Von den mitgelieferten Schriftarten sind 4 offline im Paket enthalten; die übrigen 4 (Liu Jian Mao Cao, ZCOOL XiaoWei, Caveat, Kalam) werden zur Laufzeit von Google Fonts geladen und fallen bei fehlender Internetverbindung auf Systemschriften zurück.
+- Lokal importierte `.ttf` / `.otf` / `.woff` / `.woff2`-Schriften verbleiben nur im Arbeitsspeicher des aktiven Tabs und müssen nach dem Neuladen neu ausgewählt werden.
 
 ## Lokale Entwicklung
 

@@ -16,7 +16,7 @@ Projetado para tarefas escolares manuscritas, anotações de leitura, atas e car
 
 | Dimensão | Detalhes |
 |---|---|
-| Ambiente | Navegadores modernos, execução 100% no cliente (Chrome e Edge 103+ suportam listagem de fontes locais; Safari e Firefox usam detecção interna) |
+| Ambiente | Navegadores modernos de desktop e celular, execução 100% no cliente; em telas estreitas, alterna automaticamente para uma área de trabalho de coluna única de edição/pré-visualização, com botões segmentados no topo (Chrome e Edge 103+ suportam listagem de fontes locais; Safari e Firefox usam detecção interna) |
 | Formatos de entrada | Colar texto, importar `.txt` / `.md` (validação estrita UTF-8 com suporte a GB18030) ou arquivos `.docx` (extração local) |
 | Estilos de papel | 6 tipos de papel (pautado, quadriculado, A4 em branco, 4 linhas de caligrafia inglesa, papel kraft, pontilhado) e fotos personalizadas de papel com ajuste automático |
 | Caneta e texturas | 4 físicas de escrita (caneta gel, tinteiro, lápis grafite, esferográfica); luz ambiente difusa, vincos de dobra, vinhetas e efeito envelhecido |
@@ -29,9 +29,9 @@ Projetado para tarefas escolares manuscritas, anotações de leitura, atas e car
 - **Escrita realista**: Perturbação pseudoaleatória controlada por semente para tamanho das letras, espaçamento, rotação, desvio de linha e fadiga ao escrever. Cada página é única e a semente permite reproduzir fielmente qualquer resultado.
 - **Tipografia inteligente e bidirecional**: Regras de início e fim de linha, recuo de parágrafo, paginação automática e assinatura alinhada à direita. Suporte nativo ao árabe com ligaduras cursivas naturais e proteção de parênteses.
 - **Texturas de papel e fotos**: Ajuste total de entrelinhas e margens; grade quadriculada com células quadradas proporcionais; ajuste automático de fotos para caber na folha A4; sombras de dobra e iluminação natural.
-- **Fontes personalizadas**: 4 fontes manuscritas de código aberto integradas (100% offline). Carregue fontes do seu sistema, Google Fonts ou arraste arquivos `.ttf` / `.otf` (compatível com Calligraphr para criar sua própria letra).
-- **Rascunhos e correções naturais**: 13 estilos de rasura (linha simples, dupla, ondulada, rabisco) gerados com probabilidade realista; risque erros e escreva a correção em cima; camada de desenho livre para setas e anotações.
-- **Estilos de escrita predefinidos**: 4 personas (aluno exemplar, anotações rápidas, rascunho corrido, cópia solene) com ajustes imediatos de caneta e espaçamento.
+- **Fontes personalizadas**: 8 fontes manuscritas de código aberto (4 incluídas offline + 4 carregadas do Google Fonts). Carregue fontes do seu sistema, Google Fonts ou arraste arquivos `.ttf` / `.otf` / `.woff` / `.woff2` (compatível com Calligraphr para criar sua própria letra).
+- **Rascunhos e correções naturais**: 13 estilos de rasura (linha simples, dupla, ondulada, rabisco) gerados com probabilidade realista; risque erros e escreva a correção em cima; a barra de ferramentas da tela permite desenhar setas, esboços e círculos à mão, com borracha, limpeza dos traços desta página e guias de margem.
+- **Estilos de escrita predefinidos**: 4 personas (Estudante exemplar, Anotações espontâneas, Escrita apressada, Lição escolar regulamentar) que aplicam em um clique a intensidade da perturbação, a textura da escrita e a probabilidade de rasura.
 
 ## Sintaxe de marcação
 
@@ -44,12 +44,13 @@ Insira marcações diretamente no texto para indicar rasuras e destaques exatos:
 | `[u]destaque[/u]` | Sublinhado ondulado |
 | `[circle]destaque[/circle]` | Circular o texto (alias `[圈]…[/圈]`) |
 | `[box]destaque[/box]` | Enquadrar em uma caixa (alias `[框]…[/框]`) |
+| `[right]assinatura[/right]` | Alinhar a linha inteira à direita (alias `[靠右]…[/靠右]`) para assinaturas e datas |
 
 ## Início rápido
 
 1. Acesse a [demonstração online](https://shouxie.newzone.top) ou carregue um arquivo de texto (`.txt` / `.docx` / `.md`).
-2. Escolha o estilo de papel, a fonte e a persona de escrita no painel esquerdo.
-3. Clique em "Exportar" no topo para baixar imagens de alta resolução, PDF multipágina ou imprimir diretamente.
+2. Escolha o estilo de papel, a fonte e a persona de escrita no painel esquerdo, ajustando a perturbação ou a iluminação da foto conforme necessário (no celular, use os botões segmentados "Editar / Prévia" no topo para alternar entre as colunas).
+3. Clique em "Exportar" na barra superior para baixar imagens em alta resolução (PNG / JPG), um ZIP com todas as páginas, um PDF multipágina ou imprimir diretamente em milímetros reais.
 
 ## Limitações conhecidas
 
@@ -57,7 +58,8 @@ Insira marcações diretamente no texto para indicar rasuras e destaques exatos:
 - A função de impressão do navegador imprime apenas a página atual; utilize a exportação em PDF para imprimir o documento completo.
 - No Safari abaixo da versão 16, a ausência de suporte a `ctx.filter` desativa os ajustes de brilho e contraste da imagem de fundo.
 - A camada de desenho à mão livre fica vinculada ao número da página na memória; alterações grandes no texto que mudem a paginação podem deslocar os desenhos.
-- Fontes importadas localmente permanecem apenas na memória da aba atual e devem ser selecionadas novamente após recarregar a página.
+- Das fontes integradas, 4 acompanham o pacote para uso offline; as outras 4 (Liu Jian Mao Cao, ZCOOL XiaoWei, Caveat, Kalam) são carregadas do Google Fonts em tempo de execução e recorrem a fontes do sistema quando não há internet ou em redes internas.
+- Fontes importadas localmente `.ttf` / `.otf` / `.woff` / `.woff2` permanecem apenas na memória da aba atual e devem ser selecionadas novamente após recarregar a página.
 
 ## Desenvolvimento local
 

@@ -2,7 +2,7 @@
   "name": "text2handwriting",
   "private": true,
   "version": "0.1.0",
-  "description": "把普通文本排版成高拟真手写文稿的纯本地工具：种子化随机笔迹扰动、中文避头尾排版、真实纸张与实拍质感，支持 PNG / PDF / ZIP 导出。Turn plain text into realistic handwriting, fully offline in your browser.",
+  "description": "把普通文本排版成高拟真手写文稿的纯本地工具：种子化随机笔迹扰动、中文避头尾排版、真实纸张与实拍质感，支持 PNG / JPG / PDF / ZIP 导出。Turn plain text into realistic handwriting, fully offline in your browser.",
   "type": "module",
   "license": "MIT",
   "author": "rockbenben <qingwhat@gmail.com>",

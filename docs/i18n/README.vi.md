@@ -16,7 +16,7 @@
 
 | Hạng mục | Chi tiết |
 |---|---|
-| Môi trường | Trình duyệt hiện đại trên máy tính và thiết bị di động, 100% phía máy khách (Chrome và Edge 103+ có thể liệt kê phông chữ cục bộ, Safari và Firefox sử dụng nhận diện tích hợp) |
+| Môi trường | Trình duyệt hiện đại trên máy tính và thiết bị di động, 100% phía máy khách; trên màn hình hẹp tự động chuyển sang không gian làm việc một cột cho chỉnh sửa/xem trước, có nút phân đoạn ở trên cùng để chuyển đổi (Chrome và Edge 103+ có thể liệt kê phông chữ cục bộ, Safari và Firefox sử dụng nhận diện tích hợp) |
 | Định dạng nhập | Dán văn bản trực tiếp, tải lên tệp `.txt` / `.md` (kiểm tra nghiêm ngặt UTF-8 với dự phòng GB18030) hoặc tệp `.docx` (trích xuất nội dung phía máy khách) |
 | Kiểu giấy | 6 loại giấy tích hợp (vở kẻ ngang, ô kẻ caro, A4 trắng, 4 dòng kẻ tiếng Anh, giấy kraft, lưới chấm dot) và hỗ trợ tải lên ảnh giấy tùy chỉnh có tự động căn chỉnh |
 | Bút và hiệu ứng | 4 cơ chế vật lý của nét bút (bút gel, bút máy, bút chì, bút bi); ánh sáng tán xạ môi trường, bóng nếp gấp giấy, hiệu ứng mờ góc và giấy cũ |
@@ -29,9 +29,9 @@
 - **Chữ viết tay chân thực**: Nhiễu loạn giả ngẫu nhiên do hạt giống điều khiển giúp tinh chỉnh kích thước chữ, khoảng cách, độ nghiêng, độ lệch đường cơ sở, độ đậm nhạt và cảm giác mỏi tay khi viết. Mỗi lần kết xuất đều độc nhất và lưu lại hạt giống cho phép tái tạo chính xác 100% cùng một kết quả.
 - **Dàn trang thông minh & văn bản hai chiều**: Bản địa hóa hoàn chỉnh cho 18 ngôn ngữ; quy tắc đầu/cuối dòng CJK, thụt đầu dòng đoạn văn, tự động phân trang và căn phải chữ ký; bảo vệ ngắt từ cho chữ cái Latinh; hỗ trợ chữ viết Ả Rập liền nét tự nhiên cùng bảo vệ dấu ngoặc.
 - **Kết cấu giấy & ảnh chụp**: Tùy chỉnh chi tiết khoảng cách dòng và lề trang; lưới ô vuông tỉ lệ chuẩn; tự động căn ảnh chụp tải lên vừa vặn khổ A4; đổ bóng nếp gấp và ánh sáng chân thực.
-- **Tùy biến phông chữ**: Tích hợp sẵn 4 phông chữ viết tay mã nguồn mở (sẵn sàng dùng 100% ngoại tuyến). Tải phông chữ hệ thống, Google Fonts hoặc kéo thả tệp `.ttf` / `.otf` (tương thích với Calligraphr để dùng nét chữ của chính bạn).
-- **Chỉnh sửa & gạch xóa tự nhiên**: 13 kiểu gạch xóa (nét đơn, nét đôi, lượn sóng, gạch nguệch ngoạc) với xác suất tùy chỉnh; gạch lỗi và viết từ sửa phía trên dòng; lớp vẽ tự do tích hợp để thêm mũi tên và ghi chú.
-- **Hình mẫu chữ viết**: 4 thiết lập sẵn chỉ bằng một cú nhấp (học sinh chăm chỉ, ghi chú nhanh, bản thảo vội vàng, bản sao trang trọng) giúp cài đặt ngay loại bút và khoảng cách.
+- **Tùy biến phông chữ**: Tích hợp sẵn 8 phông chữ viết tay mã nguồn mở (4 phông đóng gói sẵn dùng ngoại tuyến + 4 phông tải trực tuyến từ Google Fonts). Tải phông chữ hệ thống, Google Fonts hoặc kéo thả tệp `.ttf` / `.otf` / `.woff` / `.woff2` (tương thích với Calligraphr để dùng nét chữ của chính bạn).
+- **Chỉnh sửa & gạch xóa tự nhiên**: 13 kiểu gạch xóa (nét đơn, nét đôi, lượn sóng, gạch nguệch ngoạc) với xác suất tùy chỉnh; gạch lỗi và viết từ sửa phía trên dòng; thanh công cụ trên khung vẽ hỗ trợ vẽ tay mũi tên, bản phác và vòng tròn, kèm tẩy, xóa nét vẽ của trang hiện tại và đường dẫn lề.
+- **Hình mẫu chữ viết**: 4 thiết lập sẵn (Học Sinh Giỏi Gương Mẫu, Ghi Chép Nhanh Hàng Ngày, Chữ Viết Vội Vàng, Bài Về Nhà Chuẩn Mực) áp dụng ngay cường độ nhiễu loạn, chất liệu nét viết và xác suất sửa lỗi chỉ bằng một cú nhấp.
 
 ## Cú pháp đánh dấu
 
@@ -44,12 +44,13 @@ Sử dụng các thẻ đánh dấu nội dòng trực tiếp trong văn bản �
 | `[u]nổi bật[/u]` | Gạch chân lượn sóng |
 | `[circle]nổi bật[/circle]` | Khoanh tròn văn bản (tên viết tắt `[圈]…[/圈]`) |
 | `[box]nổi bật[/box]` | Đóng khung hộp quanh văn bản (tên viết tắt `[框]…[/框]`) |
+| `[right]chữ ký[/right]` | Căn phải toàn bộ dòng (tên viết tắt `[靠右]…[/靠右]`) cho chữ ký và ngày tháng |
 
 ## Bắt đầu nhanh
 
 1. Mở [bản dùng thử trực tuyến](https://shouxie.newzone.top) hoặc nhập tệp văn bản (`.txt` / `.docx` / `.md`).
-2. Chọn kiểu giấy, phông chữ viết tay và phong cách viết từ bảng điều khiển bên trái.
-3. Nhấp vào "Xuất" trên thanh tiêu đề phía trên để tải xuống hình ảnh độ phân giải cao, tệp PDF hoặc gửi trực tiếp tới máy in.
+2. Chọn kiểu giấy, phông chữ viết tay và phong cách viết từ bảng điều khiển bên trái, tinh chỉnh cường độ nhiễu loạn hoặc ánh sáng ảnh nếu cần (trên điện thoại, dùng nút phân đoạn "Chỉnh sửa / Xem trước" ở trên cùng để chuyển đổi hai cột).
+3. Nhấp vào "Xuất" trên thanh tiêu đề phía trên để tải xuống hình ảnh độ phân giải cao (PNG / JPG), tệp ZIP toàn bộ trang, PDF nhiều trang hoặc in trực tiếp theo kích thước milimét thật.
 
 ## Giới hạn đã biết
 
@@ -57,7 +58,8 @@ Sử dụng các thẻ đánh dấu nội dòng trực tiếp trong văn bản �
 - Tính năng in của trình duyệt chỉ in trang đang xem hiện tại; vui lòng sử dụng tính năng xuất PDF để in toàn bộ tài liệu nhiều trang.
 - Trên trình duyệt Safari phiên bản thấp hơn 16, việc thiếu hỗ trợ `ctx.filter` sẽ làm các thanh trượt điều chỉnh độ sáng và tương phản của ảnh nền không hoạt động.
 - Lớp vẽ tay tự do gắn liền với chỉ số trang trong bộ nhớ; các chỉnh sửa văn bản lớn làm thay đổi số trang có thể làm dịch chuyển vị trí các nét vẽ.
-- Các tệp phông chữ tải lên cục bộ chỉ lưu tạm trong bộ nhớ phiên làm việc hiện tại và cần chọn lại sau khi tải lại trang.
+- Trong số phông chữ tích hợp, 4 phông đi kèm để dùng ngoại tuyến; 4 phông còn lại (Liu Jian Mao Cao, ZCOOL XiaoWei, Caveat, Kalam) được tải từ Google Fonts khi chạy và sẽ quay về phông chữ hệ thống khi mất mạng hoặc trong mạng nội bộ.
+- Các tệp phông chữ `.ttf` / `.otf` / `.woff` / `.woff2` tải lên cục bộ chỉ lưu tạm trong bộ nhớ phiên làm việc hiện tại và cần chọn lại sau khi tải lại trang.
 
 ## Phát triển cục bộ
 
