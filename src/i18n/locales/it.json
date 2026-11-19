@@ -14,7 +14,7 @@
     "qualityStandard": "Standard (1x · 145 DPI)",
     "qualityHigh": "Alta risoluzione (2x · 290 DPI)",
     "qualityUltra": "Ultra HD (3x · 435 DPI)",
-    "export": "Esporta documento",
+    "export": "Esporta",
     "exporting": "Generazione in corso...",
     "exportPng": "Salva pagina corrente (PNG)",
     "exportJpg": "Salva pagina corrente (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "Visualizza codice sorgente su GitHub"
   },
   "preview": {
+    "fitPage": "Adatta pagina",
+    "pen": "Penna",
+    "eraser": "Gomma",
+    "tools": "Strumenti",
+    "title": "Anteprima",
     "prevPage": "Pagina precedente",
     "nextPage": "Pagina successiva",
     "pageIndicator": "Pagina {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Ricarica pagina"
   },
   "common": {
+    "more": "Altro",
     "reset": "Reimposta",
     "apply": "Applica",
     "clear": "Cancella"
   },
   "editor": {
+    "workspaceEdit": "Modifica",
+    "advancedHandwriting": "Impostazioni avanzate della scrittura",
     "tabText": "Testo",
     "tabHandwriting": "Scrittura a mano",
     "tabPaper": "Carta & Layout",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Da Testo a Manoscritto – Generatore Realistico di Documenti Calligrafici",
-    "description": "Trasforma il testo digitale in documenti manoscritti ultra-realistici con elaborazione 100% locale nel browser: variazioni naturali del tratto, texture realistiche di carta e fotografia, ed esportazione ad alta risoluzione in PNG, PDF o ZIP. Massima privacy.",
+    "description": "Trasforma il testo digitale in documenti manoscritti ultra-realistici con elaborazione 100% locale nel browser: variazioni naturali del tratto, texture realistiche di carta e fotografia, ed esportazione ad alta risoluzione in PNG, JPG, PDF o ZIP. Massima privacy.",
     "keywords": "testo a manoscritto,generatore scrittura a mano,compiti a mano,lettera scritta a mano,simulatore calligrafia",
     "siteName": "Da Testo a Manoscritto",
     "ogLocale": "it_IT"

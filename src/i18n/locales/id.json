@@ -14,7 +14,7 @@
     "qualityStandard": "Standar (1x · 145 DPI)",
     "qualityHigh": "Resolusi tinggi (2x · 290 DPI)",
     "qualityUltra": "Ultra HD (3x · 435 DPI)",
-    "export": "Ekspor dokumen",
+    "export": "Ekspor",
     "exporting": "Membuat...",
     "exportPng": "Simpan halaman ini (PNG)",
     "exportJpg": "Simpan halaman ini (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "Lihat kode sumber di GitHub"
   },
   "preview": {
+    "fitPage": "Paskan halaman",
+    "pen": "Pena",
+    "eraser": "Penghapus",
+    "tools": "Alat",
+    "title": "Pratinjau",
     "prevPage": "Halaman sebelumnya",
     "nextPage": "Halaman berikutnya",
     "pageIndicator": "Halaman {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Muat ulang halaman"
   },
   "common": {
+    "more": "Lainnya",
     "reset": "Atur ulang",
     "apply": "Terapkan",
     "clear": "Bersihkan"
   },
   "editor": {
+    "workspaceEdit": "Edit",
+    "advancedHandwriting": "Pengaturan lanjutan tulisan tangan",
     "tabText": "Input Teks",
     "tabHandwriting": "Tulisan Tangan",
     "tabPaper": "Kertas & Tata Letak",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Teks ke Tulisan Tangan – Generator Dokumen Tulisan Tangan Realistis",
-    "description": "Ubah teks ketikan menjadi dokumen tulisan tangan yang tampak nyata dengan pemrosesan 100% lokal di peramban Anda: variasi goresan alami, tekstur kertas dan pencahayaan foto realistis, serta ekspor resolusi tinggi ke PNG, PDF, atau ZIP. Privasi terjaga penuh.",
+    "description": "Ubah teks ketikan menjadi dokumen tulisan tangan yang tampak nyata dengan pemrosesan 100% lokal di peramban Anda: variasi goresan alami, tekstur kertas dan pencahayaan foto realistis, serta ekspor resolusi tinggi ke PNG, JPG, PDF, atau ZIP. Privasi terjaga penuh.",
     "keywords": "teks ke tulisan tangan,generator tulisan tangan,tugas tulis tangan,surat tulis tangan,konversi teks ke tulisan tangan",
     "siteName": "Teks ke Tulisan Tangan",
     "ogLocale": "id_ID"

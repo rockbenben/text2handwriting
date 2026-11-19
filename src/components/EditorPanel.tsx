@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sliders, FileText, Camera, Grid } from 'lucide-react';
+import { PenLine, FileText, Camera, Grid } from 'lucide-react';
 import type { PaperConfig, HandwritingConfig } from '../engine/types';
 import { loadCustomFontFromFile, createCustomFontOption } from '../engine/fontLoader';
 import type { FontOption } from '../engine/fontLoader';
@@ -16,7 +16,7 @@ import { PhotoTab } from './editor/PhotoTab';
 /**
  * 大底图直接写入 localStorage 会超出配额，saveStoredSettings 会把它丢掉。
  * 纸纹照片缩到 2000px 再转 JPEG 几乎看不出差别，却能跨刷新保留；
- * 两次仍压不进阈值时返回原图，由现有的“仅本次打开有效”提示兜底。
+ * 两次仍压不进阈值时返回原图，由界面上的“只在本次打开中保留”提示兜底。
  */
 function compressPaperPhoto(img: HTMLImageElement, originalUrl: string): string {
   if (originalUrl.length <= CUSTOM_BG_PERSIST_MAX_CHARS) return originalUrl;
@@ -53,6 +53,7 @@ function compressPaperPhoto(img: HTMLImageElement, originalUrl: string): string 
 interface EditorPanelProps {
   text: string;
   onTextChange: (text: string) => void;
+  onShuffleSeed: () => void;
   onReplaceDocument: (text: string, confirmation: string) => boolean;
   documentRevision: number;
   paper: PaperConfig;
@@ -71,6 +72,7 @@ interface EditorPanelProps {
 export const EditorPanel: React.FC<EditorPanelProps> = ({
   text,
   onTextChange,
+  onShuffleSeed,
   onReplaceDocument,
   documentRevision,
   paper,
@@ -283,6 +285,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         <button 
           className={`tab-btn ${activeTab === 'text' ? 'active' : ''}`}
           onClick={() => setActiveTab('text')}
+          aria-pressed={activeTab === 'text'}
           title={t('editor.tabText')}
           aria-label={t('editor.tabText')}
         >
@@ -292,15 +295,17 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         <button 
           className={`tab-btn ${activeTab === 'handwriting' ? 'active' : ''}`}
           onClick={() => setActiveTab('handwriting')}
+          aria-pressed={activeTab === 'handwriting'}
           title={t('editor.tabHandwriting')}
           aria-label={t('editor.tabHandwriting')}
         >
-          <Sliders size={15} />
+          <PenLine size={17} />
           <span>{t('editor.tabHandwriting')}</span>
         </button>
         <button 
           className={`tab-btn ${activeTab === 'paper' ? 'active' : ''}`}
           onClick={() => setActiveTab('paper')}
+          aria-pressed={activeTab === 'paper'}
           title={t('editor.tabPaper')}
           aria-label={t('editor.tabPaper')}
         >
@@ -310,6 +315,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         <button 
           className={`tab-btn ${activeTab === 'photo' ? 'active' : ''}`}
           onClick={() => setActiveTab('photo')}
+          aria-pressed={activeTab === 'photo'}
           title={t('editor.tabPhoto')}
           aria-label={t('editor.tabPhoto')}
         >
@@ -317,8 +323,6 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           <span>{t('editor.tabPhoto')}</span>
         </button>
       </div>
-
-      {/* Tab 1: Text Content */}
 
       {/* Tab 1: Text Content */}
       {activeTab === 'text' && (
@@ -340,9 +344,10 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
         />
       )}
 
-      {/* Tab 2: Handwriting Perturbations & Fonts */}
+      {/* Tab 2: Handwriting Persona, Font, Pen & Typography (advanced tools collapsed) */}
       {activeTab === 'handwriting' && (
         <HandwritingTab
+          onShuffleSeed={onShuffleSeed}
           handwriting={handwriting}
           onHandwritingChange={handleHandwritingChange}
           paper={paper}

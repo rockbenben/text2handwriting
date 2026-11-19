@@ -9,7 +9,7 @@ interface ScratchSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「划改」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 高级折叠区内的「划改」区块：错字涂改与上方订正字，参数由 typeset.ts 的排版流程消费。 */
 export const ScratchSection: React.FC<ScratchSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -20,7 +20,7 @@ export const ScratchSection: React.FC<ScratchSectionProps> = ({
     <>
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Edit3 size={14} />
             {t('editor.scratchTitle')}
           </span>
@@ -113,10 +113,10 @@ export const ScratchSection: React.FC<ScratchSectionProps> = ({
               </select>
             </div>
 
-            {/* Correction character placed above strikethrough (错字改写订正) */}
-            <div className="control-item" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '10px' }}>
+            {/* Correction character placement (错字改写订正：默认写在涂改右上方，可切正上方/随机) */}
+            <div className="control-item" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px dashed var(--border-color)', paddingTop: '10px' }}>
               <div>
-                <span style={{ fontSize: '13px', fontWeight: 500, color: '#fca5a5' }}>{t('editor.correctionEnable')}</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--danger)' }}>{t('editor.correctionEnable')}</span>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t('editor.correctionHint')}</div>
               </div>
               <input 
@@ -152,7 +152,7 @@ export const ScratchSection: React.FC<ScratchSectionProps> = ({
                 <div className="control-item">
                   <div className="control-label-row">
                     <span>{t('editor.correctionPosition')}</span>
-                    <span className="control-value" style={{ fontSize: '11px', color: '#93c5fd' }}>
+                    <span className="control-value" style={{ fontSize: '11px', color: 'var(--primary)' }}>
                       {handwriting.scratchOutCorrectionPosition === 'top'
                         ? t('editor.posTop')
                         : handwriting.scratchOutCorrectionPosition === 'random'
@@ -215,9 +215,9 @@ export const ScratchSection: React.FC<ScratchSectionProps> = ({
                           padding: '4px 8px',
                           borderRadius: '6px',
                           fontSize: '11px',
-                          border: (handwriting.scratchOutCorrectionColor || handwriting.inkColor) === c.color ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)',
-                          background: 'rgba(255,255,255,0.05)',
-                          color: '#e2e8f0',
+                          border: (handwriting.scratchOutCorrectionColor || handwriting.inkColor) === c.color ? '2px solid var(--primary)' : '1px solid var(--border-color)',
+                          background: 'var(--bg-input)',
+                          color: 'var(--text-main)',
                           display: 'flex',
                           alignItems: 'center',
                           gap: '4px',
@@ -235,8 +235,6 @@ export const ScratchSection: React.FC<ScratchSectionProps> = ({
           </>
         )}
       </div>
-
-      {/* Real Document Markup: Annotations simulation (真实文件手写圈画与批注) */}
     </>
   );
 };

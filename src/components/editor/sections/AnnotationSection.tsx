@@ -8,7 +8,7 @@ interface AnnotationSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「批注」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 高级折叠区内的「批注」区块：波浪下划线 / 圈画 / 插入脱字符 / 方框。 */
 export const AnnotationSection: React.FC<AnnotationSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -19,7 +19,7 @@ export const AnnotationSection: React.FC<AnnotationSectionProps> = ({
     <>
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sparkles size={14} />
             {t('editor.annotationTitle')}
           </span>
@@ -112,9 +112,9 @@ export const AnnotationSection: React.FC<AnnotationSectionProps> = ({
                       padding: '4px 8px',
                       borderRadius: '6px',
                       fontSize: '11px',
-                      border: (handwriting.annotationColor || handwriting.inkColor) === c.color ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)',
-                      background: 'rgba(255,255,255,0.05)',
-                      color: '#e2e8f0',
+                      border: (handwriting.annotationColor || handwriting.inkColor) === c.color ? '2px solid var(--primary)' : '1px solid var(--border-color)',
+                      background: 'var(--bg-input)',
+                      color: 'var(--text-main)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '4px',
@@ -130,8 +130,6 @@ export const AnnotationSection: React.FC<AnnotationSectionProps> = ({
           </>
         )}
       </div>
-
-      {/* Handwritten Disarray & Stroke Roughness (文字位置凌乱度与笔画凌乱度) */}
     </>
   );
 };

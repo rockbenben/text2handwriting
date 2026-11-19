@@ -18,8 +18,8 @@ interface ErrorBoundaryState {
  * 与其祈祷引擎层永不出错，不如保证出错时用户还知道发生了什么。
  *
  * 用 i18next.t 而不是 useTranslation：class 组件里用不了 hook，
- * 且崩溃可能发生在 i18n 初始化完成之前。t() 取不到键时会原样返回键名，
- * 至少不会是空白。
+ * 且崩溃可能发生在 i18n 初始化完成之前 —— 那时 t() 直接返回 undefined，
+ * 连键名都没有，所以 render 里必须再接一层手动兜底（见下）。
  */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { error: null };
@@ -38,9 +38,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (!error) return this.props.children;
 
     // 必须自己兜底，不能只靠 defaultValue：
-    //   - i18n 尚未初始化时，i18next.t() 返回的是「空串」而不是键名
-    //   - 已初始化但缺键时，返回的是键名本身
-    // 两种都会让错误页要么一片空白、要么显示 "errors.crashTitle"，
+    //   - i18n 尚未初始化时，i18next.t() 返回 undefined（defaultValue 也不生效）
+    //   - 已初始化但缺键时，返回的是键名本身；词条为空串时返回空串
+    // 三种都会让错误页一片空白或显示 "errors.crashTitle"，
     // 跟原来的白屏没本质区别。所以这里显式判空 + 判等。
     const t = (key: string, fallback: string) => {
       const value = i18next.t(key);

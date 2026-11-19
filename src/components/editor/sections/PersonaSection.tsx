@@ -8,7 +8,7 @@ interface PersonaSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「书写人格」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 的「书写人格」区块：点一下即套用整组笔迹参数，省去逐个滑杆去调。 */
 export const PersonaSection: React.FC<PersonaSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -17,9 +17,9 @@ export const PersonaSection: React.FC<PersonaSectionProps> = ({
 
   return (
     <>
-      <div className="control-group" style={{ background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-input) 100%)', borderColor: 'rgba(59, 130, 246, 0.4)' }}>
+      <div className="control-group" style={{ background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-input) 100%)', borderColor: 'var(--border-color)' }}>
         <div className="group-title" style={{ marginBottom: '8px' }}>
-          <span style={{ color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
+          <span style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
             <Sparkles size={14} />
             {t('editor.personaTitle')}
           </span>
@@ -50,7 +50,7 @@ export const PersonaSection: React.FC<PersonaSectionProps> = ({
                 <span style={{ fontWeight: 600, fontSize: '12px', color: 'var(--text-main)' }}>
                   {t(`personaData.${persona.id}.name`, { defaultValue: persona.name })}
                 </span>
-                <span style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}>
+                <span style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '3px', background: 'var(--selection)', color: 'var(--primary)' }}>
                   {t(`personaData.${persona.id}.badge`, { defaultValue: persona.badge })}
                 </span>
               </div>
@@ -61,8 +61,6 @@ export const PersonaSection: React.FC<PersonaSectionProps> = ({
           ))}
         </div>
       </div>
-
-      {/* Font Selection */}
     </>
   );
 };

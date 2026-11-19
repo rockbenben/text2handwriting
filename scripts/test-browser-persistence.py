@@ -55,6 +55,54 @@ def editor(context, url):
     return page
 
 
+def set_standard_quality(page):
+    page.get_by_role("button", name="Export", exact=True).click()
+    quality = page.get_by_role("combobox", name="Quality")
+    quality.select_option("1")
+    quality.press("Escape")
+
+
+def mobile_workspace(context, origin):
+    page = context.new_page()
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(origin)
+    draft = page.get_by_role("textbox", name="Document text")
+    draft.fill("A draft on a small screen")
+    more = page.get_by_role("button", name="More", exact=True)
+    expect(page.get_by_role("button", name="Presets", exact=True)).to_be_hidden()
+    more.click()
+    expect(page.get_by_role("button", name="Presets", exact=True)).to_be_visible()
+    expect(page.get_by_role("combobox", name="Interface language")).to_be_visible()
+    more.press("Escape")
+    expect(more).to_have_attribute("aria-expanded", "false")
+    page.get_by_role("button", name="Preview", exact=True).click()
+    expect(draft).to_be_hidden()
+    expect(page.locator(".preview-canvas")).to_be_visible()
+    viewport = page.locator(".preview-canvas-container")
+    page.wait_for_function("""() => {
+      const viewport = document.querySelector('.preview-canvas-container');
+      return viewport.scrollWidth <= viewport.clientWidth && viewport.scrollHeight <= viewport.clientHeight;
+    }""")
+    page.get_by_role("button", name="Zoom in", exact=True).click()
+    assert viewport.evaluate("el => el.scrollWidth > el.clientWidth")
+    page.get_by_role("button", name="Fit page", exact=True).click()
+    assert viewport.evaluate("el => el.scrollWidth <= el.clientWidth")
+    expect(page.get_by_text("Pen", exact=True)).to_be_visible()
+    tools = page.get_by_role("button", name="Tools", exact=True)
+    tools.click()
+    page.get_by_role("button", name="Margin guides", exact=True).click()
+    expect(tools).to_have_attribute("aria-expanded", "false")
+    tools.click()
+    expect(page.get_by_role("button", name="Margin guides", exact=True)).to_have_attribute("aria-pressed", "true")
+    tools.press("Escape")
+    with page.expect_download() as download:
+        page.get_by_role("button", name="Save current page", exact=True).click()
+    assert download.value.suggested_filename.endswith(".png")
+    page.get_by_role("button", name="Edit", exact=True).click()
+    expect(draft).to_have_value("A draft on a small screen")
+    expect(page.locator(".preview-canvas")).to_be_hidden()
+
+
 def wait_for_save(page, text):
     page.wait_for_function("([key, text]) => localStorage.getItem(key) === text", arg=[TEXT_KEY, text])
 
@@ -215,7 +263,7 @@ def upload_background(page, color):
 
 def background_snapshot(context, origin):
     page = editor(context, origin)
-    page.locator("header select").nth(1).select_option("1")
+    set_standard_quality(page)
     page.locator("textarea").fill("Document at the moment of export")
     page.get_by_role("button", name="Photo", exact=True).click()
     upload_background(page, "#ff0000")
@@ -276,7 +324,7 @@ def background_snapshot(context, origin):
 
 def document_outputs(context, origin):
     page = editor(context, origin)
-    page.locator("header select").nth(1).select_option("1")
+    set_standard_quality(page)
     page.locator("textarea").fill("\n".join(f"Printed line {i}" for i in range(20)))
     page.get_by_role("button", name="Photo", exact=True).click()
     upload_background(page, "#ff0000")
@@ -383,7 +431,7 @@ def arabic_sample(context, origin):
 def arabic_mixed_outputs(context, origin):
     track_arabic_drawing(context)
     page = editor(context, origin)
-    page.locator("header select").nth(1).select_option("1")
+    set_standard_quality(page)
     first_line = "النتيجة (CPU 123) هي ٤٥٫٦"
     second_line = "CPU 123 (اختبار المعالج)"
     phrase = "تتصل الحروف العربية داخل كل كلمة"
@@ -448,7 +496,7 @@ def txt_indentation(context, origin):
 def paper_effects(context, origin, effect):
     page = editor(context, origin)
     page.locator("textarea").fill("")
-    page.locator("header select").nth(1).select_option("1")
+    set_standard_quality(page)
     page.get_by_role("button", name="Photo", exact=True).click()
     texture = page.locator("select").filter(has=page.locator('option[value="creased"]'))
     vignette = page.locator(".tab-content input[type=checkbox]").last
@@ -601,7 +649,7 @@ def long_document_updates(context, origin, control):
 
 def pdf_intermediate_progress(context, origin):
     page = editor(context, origin)
-    page.locator("header select").nth(1).select_option("1")
+    set_standard_quality(page)
     page.locator("textarea").fill("\n".join(f"PDF progress test line {i}" for i in range(100)))
     expect(page.get_by_text("Page 1 / 4", exact=True)).to_be_visible()
     page.evaluate(r"""() => {
@@ -745,6 +793,7 @@ def main():
     Thread(target=server.serve_forever, daemon=True).start()
     origin = f"http://127.0.0.1:{server.server_port}/"
     cases = {
+        "mobile workspace and PNG download": mobile_workspace,
         "multi-tab draft and legacy migration": multi_tab,
         "concurrent edits": concurrent_text,
         "blocked storage": blocked_storage,

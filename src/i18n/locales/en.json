@@ -24,6 +24,11 @@
     "githubTitle": "View source on GitHub"
   },
   "preview": {
+    "fitPage": "Fit page",
+    "pen": "Pen",
+    "eraser": "Eraser",
+    "tools": "Tools",
+    "title": "Preview",
     "prevPage": "Previous page",
     "nextPage": "Next page",
     "pageIndicator": "Page {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Reload"
   },
   "common": {
+    "more": "More",
     "reset": "Reset",
     "apply": "Apply",
     "clear": "Clear"
   },
   "editor": {
+    "workspaceEdit": "Edit",
+    "advancedHandwriting": "Advanced handwriting settings",
     "tabText": "Text",
     "tabHandwriting": "Handwriting",
     "tabPaper": "Paper",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Text to Handwriting – Realistic Handwritten Document Generator",
-    "description": "Turn plain text into realistic handwritten documents, rendered entirely on your device: seeded natural stroke variation, CJK line-break rules, real paper and photo textures, and high-res PNG / PDF / ZIP export. Private — your text never leaves your computer.",
+    "description": "Turn plain text into realistic handwritten documents, rendered entirely on your device: seeded natural stroke variation, CJK line-break rules, real paper and photo textures, and high-res PNG / JPG / PDF / ZIP export. Private — your text never leaves your computer.",
     "keywords": "text to handwriting,handwriting generator,handwritten notes,handwritten assignment,essay paper,print handwriting",
     "siteName": "Text to Handwriting",
     "ogLocale": "en_US"

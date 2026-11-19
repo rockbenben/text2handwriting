@@ -21,7 +21,6 @@ interface TextTabProps {
   handleDocFileUpload: (file: File) => void;
 }
 
-/** 由 EditorPanel 的「text」tab 逐字抽出，未改行为。 */
 export const TextTab: React.FC<TextTabProps> = ({
   text,
   onTextChange,
@@ -41,13 +40,11 @@ export const TextTab: React.FC<TextTabProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="tab-content">
+    <div className="tab-content text-tab">
       <div className="text-editor-container">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: '#cbd5e1' }}>
-            {t('editor.textTitle')}
-          </span>
-          <div style={{ display: 'flex', gap: '6px' }}>
+        <div className="document-heading">
+          <label htmlFor="document-text">{t('editor.textTitle')}</label>
+          <div className="document-actions">
             <button 
               className="btn btn-secondary btn-sm"
               onClick={onSelectSampleText}
@@ -67,21 +64,11 @@ export const TextTab: React.FC<TextTabProps> = ({
         </div>
 
         {/* Quick Inline Handwriting Markup Toolbar */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          flexWrap: 'wrap',
-          padding: '6px 8px',
-          background: 'var(--bg-input)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '6px',
-        }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-subtle)', marginInlineEnd: '2px' }}>{t('editor.tagInsert')}</span>
+        <div className="markup-toolbar">
+          <span>{t('editor.tagInsert')}</span>
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            style={{ fontSize: '11px', padding: '1px 6px', height: '22px' }}
             onClick={() => handleInsertTag('~~', '~~', t('editor.insertWord.typo'))}
             title={t('editor.tagScratchTitle')}
           >
@@ -90,7 +77,6 @@ export const TextTab: React.FC<TextTabProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            style={{ fontSize: '11px', padding: '1px 6px', height: '22px' }}
             onClick={() => handleInsertTag(t('editor.token.delCorrect'), '[/del]', t('editor.insertWord.typo'))}
             title={t('editor.tagCorrectTitle')}
           >
@@ -99,7 +85,6 @@ export const TextTab: React.FC<TextTabProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            style={{ fontSize: '11px', padding: '1px 6px', height: '22px' }}
             onClick={() => handleInsertTag('[u]', '[/u]', t('editor.insertWord.keyword'))}
             title={t('editor.tagUnderlineTitle')}
           >
@@ -108,7 +93,6 @@ export const TextTab: React.FC<TextTabProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            style={{ fontSize: '11px', padding: '1px 6px', height: '22px' }}
             onClick={() => handleInsertTag('[circle]', '[/circle]', t('editor.insertWord.keyword'))}
             title={t('editor.tagCircleTitle')}
           >
@@ -117,7 +101,6 @@ export const TextTab: React.FC<TextTabProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            style={{ fontSize: '11px', padding: '1px 6px', height: '22px' }}
             onClick={() => handleInsertTag('[box]', '[/box]', t('editor.insertWord.boxed'))}
             title={t('editor.tagBoxTitle')}
           >
@@ -126,7 +109,6 @@ export const TextTab: React.FC<TextTabProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            style={{ fontSize: '11px', padding: '1px 6px', height: '22px' }}
             onClick={() => handleInsertTag('[right]', '[/right]', t('editor.insertWord.signature'))}
             title={t('editor.tagRightTitle')}
           >
@@ -136,15 +118,54 @@ export const TextTab: React.FC<TextTabProps> = ({
 
         <textarea
           ref={textareaRef}
+          id="document-text"
+          dir="auto"
           className="editor-textarea"
           placeholder={t('editor.textareaPlaceholder')}
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
         />
 
+        <div className="editor-stats">
+          <span>{t('editor.stats', { chars: totalChars, lines: text.split(/\r?\n/).length })}</span>
+          <span className="editor-page-count">{t('editor.estimatedPages', { pages: totalPages })}</span>
+        </div>
+
+        {/* Drag & drop file area */}
+        <button type="button"
+          className={`file-drop-zone ${isDraggingFile ? 'dragover' : ''}`}
+          onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
+          onDragLeave={() => setIsDraggingFile(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDraggingFile(false);
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+              handleDocFileUpload(e.dataTransfer.files[0]);
+            }
+          }}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <FileUp size={17} aria-hidden="true" />
+          <span>{t('editor.importFile')}</span>
+          <small dir="ltr">.docx, .txt, .md</small>
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          accept=".docx,.txt,.md"
+          onChange={(e) => {
+            if (e.target.files && e.target.files[0]) {
+              handleDocFileUpload(e.target.files[0]);
+            }
+            // 重置后同名文件才能被重新选择（否则 onChange 不再触发）
+            e.target.value = '';
+          }}
+        />
+
         {/* 标记语法提示：让内联标签功能可被发现 */}
-        <details className="tag-hint" style={{ marginBottom: '8px' }}>
-          <summary style={{ fontSize: '11px', color: 'var(--text-muted)', cursor: 'pointer', padding: '6px 10px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+        <details className="editor-disclosure tag-hint">
+          <summary>
             {t('editor.tagHintSummary')}
           </summary>
           <div style={{ marginTop: '6px', background: 'var(--bg-input)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -166,146 +187,97 @@ export const TextTab: React.FC<TextTabProps> = ({
         </details>
 
         {/* Freeform Writing & Indentation Quick Controls */}
-        <div style={{
-          background: 'var(--bg-input)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '8px',
-          padding: '10px 12px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>
-              {t('editor.freeformTitle')}
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
-                {handwriting.paragraphIndent === 0
-                  ? t('editor.freeMode')
-                  : t('editor.indentN', { n: handwriting.paragraphIndent })}
-              </span>
+        <details className="editor-disclosure">
+          <summary>{t('editor.freeformTitle')}</summary>
+          <div className="layout-options">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
+                  {handwriting.paragraphIndent === 0
+                    ? t('editor.freeMode')
+                    : t('editor.indentN', { n: handwriting.paragraphIndent })}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ fontSize: '11px', padding: '1px 6px', height: '20px', display: 'flex', alignItems: 'center', gap: '3px' }}
+                  onClick={() => onHandwritingChange({
+                    ...handwriting,
+                    paragraphIndent: SECTION_DEFAULTS.freeform.paragraphIndent,
+                    alignToLines: SECTION_DEFAULTS.freeform.alignToLines,
+                    smartSignatureAlign: SECTION_DEFAULTS.freeform.smartSignatureAlign,
+                  })}
+                  title={t('editor.freeformResetTitle')}
+                >
+                  <RotateCcw size={10} />
+                  <span>{t('common.reset')}</span>
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '6px' }}>
               <button
                 type="button"
-                className="btn btn-secondary btn-sm"
-                style={{ fontSize: '11px', padding: '1px 6px', height: '20px', display: 'flex', alignItems: 'center', gap: '3px' }}
-                onClick={() => onHandwritingChange({
-                  ...handwriting,
-                  paragraphIndent: SECTION_DEFAULTS.freeform.paragraphIndent,
-                  alignToLines: SECTION_DEFAULTS.freeform.alignToLines,
-                  smartSignatureAlign: SECTION_DEFAULTS.freeform.smartSignatureAlign,
-                })}
-                title={t('editor.freeformResetTitle')}
+                className={`btn btn-sm ${handwriting.paragraphIndent === 0 ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ flex: 1, fontSize: '12px', padding: '5px 4px', justifyContent: 'center' }}
+                onClick={() => onHandwritingChange({ ...handwriting, paragraphIndent: 0 })}
+                title={t('editor.freeInputTitle')}
               >
-                <RotateCcw size={10} />
-                <span>{t('common.reset')}</span>
+                {t('editor.freeInput')}
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${handwriting.paragraphIndent === 2 ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ flex: 1, fontSize: '12px', padding: '5px 4px', justifyContent: 'center' }}
+                onClick={() => onHandwritingChange({ ...handwriting, paragraphIndent: 2 })}
+                title={t('editor.indent2Title')}
+              >
+                {t('editor.indent2')}
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${handwriting.paragraphIndent === 4 ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ flex: 1, fontSize: '12px', padding: '5px 4px', justifyContent: 'center' }}
+                onClick={() => onHandwritingChange({ ...handwriting, paragraphIndent: 4 })}
+                title={t('editor.indent4Title')}
+              >
+                {t('editor.indent4')}
               </button>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <button
-              type="button"
-              className={`btn btn-sm ${handwriting.paragraphIndent === 0 ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ flex: 1, fontSize: '12px', padding: '5px 4px', justifyContent: 'center' }}
-              onClick={() => onHandwritingChange({ ...handwriting, paragraphIndent: 0 })}
-              title={t('editor.freeInputTitle')}
-            >
-              {t('editor.freeInput')}
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${handwriting.paragraphIndent === 2 ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ flex: 1, fontSize: '12px', padding: '5px 4px', justifyContent: 'center' }}
-              onClick={() => onHandwritingChange({ ...handwriting, paragraphIndent: 2 })}
-              title={t('editor.indent2Title')}
-            >
-              {t('editor.indent2')}
-            </button>
-            <button
-              type="button"
-              className={`btn btn-sm ${handwriting.paragraphIndent === 4 ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ flex: 1, fontSize: '12px', padding: '5px 4px', justifyContent: 'center' }}
-              onClick={() => onHandwritingChange({ ...handwriting, paragraphIndent: 4 })}
-              title={t('editor.indent4Title')}
-            >
-              {t('editor.indent4')}
-            </button>
-          </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px solid var(--border-color)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', color: 'var(--text-main)' }}>
+                <input
+                  type="checkbox"
+                  checked={handwriting.alignToLines}
+                  onChange={(e) => onHandwritingChange({ ...handwriting, alignToLines: e.target.checked })}
+                  style={{ cursor: 'pointer' }}
+                />
+                <span>{t('editor.snapLines')}</span>
+              </label>
+              {!handwriting.alignToLines && (
+                <span style={{ fontSize: '11px', color: 'var(--primary)' }}>
+                  {t('editor.freeLineHeight', { n: handwriting.lineHeight })}
+                </span>
+              )}
+            </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px solid rgba(51, 65, 85, 0.5)' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', color: '#cbd5e1' }}>
-              <input
-                type="checkbox"
-                checked={handwriting.alignToLines}
-                onChange={(e) => onHandwritingChange({ ...handwriting, alignToLines: e.target.checked })}
-                style={{ cursor: 'pointer' }}
-              />
-              <span>{t('editor.snapLines')}</span>
-            </label>
-            {!handwriting.alignToLines && (
-              <span style={{ fontSize: '11px', color: '#38bdf8' }}>
-                {t('editor.freeLineHeight', { n: handwriting.lineHeight })}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '4px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', color: 'var(--text-main)' }} title={t('editor.smartSignatureTitle')}>
+                <input
+                  type="checkbox"
+                  checked={handwriting.smartSignatureAlign !== false}
+                  onChange={(e) => onHandwritingChange({ ...handwriting, smartSignatureAlign: e.target.checked })}
+                  style={{ cursor: 'pointer' }}
+                />
+                <span>{t('editor.smartSignature')}</span>
+              </label>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                {t('editor.supportsRightTag')}
               </span>
-            )}
+            </div>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '4px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', color: '#cbd5e1' }} title={t('editor.smartSignatureTitle')}>
-              <input
-                type="checkbox"
-                checked={handwriting.smartSignatureAlign !== false}
-                onChange={(e) => onHandwritingChange({ ...handwriting, smartSignatureAlign: e.target.checked })}
-                style={{ cursor: 'pointer' }}
-              />
-              <span>{t('editor.smartSignature')}</span>
-            </label>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              {t('editor.supportsRightTag')}
-            </span>
-          </div>
-        </div>
-
-        <div className="editor-stats">
-          <span>{t('editor.stats', { chars: totalChars, lines: text.split(/\r?\n/).length })}</span>
-          <span style={{ color: '#60a5fa' }}>{t('editor.estimatedPages', { pages: totalPages })}</span>
-        </div>
-
-        {/* Drag & drop file area */}
-        <div 
-          className={`file-drop-zone ${isDraggingFile ? 'dragover' : ''}`}
-          onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
-          onDragLeave={() => setIsDraggingFile(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setIsDraggingFile(false);
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-              handleDocFileUpload(e.dataTransfer.files[0]);
-            }
-          }}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <FileUp size={20} color="#60a5fa" />
-          <div style={{ fontSize: '13px', fontWeight: 500, color: '#e2e8f0' }}>
-            {t('editor.dropPrimary')}
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--text-subtle)' }}>
-            {t('editor.dropSecondary')}
-          </div>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            style={{ display: 'none' }} 
-            accept=".docx,.txt,.md"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                handleDocFileUpload(e.target.files[0]);
-              }
-              // 重置后同名文件才能被重新选择（否则 onChange 不再触发）
-              e.target.value = '';
-            }}
-          />
-        </div>
+        </details>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ interface PhysicsSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「物理与墨迹」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 高级折叠区内的「物理与墨迹」区块：同字异构、洇墨、手腕弧度、疲劳与飞墨。 */
 export const PhysicsSection: React.FC<PhysicsSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -19,7 +19,7 @@ export const PhysicsSection: React.FC<PhysicsSectionProps> = ({
     <>
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#a78bfa', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--accent-purple)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sparkles size={14} />
             {t('editor.physicsTitle')}
           </span>
@@ -119,8 +119,6 @@ export const PhysicsSection: React.FC<PhysicsSectionProps> = ({
           />
         </div>
       </div>
-
-      {/* Real Human Writing Details: Scratch-out simulation (真实错字涂改) */}
     </>
   );
 };

@@ -10,8 +10,8 @@ import { saveStoredSettings, type LoadedSettings, type StoredSettings } from './
  * 3. 并发安全（Web Locks API）：多标签页同时打开时，加锁防止相互覆盖。
  *    写入前校验基线文本（expectedText），检测到外部标签已更新时上报 'conflict'。
  * 4. 页面离开安全：
- *    - visibilitychange（切后台/最小化）：立即同步未落盘变更。
- *    - beforeunload（关闭页面）：检测到未保存文本时同步持久化并触发浏览器离开确认。
+ *    - visibilitychange（切后台/最小化）：立即触发一次落盘（有 Web Locks 时仍是异步锁）。
+ *    - beforeunload（关闭页面）：检测到未保存文本时再尽力落盘一次，并触发浏览器离开确认。
  *
  * @param settings 当前编辑器中的最新设置快照
  * @param initialStoredText 页面加载时从存储读取的初始基线正文
@@ -71,7 +71,8 @@ export function useDraftPersistence(settings: LoadedSettings, initialStoredText:
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!navigator.locks) persist();
       if (latest.current.text !== saved.current.text) {
-        // 卸载事件无法等待异步锁，触发同步刷新并弹出浏览器防误关确认框
+        // 卸载事件等不到异步锁完成：先尽力 flush（无 Web Locks 时内部回落到同步 persist），
+        // 再弹浏览器防误关确认框，把「可能没存上」的决定权交给用户。
         flush();
         event.preventDefault();
         event.returnValue = true;

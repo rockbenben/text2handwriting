@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Dice5,
+  ShieldCheck,
   Download,
+  Ellipsis,
   ChevronDown,
   FileText,
   Archive,
@@ -14,7 +15,7 @@ import {
 import { SUPPORTED_LANGUAGES, FULLY_TRANSLATED } from '../i18n/languages';
 import { setAppLanguage } from '../i18n';
 
-/** 开源仓库地址，供顶栏 GitHub 图标使用 */
+/** 开源仓库地址，供顶栏 GitHub 入口使用（宽屏内联在操作区，窄屏收进「更多」菜单） */
 const REPO_URL = 'https://github.com/rockbenben/text2handwriting';
 
 /**
@@ -24,7 +25,7 @@ const REPO_URL = 'https://github.com/rockbenben/text2handwriting';
  * 于是「标签页图标」和「界面 logo」是两个不同的东西，改了 favicon 界面不会跟着变。
  * 直接内联同一份 SVG 就不会再漂移。
  *
- * 图形自带米白纸底（#fdf6e9），在深色顶栏上正好提供对比度，
+ * 图形自带米白纸底（#fdf6e9），可与顶栏区分，
  * 所以不要再套背景色或渐变。
  */
 const BrandMark: React.FC<{ size?: number }> = ({ size = 34 }) => (
@@ -64,7 +65,7 @@ const BrandMark: React.FC<{ size?: number }> = ({ size = 34 }) => (
  * mark 的 path，不为此单独引入图标依赖。
  * 路径逐字符取自 GitHub 自家的图标库 primer/octicons：icons/mark-github-16.svg
  * （注意 GitHub 后来改过这个矢量，网上流传的旧版 path 与本仓库用的不是同一份）。
- * fill="currentColor" 让它跟随 .btn-secondary 的文字色，hover 时一起变亮。
+ * fill="currentColor" 让它跟随 .btn-secondary 的文字色（--text-main），不必写死填充色。
  */
 const GithubMark: React.FC<{ size?: number }> = ({ size = 16 }) => (
   <svg
@@ -81,7 +82,6 @@ const GithubMark: React.FC<{ size?: number }> = ({ size = 16 }) => (
 
 interface HeaderProps {
   onOpenPresets: () => void;
-  onShuffleSeed: () => void;
   exportScale: number;
   onSetExportScale: (scale: number) => void;
   onExportCurrentPage: (format: 'png' | 'jpeg') => void;
@@ -95,7 +95,6 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenPresets,
-  onShuffleSeed,
   exportScale,
   onSetExportScale,
   onExportCurrentPage,
@@ -108,11 +107,16 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const [pendingLanguage, setPendingLanguage] = useState<{ code: string } | null>(null);
-  const [showExportMenu, setShowExportMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [openPanel, setOpenPanel] = useState<'utilities' | 'export' | null>(null);
+  const showExportMenu = openPanel === 'export';
+  const showUtilities = openPanel === 'utilities';
+  const utilitiesButtonRef = useRef<HTMLButtonElement>(null);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
   const handleLanguageChange = async (code: string) => {
-    // Show the pending choice so the user can also reselect the active language.
+    // 语言包是异步取回的：先记下用户点选的项顶住受控 select 的 value，
+    // 否则 await 期间 select 会回弹到旧语言，看起来像没生效，也没法立刻改选另一种。
     const selection = { code };
     setPendingLanguage(selection);
     try {
@@ -125,79 +129,99 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowExportMenu(false);
+    function handleClickOutside(event: PointerEvent) {
+      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) {
+        setOpenPanel(null);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
   return (
     <header className="app-header">
       <div className="header-brand">
         <BrandMark size={34} />
-        <div className="brand-title">
-          {t('app.brand')}
-          <span className="brand-badge">{t('app.badge')}</span>
+        <div className="brand-copy">
+          <h1 className="brand-title">{t('app.brand')}</h1>
+          <span className="brand-local"><ShieldCheck size={12} aria-hidden="true" />{t('app.badge')}</span>
         </div>
-        {/* 窄屏由 CSS 隐藏（.brand-stats），给操作按钮让位 */}
-        <div className="brand-stats" style={{ fontSize: '12px', color: 'var(--text-subtle)', marginLeft: '8px' }}>
-          {t('app.stats', { chars: totalChars, pages: totalPages })}
-        </div>
+        <span className="brand-stats">{t('app.stats', { chars: totalChars, pages: totalPages })}</span>
       </div>
 
-      <div className="header-actions">
-        {/* 语言切换：记住选择，刷新保持 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--bg-input)', padding: '3px 6px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
-          <Languages size={13} style={{ color: 'var(--text-subtle)' }} />
-          <select
-            value={pendingLanguage?.code ?? i18n.language}
-            onChange={(e) => void handleLanguageChange(e.target.value)}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '12px', padding: '2px 2px', cursor: 'pointer', outline: 'none', maxWidth: '110px' }}
-            title={t('header.languageTitle')}
-            aria-label={t('header.languageTitle')}
+      <div
+        className="header-actions"
+        ref={actionsRef}
+        onKeyDown={(event) => {
+          if (event.key !== 'Escape' || !openPanel) return;
+          setOpenPanel(null);
+          (showExportMenu ? exportButtonRef : utilitiesButtonRef).current?.focus();
+        }}
+      >
+        <div className="header-utilities-wrap">
+          <button
+            type="button"
+            ref={utilitiesButtonRef}
+            className="btn btn-secondary btn-icon header-more"
+            aria-label={t('common.more')}
+            aria-expanded={showUtilities}
+            aria-controls="header-utilities"
+            onClick={() => setOpenPanel(showUtilities ? null : 'utilities')}
           >
-            {SUPPORTED_LANGUAGES.map(l => (
-              <option key={l.code} value={l.code}>
-                {l.label}{FULLY_TRANSLATED.has(l.code) ? '' : ' (EN)'}
-              </option>
-            ))}
-          </select>
-        </div>
+            <Ellipsis size={18} aria-hidden="true" />
+          </button>
+          <div id="header-utilities" className="header-utilities" data-open={showUtilities}>
+            {/* 语言切换：记住选择，刷新保持 */}
+            <label className="header-language">
+              <Languages size={16} aria-hidden="true" />
+              <span className="header-language-label">{t('header.languageTitle')}</span>
+              <select
+                value={pendingLanguage?.code ?? i18n.language}
+                onChange={(e) => void handleLanguageChange(e.target.value)}
+                title={t('header.languageTitle')}
+                aria-label={t('header.languageTitle')}
+              >
+                {SUPPORTED_LANGUAGES.map(l => (
+                  <option key={l.code} value={l.code}>
+                    {l.label}{FULLY_TRANSLATED.has(l.code) ? '' : ' (EN)'}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        {/* Preset Templates */}
-        <button className="btn btn-secondary" onClick={onOpenPresets} title={t('header.presetsTitle')}>
-          <LayoutTemplate size={15} />
-          <span>{t('header.presets')}</span>
-        </button>
+            {/* Preset Templates */}
+            <button className="btn btn-secondary" onClick={() => {
+              if (showUtilities) utilitiesButtonRef.current?.focus();
+              setOpenPanel(null);
+              onOpenPresets();
+            }} title={t('header.presetsTitle')}>
+              <LayoutTemplate size={15} />
+              <span>{t('header.presets')}</span>
+            </button>
 
-        {/* Shuffle Random Seed */}
-        <button className="btn btn-secondary" onClick={onShuffleSeed} title={t('header.shuffleTitle')}>
-          <Dice5 size={15} />
-          <span>{t('header.shuffle')}</span>
-        </button>
-
-        {/* DPI Scale Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--bg-input)', padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
-          <span className="quality-label" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t('header.quality')}</span>
-          <select
-            value={exportScale}
-            onChange={(e) => onSetExportScale(Number(e.target.value))}
-            style={{ background: 'transparent', border: 'none', color: '#60a5fa', fontSize: '12px', padding: '2px 4px', cursor: 'pointer', outline: 'none' }}
-          >
-            <option value="1">{t('header.qualityStandard')}</option>
-            <option value="2">{t('header.qualityHigh')}</option>
-            <option value="3">{t('header.qualityUltra')}</option>
-          </select>
+            {/* 开源仓库入口：宽屏纯图标、窄屏带文字；新标签打开，不打断用户正在编辑的文稿 */}
+            <a
+              className="btn btn-secondary header-source"
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={t('header.githubTitle')}
+              aria-label={t('header.githubTitle')}
+            >
+              <GithubMark size={16} />
+              <span>{t('header.githubTitle')}</span>
+            </a>
+          </div>
         </div>
 
         {/* Export Dropdown */}
-        <div style={{ position: 'relative' }} ref={menuRef}>
+        <div className="header-output">
           <button
+            ref={exportButtonRef}
             className="btn btn-primary"
-            onClick={() => setShowExportMenu(!showExportMenu)}
+            aria-expanded={showExportMenu}
+            aria-controls="export-options"
+            onClick={() => setOpenPanel(showExportMenu ? null : 'export')}
             disabled={isExporting}
             title={isExporting ? t('header.exporting') : t('header.export')}
             aria-label={isExporting ? t('header.exporting') : t('header.export')}
@@ -207,60 +231,54 @@ export const Header: React.FC<HeaderProps> = ({
             <ChevronDown size={14} />
           </button>
 
-          {showExportMenu && (
-            <div className="dropdown-menu">
-              <button
-                className="dropdown-item"
-                onClick={() => { setShowExportMenu(false); onExportCurrentPage('png'); }}
-              >
-                <ImageIcon size={14} />
-                <span>{t('header.exportPng')}</span>
-              </button>
-              <button
-                className="dropdown-item"
-                onClick={() => { setShowExportMenu(false); onExportCurrentPage('jpeg'); }}
-              >
-                <ImageIcon size={14} />
-                <span>{t('header.exportJpg')}</span>
-              </button>
-              <div style={{ height: '1px', background: 'var(--border-color)', margin: '4px 0' }} />
-              <button
-                className="dropdown-item"
-                onClick={() => { setShowExportMenu(false); onExportAllPdf(); }}
-              >
-                <FileText size={14} />
-                <span>{t('header.exportPdf')}</span>
-              </button>
-              <button
-                className="dropdown-item"
-                onClick={() => { setShowExportMenu(false); onExportAllZip(); }}
-              >
-                <Archive size={14} />
-                <span>{t('header.exportZip')}</span>
-              </button>
-              <div style={{ height: '1px', background: 'var(--border-color)', margin: '4px 0' }} />
-              <button
-                className="dropdown-item"
-                onClick={() => { setShowExportMenu(false); onPrint(); }}
-              >
-                <Printer size={14} />
-                <span>{t('header.printPage')}</span>
-              </button>
-            </div>
-          )}
+          <div id="export-options" className="dropdown-menu" hidden={!showExportMenu}>
+            <label className="export-quality">
+              <span>{t('header.quality')}</span>
+              <select value={exportScale} onChange={(e) => onSetExportScale(Number(e.target.value))}>
+                <option value="1">{t('header.qualityStandard')}</option>
+                <option value="2">{t('header.qualityHigh')}</option>
+                <option value="3">{t('header.qualityUltra')}</option>
+              </select>
+            </label>
+            <button
+              className="dropdown-item"
+              onClick={() => { setOpenPanel(null); onExportCurrentPage('png'); }}
+            >
+              <ImageIcon size={14} />
+              <span>{t('header.exportPng')}</span>
+            </button>
+            <button
+              className="dropdown-item"
+              onClick={() => { setOpenPanel(null); onExportCurrentPage('jpeg'); }}
+            >
+              <ImageIcon size={14} />
+              <span>{t('header.exportJpg')}</span>
+            </button>
+            <hr className="dropdown-divider" />
+            <button
+              className="dropdown-item"
+              onClick={() => { setOpenPanel(null); onExportAllPdf(); }}
+            >
+              <FileText size={14} />
+              <span>{t('header.exportPdf')}</span>
+            </button>
+            <button
+              className="dropdown-item"
+              onClick={() => { setOpenPanel(null); onExportAllZip(); }}
+            >
+              <Archive size={14} />
+              <span>{t('header.exportZip')}</span>
+            </button>
+            <hr className="dropdown-divider" />
+            <button
+              className="dropdown-item"
+              onClick={() => { setOpenPanel(null); onPrint(); }}
+            >
+              <Printer size={14} />
+              <span>{t('header.printPage')}</span>
+            </button>
+          </div>
         </div>
-
-        {/* 开源仓库入口：纯图标，新标签打开，不打断用户正在编辑的文稿 */}
-        <a
-          className="btn btn-secondary btn-icon"
-          href={REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          title={t('header.githubTitle')}
-          aria-label={t('header.githubTitle')}
-        >
-          <GithubMark size={16} />
-        </a>
       </div>
     </header>
   );

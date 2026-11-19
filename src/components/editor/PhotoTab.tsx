@@ -12,7 +12,7 @@ interface PhotoTabProps {
   handleBgImageUpload: (file: File) => void;
 }
 
-/** 由 EditorPanel 的「photo」tab 逐字抽出，未改行为。 */
+/** 拍照 Tab：自定义底图（上传/适配/明暗/贴合）、精选实拍纸样与拍纸质感模拟三组。 */
 export const PhotoTab: React.FC<PhotoTabProps> = ({
   paper,
   onPaperChange,
@@ -26,7 +26,7 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
       {/* 1. Custom Background Image Upload & Controls */}
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <ImageIcon size={14} />
             {t('editor.customBgTitle')}
           </span>
@@ -74,7 +74,7 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
         />
 
         {isCustomBackgroundTooLarge(paper) && (
-          <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#fbbf24' }}>
+          <div style={{ fontSize: '11px', lineHeight: 1.5, color: 'var(--warning)' }}>
             {t('editor.customBgLargeHint')}
           </div>
         )}
@@ -170,7 +170,7 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
       {/* 2. Curated HD Real Paper Showcase */}
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#a78bfa', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--accent-purple)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sparkles size={14} />
             {t('editor.hdShowcaseTitle')}
           </span>
@@ -225,8 +225,8 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}>
-                <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: preset.previewColor, border: '1px solid rgba(255,255,255,0.2)' }} />
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#e2e8f0' }}>{t(`paperPreset.${preset.id}.name`, { defaultValue: preset.name })}</span>
+                <div style={{ width: '14px', height: '14px', borderRadius: '3px', background: preset.previewColor, border: '1px solid var(--border-color)' }} />
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-main)' }}>{t(`paperPreset.${preset.id}.name`, { defaultValue: preset.name })}</span>
               </div>
               <span style={{ fontSize: '10px', color: 'var(--text-subtle)' }}>{t(`paperPreset.${preset.id}.description`, { defaultValue: preset.description })}</span>
             </button>
@@ -237,7 +237,7 @@ export const PhotoTab: React.FC<PhotoTabProps> = ({
       {/* 3. Photo Camera Simulation */}
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--warning)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Camera size={14} />
             {t('editor.photoLightingTitle')}
           </span>

@@ -7,7 +7,8 @@ import en from './locales/en.json';
  * 18 个语言包全量内联会让首屏多出不少体积，而绝大多数用户只会用一种语言。
  * 所以：
  *   - zh-CN 是默认语言、en 是所有未翻译语言的回落语言，两者都 eager
- *     （en 仅 ~2KB，必须随主包就绪，否则未翻译语言会回落到一串 key）
+ *     （en.json 约 31 KB / gzip 约 11 KB，和 zh-CN 同量级；必须随主包就绪，
+ *      否则未翻译语言会回落到一串 key）
  *   - 其余 16 种走 import.meta.glob 动态 import，切语言时才下载
  *
  * Vite 会把每个 .json 拆成独立 chunk，只有真正被切换到的语言才会被拉取。
@@ -39,7 +40,7 @@ for (const [path, loader] of Object.entries(ALL_LOCALES)) {
   lazyByCode[file.replace(/\.json$/, '')] = loader;
 }
 
-/** 该语言是否有按需加载器（不含已内联的默认语言） */
+/** 该语言是否有按需加载器（zh-CN / en 已内联，不存在加载器） */
 export function hasLazyLoader(code: string): boolean {
   return code in lazyByCode;
 }

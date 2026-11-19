@@ -54,8 +54,8 @@ export async function setAppLanguage(code: string): Promise<string> {
   const request = ++languageRequest;
   const next = isSupportedLanguage(code) ? code : DEFAULT_LANGUAGE;
 
-  // en/zh-CN 已内联；其余语言先按需取回语言包（可能是空占位 {} ，
-  // 此时缺 key 会自动回落到英文，而不是露出 key）
+  // en/zh-CN 已内联；其余语言先按需取回语言包（若只放了空占位 {}，
+  // 缺 key 会回落到英文而不是露出 key）
   if (hasLazyLoader(next) && !i18next.hasResourceBundle(next, 'translation')) {
     const bundle = await loadLazyBundle(next);
     if (request !== languageRequest) return i18next.language;
@@ -107,7 +107,7 @@ function syncDocumentMeta(): void {
 /**
  * 启动时初始化。若持久化语言是按需语言，先取回它的语言包再初始化，
  * 避免首屏先显示回落语言、再闪切到目标语言。
- * 在 main.tsx 里 await 后再挂载 React。
+ * main.tsx 会等它结束后再挂载 React（初始化失败也照常挂载，避免白屏）。
  */
 export async function initI18n(): Promise<typeof i18next> {
   const initial = getInitialLanguage();

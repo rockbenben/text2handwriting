@@ -24,6 +24,11 @@
     "githubTitle": "GitHub'da kaynak kodunu görüntüle"
   },
   "preview": {
+    "fitPage": "Sayfaya sığdır",
+    "pen": "Kalem",
+    "eraser": "Silgi",
+    "tools": "Araçlar",
+    "title": "Önizleme",
     "prevPage": "Önceki sayfa",
     "nextPage": "Sonraki sayfa",
     "pageIndicator": "Sayfa {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Sayfayı yenile"
   },
   "common": {
+    "more": "Diğer",
     "reset": "Sıfırla",
     "apply": "Uygula",
     "clear": "Temizle"
   },
   "editor": {
+    "workspaceEdit": "Düzenle",
+    "advancedHandwriting": "Gelişmiş el yazısı ayarları",
     "tabText": "Metin Girişi",
     "tabHandwriting": "El Yazısı",
     "tabPaper": "Kağıt ve Düzen",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Metinden El Yazısına – Gerçekçi El Yazısı Belge Oluşturucu",
-    "description": "Tarayıcınızda %100 yerel işleme ile dijital metinleri ultra gerçekçi el yazısı belgelere dönüştürün: doğal vuruş varyasyonları, kağıt ve fotoğraf dokuları, yüksek çözünürlüklü PNG, PDF ve ZIP dışa aktarımı. Tam gizlilik.",
+    "description": "Tarayıcınızda %100 yerel işleme ile dijital metinleri ultra gerçekçi el yazısı belgelere dönüştürün: doğal vuruş varyasyonları, kağıt ve fotoğraf dokuları, yüksek çözünürlüklü PNG, JPG, PDF ve ZIP dışa aktarımı. Tam gizlilik.",
     "keywords": "metinden el yazısına,el yazısı oluşturucu,ödev el yazısı,el yazısı mektup,el yazısı simülatörü",
     "siteName": "Metinden El Yazısına",
     "ogLocale": "tr_TR"

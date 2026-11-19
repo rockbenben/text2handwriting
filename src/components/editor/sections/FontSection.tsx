@@ -21,7 +21,7 @@ interface FontSectionProps {
   filteredFonts: FontOption[];
 }
 
-/** HandwritingTab 的「字体」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 的「字体」区块：字体清单、搜索词与扫描状态由 EditorPanel 持有，这里只渲染选择与上传入口。 */
 export const FontSection: React.FC<FontSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -96,7 +96,7 @@ export const FontSection: React.FC<FontSectionProps> = ({
             borderRadius: '6px', 
             padding: '6px 10px', 
             fontSize: '12px', 
-            color: '#34d399' 
+            color: 'var(--accent)'
           }}>
             <CheckCircle2 size={14} />
             <span>{scanNotice}</span>
@@ -113,7 +113,7 @@ export const FontSection: React.FC<FontSectionProps> = ({
           padding: '2px 8px', 
           gap: '6px' 
         }}>
-          <Search size={13} color="#94a3b8" />
+          <Search size={13} color="var(--text-muted)" />
           <input 
             type="text" 
             placeholder={t('editor.fontSearchPlaceholder')}
@@ -134,7 +134,7 @@ export const FontSection: React.FC<FontSectionProps> = ({
         {/* Font dropdown grouped by category */}
         <div className="control-item">
           {filteredFonts.find(f => f.family === handwriting.fontFamily)?.sessionOnly && (
-            <div style={{ fontSize: '11px', lineHeight: 1.4, color: '#fbbf24' }}>
+            <div style={{ fontSize: '11px', lineHeight: 1.4, color: 'var(--warning)' }}>
               {t('editor.importedFontSessionHint')}
             </div>
           )}
@@ -154,6 +154,7 @@ export const FontSection: React.FC<FontSectionProps> = ({
 
             return (
               <select 
+                aria-label={t('editor.fontTitle')}
                 value={handwriting.fontFamily} 
                 onChange={(e) => onHandwritingChange({ ...handwriting, fontFamily: e.target.value })}
               >
@@ -212,35 +213,16 @@ export const FontSection: React.FC<FontSectionProps> = ({
           </div>
         </div>
 
-        {/* 用本人真实笔迹生成专属字体的引导（对标 Calligraphr 工作流） */}
-        <div style={{
-          marginTop: '8px',
-          padding: '8px 10px',
-          borderRadius: '6px',
-          border: '1px solid rgba(56, 189, 248, 0.25)',
-          background: 'rgba(56, 189, 248, 0.07)',
-          fontSize: '11px',
-          lineHeight: 1.5,
-          color: 'var(--text-muted)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#7dd3fc', fontWeight: 600, marginBottom: '3px' }}>
-            <Edit3 size={12} />
-            {t('editor.fontGuideTitle')}
-          </div>
-          {t('editor.fontGuideBody')}
-          {' '}
-          <a
-            href="https://www.calligraphr.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: '#60a5fa', whiteSpace: 'nowrap' }}
-          >
-            {t('editor.fontGuideLink')}
-          </a>
-        </div>
+        <details className="editor-disclosure">
+          <summary><Edit3 size={12} aria-hidden="true" /> {t('editor.fontGuideTitle')}</summary>
+          <p className="font-guide">
+            {t('editor.fontGuideBody')}{' '}
+            <a href="https://www.calligraphr.com/" target="_blank" rel="noopener noreferrer">
+              {t('editor.fontGuideLink')}
+            </a>
+          </p>
+        </details>
       </div>
-
-      {/* Pen Type & Ink */}
     </>
   );
 };

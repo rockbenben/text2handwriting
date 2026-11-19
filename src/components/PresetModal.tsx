@@ -71,7 +71,7 @@ export const PresetModal: React.FC<PresetModalProps> = ({
       <div className="modal-card" ref={dialogRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('preset.title')}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#fff' }}>{t('preset.title')}</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-main)' }}>{t('preset.title')}</h3>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t('preset.subtitle')}</span>
           </div>
           <button
@@ -107,12 +107,12 @@ export const PresetModal: React.FC<PresetModalProps> = ({
                   aria-label={t('preset.applyAria', { name: t(`presetData.${preset.id}.name`, { defaultValue: preset.name }) })}
                   style={{
                     borderColor: isActive ? 'var(--primary)' : undefined,
-                    background: isActive ? '#1e2d42' : undefined,
+                    background: isActive ? 'var(--selection)' : undefined,
                     cursor: 'pointer',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontWeight: 600, fontSize: '14px', color: '#fff' }}>
+                    <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text-main)' }}>
                       {t(`presetData.${preset.id}.name`, { defaultValue: preset.name })}
                     </span>
                     <span
@@ -120,8 +120,8 @@ export const PresetModal: React.FC<PresetModalProps> = ({
                         fontSize: '11px',
                         padding: '1px 6px',
                         borderRadius: '4px',
-                        background: 'rgba(59, 130, 246, 0.2)',
-                        color: '#93c5fd'
+                        background: 'var(--selection)',
+                        color: 'var(--primary)'
                       }}
                     >
                       {t(`presetData.${preset.id}.badge`, { defaultValue: preset.badge })}

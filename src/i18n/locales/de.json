@@ -14,7 +14,7 @@
     "qualityStandard": "Standard (1x · 145 DPI)",
     "qualityHigh": "HD (2x · 290 DPI)",
     "qualityUltra": "Ultra HD (3x · 435 DPI)",
-    "export": "Dokument exportieren",
+    "export": "Exportieren",
     "exporting": "Wird erstellt...",
     "exportPng": "Aktuelle Seite als PNG speichern",
     "exportJpg": "Aktuelle Seite als JPG speichern",
@@ -24,6 +24,11 @@
     "githubTitle": "Quellcode auf GitHub ansehen"
   },
   "preview": {
+    "fitPage": "Ganze Seite",
+    "pen": "Stift",
+    "eraser": "Radierer",
+    "tools": "Werkzeuge",
+    "title": "Vorschau",
     "prevPage": "Vorherige Seite",
     "nextPage": "Nächste Seite",
     "pageIndicator": "Seite {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Seite neu laden"
   },
   "common": {
+    "more": "Mehr",
     "reset": "Zurücksetzen",
     "apply": "Anwenden",
     "clear": "Löschen"
   },
   "editor": {
+    "workspaceEdit": "Bearbeiten",
+    "advancedHandwriting": "Erweiterte Handschrift-Einstellungen",
     "tabText": "Texteingabe",
     "tabHandwriting": "Handschrift",
     "tabPaper": "Papier & Layout",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Handschrift-Generator – Text in realistische Handschrift umwandeln",
-    "description": "Erstellen Sie täuschend echte handschriftliche Dokumente direkt im Browser: Natürliche Schreibabweichungen, fehlerfreier Schriftsatz, Fototexturen und hochauflösender PNG-/PDF-/ZIP-Export. 100% lokal und privat.",
+    "description": "Erstellen Sie täuschend echte handschriftliche Dokumente direkt im Browser: Natürliche Schreibabweichungen, fehlerfreier Schriftsatz, Fototexturen und hochauflösender PNG-/JPG-/PDF-/ZIP-Export. 100% lokal und privat.",
     "keywords": "Handschrift Generator,Text in Handschrift,Handschriftliches Dokument,Handgeschriebener Brief,Aufschrieb erstellen,Handschrift PDF",
     "siteName": "Handschrift-Generator",
     "ogLocale": "de_DE"

@@ -14,7 +14,7 @@
     "qualityStandard": "Tiêu chuẩn (1x · 145 DPI)",
     "qualityHigh": "Độ nét cao (2x · 290 DPI)",
     "qualityUltra": "Ultra HD (3x · 435 DPI)",
-    "export": "Xuất tài liệu",
+    "export": "Xuất",
     "exporting": "Đang tạo...",
     "exportPng": "Lưu trang hiện tại (PNG)",
     "exportJpg": "Lưu trang hiện tại (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "Xem mã nguồn trên GitHub"
   },
   "preview": {
+    "fitPage": "Vừa trang",
+    "pen": "Bút",
+    "eraser": "Tẩy",
+    "tools": "Công cụ",
+    "title": "Xem trước",
     "prevPage": "Trang trước",
     "nextPage": "Trang sau",
     "pageIndicator": "Trang {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Tải lại trang"
   },
   "common": {
+    "more": "Thêm",
     "reset": "Đặt lại",
     "apply": "Áp dụng",
     "clear": "Xóa"
   },
   "editor": {
+    "workspaceEdit": "Chỉnh sửa",
+    "advancedHandwriting": "Cài đặt chữ viết tay nâng cao",
     "tabText": "Nhập văn bản",
     "tabHandwriting": "Nét chữ viết tay",
     "tabPaper": "Giấy & Bố cục",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Chuyển Văn Bản Thành Chữ Viết Tay – Tạo Tài Liệu Viết Tay Như Thật",
-    "description": "Chuyển đổi văn bản kỹ thuật số thành tài liệu chữ viết tay siêu thực hoàn toàn trên trình duyệt (xử lý cục bộ 100%): biến thể nét bút tự nhiên, bề mặt giấy và bóng chụp ảnh chân thực, xuất file chất lượng cao PNG, PDF và ZIP. Bảo mật riêng tư tuyệt đối.",
+    "description": "Chuyển đổi văn bản kỹ thuật số thành tài liệu chữ viết tay siêu thực hoàn toàn trên trình duyệt (xử lý cục bộ 100%): biến thể nét bút tự nhiên, bề mặt giấy và bóng chụp ảnh chân thực, xuất file chất lượng cao PNG, JPG, PDF và ZIP. Bảo mật riêng tư tuyệt đối.",
     "keywords": "chuyển văn bản thành chữ viết tay,tạo chữ viết tay,bài tập viết tay,thư viết tay,phần mềm viết tay",
     "siteName": "Chuyển Văn Bản Thành Chữ Viết Tay",
     "ogLocale": "vi_VN"

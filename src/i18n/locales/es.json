@@ -14,7 +14,7 @@
     "qualityStandard": "Estándar (1x · 145 DPI)",
     "qualityHigh": "Alta resolución (2x · 290 DPI)",
     "qualityUltra": "Ultra HD (3x · 435 DPI)",
-    "export": "Exportar documento",
+    "export": "Exportar",
     "exporting": "Generando...",
     "exportPng": "Guardar página actual (PNG)",
     "exportJpg": "Guardar página actual (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "Ver código fuente en GitHub"
   },
   "preview": {
+    "fitPage": "Ajustar página",
+    "pen": "Lápiz",
+    "eraser": "Goma",
+    "tools": "Herramientas",
+    "title": "Vista previa",
     "prevPage": "Página anterior",
     "nextPage": "Página siguiente",
     "pageIndicator": "Página {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Recargar página"
   },
   "common": {
+    "more": "Más",
     "reset": "Restablecer",
     "apply": "Aplicar",
     "clear": "Limpiar"
   },
   "editor": {
+    "workspaceEdit": "Editar",
+    "advancedHandwriting": "Ajustes avanzados de escritura",
     "tabText": "Edición de texto",
     "tabHandwriting": "Trazo a mano",
     "tabPaper": "Papel y diseño",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Generador de Manuscritos – Convierte texto en letra a mano realista",
-    "description": "Transforma texto en documentos manuscritos realistas con procesamiento 100% local en tu navegador: variación natural del trazo, texturas de papel y fotografía, y exportación en alta resolución PNG, PDF y ZIP. Privacidad total.",
+    "description": "Transforma texto en documentos manuscritos realistas con procesamiento 100% local en tu navegador: variación natural del trazo, texturas de papel y fotografía, y exportación en alta resolución PNG, JPG, PDF y ZIP. Privacidad total.",
     "keywords": "generador de letra a mano,texto a manuscrito,convertir texto a caligrafia,apuntes a mano,carta escrita a mano,generador caligrafico",
     "siteName": "Generador de Manuscritos",
     "ogLocale": "es_ES"

@@ -10,7 +10,7 @@ interface TypographySectionProps {
   paper: PaperConfig;
 }
 
-/** HandwritingTab 的「排版」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 的「排版」区块：字号/字距/行距/缩进；推荐字号按纸张类型与行距反推（getRecommendedFontSize）。 */
 export const TypographySection: React.FC<TypographySectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -47,7 +47,7 @@ export const TypographySection: React.FC<TypographySectionProps> = ({
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
-                style={{ fontSize: '10px', padding: '1px 6px', height: '20px', color: '#38bdf8', borderColor: 'rgba(56, 189, 248, 0.4)' }}
+                style={{ fontSize: '10px', padding: '1px 6px', height: '20px', color: 'var(--primary)', borderColor: 'var(--border-hover)' }}
                 onClick={() => {
                   const recommended = getRecommendedFontSize(paper);
                   onHandwritingChange({ ...handwriting, fontSize: recommended });
@@ -113,8 +113,6 @@ export const TypographySection: React.FC<TypographySectionProps> = ({
           />
         </div>
       </div>
-
-      {/* AI Perturbation Controls (手写真实感扰动) */}
     </>
   );
 };

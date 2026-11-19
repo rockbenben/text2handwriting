@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Eye, PenLine } from 'lucide-react';
 import { Header } from './components/Header';
 import { EditorPanel } from './components/EditorPanel';
 import { PreviewPanel } from './components/PreviewPanel';
@@ -38,6 +39,7 @@ const outputErrors = {
 
 export function App() {
   const { t } = useTranslation();
+  const [mobilePreview, setMobilePreview] = useState(false);
   // Initialize with persisted settings or default template
   const defaultPreset = PRESET_TEMPLATES[0];
   const initialSettings = useMemo(() => loadStoredSettings(), []);
@@ -59,7 +61,7 @@ export function App() {
   const [activePresetId, setActivePresetId] = useState<string>(() => initialSettings.activePresetId);
 
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
-  const [exportScale, setExportScale] = useState<number>(() => initialSettings.exportScale); // 2x = ~300 DPI high resolution
+  const [exportScale, setExportScale] = useState<number>(() => initialSettings.exportScale); // 2x ≈ 290 DPI（A4 1200px 宽对应 210mm，与顶栏「高清」档标注一致）
   const [isPresetModalOpen, setIsPresetModalOpen] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportProgress, setExportProgress] = useState<{ current: number; total: number } | undefined>();
@@ -241,73 +243,84 @@ export function App() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+    <div className="app-frame">
       {/* 预设弹窗打开时，把背景设为 inert/aria-hidden，键盘与读屏都留在弹窗内 */}
       <div
         className="app-shell"
         inert={isPresetModalOpen || undefined}
         aria-hidden={isPresetModalOpen || undefined}
       >
-      {/* Top Navigation */}
-      <Header 
-        onOpenPresets={() => setIsPresetModalOpen(true)}
-        onShuffleSeed={handleShuffleSeed}
-        exportScale={exportScale}
-        onSetExportScale={setExportScale}
-        onExportCurrentPage={runOutput}
-        onExportAllZip={() => runOutput('zip')}
-        onExportAllPdf={() => runOutput('pdf')}
-        onPrint={() => runOutput('print')}
-        isExporting={isExporting}
-        totalChars={typesetResult.totalChars}
-        totalPages={typesetResult.totalPages}
-      />
-
-      {draftStatus && (
-        <div className="draft-save-status" role="status">
-          {t(draftStatus === 'conflict' ? 'errors.draftConflict' : 'errors.draftSaveFailed')}
-        </div>
-      )}
-      {/* Main Split Body */}
-      <div className="app-main">
-        {/* Left Control Panel */}
-        <EditorPanel 
-          text={text}
-          onTextChange={setText}
-          onReplaceDocument={replaceDocument}
-          documentRevision={documentRevision}
-          paper={paper}
-          onPaperChange={setPaper}
-          handwriting={handwriting}
-          onHandwritingChange={setHandwriting}
-          fontList={fontList}
-          onAddCustomFont={handleAddCustomFont}
-          onAddMultipleFonts={handleAddMultipleFonts}
-          onSelectSampleText={() => {
-            const currentPreset = PRESET_TEMPLATES.find((p) => p.id === activePresetId) || defaultPreset;
-            replaceDocument(localizedSample(currentPreset), t('confirm.resetSample'));
-          }}
+        {/* Top Navigation */}
+        <Header
+          onOpenPresets={() => setIsPresetModalOpen(true)}
+          exportScale={exportScale}
+          onSetExportScale={setExportScale}
+          onExportCurrentPage={runOutput}
+          onExportAllZip={() => runOutput('zip')}
+          onExportAllPdf={() => runOutput('pdf')}
+          onPrint={() => runOutput('print')}
+          isExporting={isExporting}
           totalChars={typesetResult.totalChars}
           totalPages={typesetResult.totalPages}
         />
 
-        {/* Right Live Preview Canvas */}
-        <PreviewPanel 
-          currentPage={currentPage}
-          documentRevision={documentRevision}
-          currentPageIndex={currentPageIndex}
-          totalPages={typesetResult.totalPages}
-          onPageChange={setCurrentPageIndex}
-          paper={paper}
-          handwriting={handwriting}
-          customImage={customImage}
-          onExportCurrentPage={runOutput}
-          isExporting={isExporting}
-          exportProgress={exportProgress}
-          doodles={doodles[currentPageIndex] ?? []}
-          onDoodlesChange={(strokes) => handleDoodlesChange(currentPageIndex, strokes)}
-        />
-      </div>
+        {draftStatus && (
+          <div className="draft-save-status" role="status">
+            {t(draftStatus === 'conflict' ? 'errors.draftConflict' : 'errors.draftSaveFailed')}
+          </div>
+        )}
+        {/* 窄屏（≤900px）单栏切换：宽屏由 CSS 隐藏，同一套 DOM 只显示编辑或预览其中一栏 */}
+        <div className="mobile-workspace-switch">
+          <button type="button" className="btn" aria-pressed={!mobilePreview} onClick={() => setMobilePreview(false)}>
+            <PenLine size={16} aria-hidden="true" />
+            {t('editor.workspaceEdit')}
+          </button>
+          <button type="button" className="btn" aria-pressed={mobilePreview} onClick={() => setMobilePreview(true)}>
+            <Eye size={16} aria-hidden="true" />
+            {t('preview.title')}
+          </button>
+        </div>
+        {/* Main Split Body */}
+        <div className="app-main" data-mobile-view={mobilePreview ? 'preview' : 'editor'}>
+          {/* Left Control Panel */}
+          <EditorPanel
+            text={text}
+            onShuffleSeed={handleShuffleSeed}
+            onTextChange={setText}
+            onReplaceDocument={replaceDocument}
+            documentRevision={documentRevision}
+            paper={paper}
+            onPaperChange={setPaper}
+            handwriting={handwriting}
+            onHandwritingChange={setHandwriting}
+            fontList={fontList}
+            onAddCustomFont={handleAddCustomFont}
+            onAddMultipleFonts={handleAddMultipleFonts}
+            onSelectSampleText={() => {
+              const currentPreset = PRESET_TEMPLATES.find((p) => p.id === activePresetId) || defaultPreset;
+              replaceDocument(localizedSample(currentPreset), t('confirm.resetSample'));
+            }}
+            totalChars={typesetResult.totalChars}
+            totalPages={typesetResult.totalPages}
+          />
+
+          {/* Right Live Preview Canvas */}
+          <PreviewPanel
+            currentPage={currentPage}
+            documentRevision={documentRevision}
+            currentPageIndex={currentPageIndex}
+            totalPages={typesetResult.totalPages}
+            onPageChange={setCurrentPageIndex}
+            paper={paper}
+            handwriting={handwriting}
+            customImage={customImage}
+            onExportCurrentPage={runOutput}
+            isExporting={isExporting}
+            exportProgress={exportProgress}
+            doodles={doodles[currentPageIndex] ?? []}
+            onDoodlesChange={(strokes) => handleDoodlesChange(currentPageIndex, strokes)}
+          />
+        </div>
       </div>
 
       {/* Presets Modal */}

@@ -8,13 +8,13 @@
     "languageTitle": "界面语言",
     "presets": "预设模板",
     "presetsTitle": "选择经典预设风格模板",
-    "shuffle": "换一批扰动",
+    "shuffle": "换一版笔迹",
     "shuffleTitle": "重新随机生成独特的笔迹自然扰动",
     "quality": "画质",
     "qualityStandard": "标准 (1x · 145 DPI)",
     "qualityHigh": "高清 (2x · 290 DPI)",
     "qualityUltra": "超清 (3x · 435 DPI)",
-    "export": "导出文稿",
+    "export": "导出",
     "exporting": "正在生成...",
     "exportPng": "导出当前页 (PNG)",
     "exportJpg": "导出当前页 (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "在 GitHub 上查看源码"
   },
   "preview": {
+    "fitPage": "整页",
+    "pen": "画笔",
+    "eraser": "橡皮擦",
+    "tools": "工具",
+    "title": "文稿预览",
     "prevPage": "上一页",
     "nextPage": "下一页",
     "pageIndicator": "第 {{current}} / {{total}} 页",
@@ -79,13 +84,16 @@
     "crashReload": "刷新页面"
   },
   "common": {
+    "more": "更多",
     "reset": "重置",
     "apply": "应用",
     "clear": "清空"
   },
   "editor": {
+    "workspaceEdit": "编辑",
+    "advancedHandwriting": "高级笔迹设置",
     "tabText": "文本编辑",
-    "tabHandwriting": "笔迹扰动",
+    "tabHandwriting": "笔迹样式",
     "tabPaper": "纸张排版",
     "tabPhoto": "实拍与背景",
     "textTitle": "文稿内容输入",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "手写文稿生成器 - 文字转手写，纯本地渲染",
-    "description": "纯本地渲染的手写文稿生成器：把文字转成高拟真手写稿。种子化随机扰动笔迹、避头尾中文排版、真实纸张与实拍质感模拟，支持高清 PNG / PDF / ZIP 导出。隐私安全，文字不离开你的电脑。",
+    "description": "纯本地渲染的手写文稿生成器：把文字转成高拟真手写稿。种子化随机扰动笔迹、避头尾中文排版、真实纸张与实拍质感模拟，支持高清 PNG / JPG / PDF / ZIP 导出。隐私安全，文字不离开你的电脑。",
     "keywords": "手写文稿生成器,文字转手写,字体转手写,手写文稿,手写笔记生成,仿真手写字,打印手写,检讨书,作文纸,作业手写,手稿生成",
     "siteName": "手写文稿生成器",
     "ogLocale": "zh_CN"

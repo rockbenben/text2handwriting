@@ -18,7 +18,7 @@ interface PenSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「笔型与墨色」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 的「笔型与墨色」区块：4 种笔型分别对应 paper.ts 里不同的墨迹绘制算法。 */
 export const PenSection: React.FC<PenSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -71,8 +71,8 @@ export const PenSection: React.FC<PenSectionProps> = ({
                     padding: '8px 4px',
                     borderRadius: '6px',
                     border: isActive ? '1px solid var(--primary)' : '1px solid var(--border-color)',
-                    background: isActive ? 'rgba(59, 130, 246, 0.16)' : 'var(--bg-input)',
-                    color: isActive ? '#60a5fa' : 'var(--text-muted)',
+                    background: isActive ? 'var(--selection)' : 'var(--bg-input)',
+                    color: isActive ? 'var(--primary)' : 'var(--text-muted)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                   }}
@@ -117,8 +117,6 @@ export const PenSection: React.FC<PenSectionProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Handwriting Dimension Sliders */}
     </>
   );
 };

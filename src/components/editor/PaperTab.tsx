@@ -16,7 +16,7 @@ interface PaperTabProps {
   handleBgImageUpload: (file: File) => void;
 }
 
-/** 由 EditorPanel 的「paper」tab 逐字抽出，未改行为。 */
+/** 纸张 Tab：纸型/尺寸、方格与横线、四边距与红色边线开关。 */
 export const PaperTab: React.FC<PaperTabProps> = ({
   paper,
   onPaperChange,
@@ -93,7 +93,7 @@ export const PaperTab: React.FC<PaperTabProps> = ({
               }}
             />
             {isCustomBackgroundTooLarge(paper) && (
-              <div style={{ fontSize: '11px', lineHeight: 1.5, color: '#fbbf24' }}>
+              <div style={{ fontSize: '11px', lineHeight: 1.5, color: 'var(--warning)' }}>
                 {t('editor.customBgLargeHint')}
               </div>
             )}
@@ -283,7 +283,7 @@ export const PaperTab: React.FC<PaperTabProps> = ({
           </div>
         </div>
 
-        <div style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'rgba(56, 189, 248, 0.08)', padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(56, 189, 248, 0.18)', marginBottom: '8px', lineHeight: '1.4' }}>
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'var(--selection)', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--border-color)', marginBottom: '8px', lineHeight: '1.4' }}>
           {t('editor.marginsInfo')}
         </div>
 

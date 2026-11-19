@@ -14,7 +14,7 @@
     "qualityStandard": "표준 (1x · 145 DPI)",
     "qualityHigh": "고화질 (2x · 290 DPI)",
     "qualityUltra": "초고화질 (3x · 435 DPI)",
-    "export": "문서 내보내기",
+    "export": "내보내기",
     "exporting": "생성 중...",
     "exportPng": "현재 페이지 저장 (PNG)",
     "exportJpg": "현재 페이지 저장 (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "GitHub에서 소스코드 보기"
   },
   "preview": {
+    "fitPage": "전체 페이지",
+    "pen": "펜",
+    "eraser": "지우개",
+    "tools": "도구",
+    "title": "미리보기",
     "prevPage": "이전 쪽",
     "nextPage": "다음 쪽",
     "pageIndicator": "{{current}} / {{total}} 쪽",
@@ -79,11 +84,14 @@
     "crashReload": "페이지 새로고침"
   },
   "common": {
+    "more": "더 보기",
     "reset": "초기화",
     "apply": "적용",
     "clear": "지우기"
   },
   "editor": {
+    "workspaceEdit": "편집",
+    "advancedHandwriting": "손글씨 고급 설정",
     "tabText": "텍스트 편집",
     "tabHandwriting": "필적 변화",
     "tabPaper": "용지 및 배치",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "손글씨 문서 생성기 - 텍스트를 손글씨로 자동 변환",
-    "description": "텍스트를 사실적인 손글씨 문서로 변환하는 순수 로컬 웹 도구: 자연스러운 필적 변화, 자동 줄바꿈 및 조판, 실제 종이 및 사진 질감 시뮬레이션, 고화질 PNG / PDF / ZIP 내보내기 지원. 데이터 외부 유출 없는 안전한 프라이버시.",
+    "description": "텍스트를 사실적인 손글씨 문서로 변환하는 순수 로컬 웹 도구: 자연스러운 필적 변화, 자동 줄바꿈 및 조판, 실제 종이 및 사진 질감 시뮬레이션, 고화질 PNG / JPG / PDF / ZIP 내보내기 지원. 데이터 외부 유출 없는 안전한 프라이버시.",
     "keywords": "손글씨 변환기,텍스트 손글씨,폰트 손글씨,손글씨 문서,손글씨 과제,반성문 손글씨,원고지 손글씨,손글씨 생성기",
     "siteName": "손글씨 문서 생성기",
     "ogLocale": "ko_KR"

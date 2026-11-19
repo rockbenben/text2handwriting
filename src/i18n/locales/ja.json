@@ -24,6 +24,11 @@
     "githubTitle": "GitHub でソースコードを見る"
   },
   "preview": {
+    "fitPage": "全体表示",
+    "pen": "ペン",
+    "eraser": "消しゴム",
+    "tools": "ツール",
+    "title": "プレビュー",
     "prevPage": "前のページ",
     "nextPage": "次のページ",
     "pageIndicator": "{{current}} / {{total}} ページ",
@@ -79,11 +84,14 @@
     "crashReload": "ページを再読み込み"
   },
   "common": {
+    "more": "その他",
     "reset": "リセット",
     "apply": "適用",
     "clear": "クリア"
   },
   "editor": {
+    "workspaceEdit": "編集",
+    "advancedHandwriting": "手書きの詳細設定",
     "tabText": "テキスト編集",
     "tabHandwriting": "筆跡の揺らぎ",
     "tabPaper": "用紙とレイアウト",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "手書き原稿ジェネレーター - テキストを手書き風に自動変換",
-    "description": "テキストを高精細な手書き原稿に自動変換する完全ローカル動作ツール。筆跡の自然な揺らぎ、禁則処理、リアルな用紙・実写質感シミュレーション、高解像度 PNG / PDF / ZIP 書き出しに対応。プライバシー保護、外部送信なし。",
+    "description": "テキストを高精細な手書き原稿に自動変換する完全ローカル動作ツール。筆跡の自然な揺らぎ、禁則処理、リアルな用紙・実写質感シミュレーション、高解像度 PNG / JPG / PDF / ZIP 書き出しに対応。プライバシー保護、外部送信なし。",
     "keywords": "手書き風,テキスト手書き変換,手書き原稿,手書き文字生成,フォント手書き,手書きノート,反省文手書き,作文用紙,レポート手書き",
     "siteName": "手書き原稿ジェネレーター",
     "ogLocale": "ja_JP"

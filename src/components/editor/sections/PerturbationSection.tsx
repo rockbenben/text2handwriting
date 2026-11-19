@@ -8,7 +8,7 @@ interface PerturbationSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「笔迹扰动」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 高级折叠区内的「笔迹扰动」区块：控制逐字随机抖动的幅度。 */
 export const PerturbationSection: React.FC<PerturbationSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -19,7 +19,7 @@ export const PerturbationSection: React.FC<PerturbationSectionProps> = ({
     <>
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sparkles size={14} />
             {t('editor.perturbationTitle')}
           </span>
@@ -134,8 +134,6 @@ export const PerturbationSection: React.FC<PerturbationSectionProps> = ({
           />
         </div>
       </div>
-
-      {/* Real Human Handwriting Physics: Glyph Deformation & Inking (同字异构与墨迹物理仿真) */}
     </>
   );
 };

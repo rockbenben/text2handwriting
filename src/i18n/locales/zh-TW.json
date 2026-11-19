@@ -8,13 +8,13 @@
     "languageTitle": "介面語言",
     "presets": "預設模板",
     "presetsTitle": "選擇經典預設風格模板",
-    "shuffle": "換一批擾動",
+    "shuffle": "換一版筆跡",
     "shuffleTitle": "重新隨機生成獨特的筆跡自然擾動",
     "quality": "畫質",
     "qualityStandard": "標準 (1x · 145 DPI)",
     "qualityHigh": "高畫質 (2x · 290 DPI)",
     "qualityUltra": "超清 (3x · 435 DPI)",
-    "export": "匯出文稿",
+    "export": "匯出",
     "exporting": "正在生成...",
     "exportPng": "匯出當前頁 (PNG)",
     "exportJpg": "匯出當前頁 (JPG)",
@@ -24,6 +24,11 @@
     "githubTitle": "在 GitHub 上檢視原始碼"
   },
   "preview": {
+    "fitPage": "整頁",
+    "pen": "畫筆",
+    "eraser": "橡皮擦",
+    "tools": "工具",
+    "title": "文稿預覽",
     "prevPage": "上一頁",
     "nextPage": "下一頁",
     "pageIndicator": "第 {{current}} / {{total}} 頁",
@@ -79,13 +84,16 @@
     "crashReload": "重新載入"
   },
   "common": {
+    "more": "更多",
     "reset": "重置",
     "apply": "應用",
     "clear": "清空"
   },
   "editor": {
+    "workspaceEdit": "編輯",
+    "advancedHandwriting": "進階筆跡設定",
     "tabText": "文本編輯",
-    "tabHandwriting": "筆跡擾動",
+    "tabHandwriting": "筆跡樣式",
     "tabPaper": "紙張排版",
     "tabPhoto": "實拍與背景",
     "textTitle": "文稿內容輸入",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "手寫文稿產生器 - 文字轉手寫，純本機渲染",
-    "description": "純本機渲染的手寫文稿產生器：把文字轉成高擬真手寫稿。種子化隨機擾動筆跡、避頭尾中文排版、真實紙張與實拍質感模擬，支援高清 PNG / PDF / ZIP 匯出。隱私安全，文字不離開你的電腦。",
+    "description": "純本機渲染的手寫文稿產生器：把文字轉成高擬真手寫稿。種子化隨機擾動筆跡、避頭尾中文排版、真實紙張與實拍質感模擬，支援高清 PNG / JPG / PDF / ZIP 匯出。隱私安全，文字不離開你的電腦。",
     "keywords": "手寫文稿產生器,文字轉手寫,字體轉手寫,手寫文稿,手寫筆記產生,擬真手寫字,列印手寫,方格紙,作業手寫,手稿產生",
     "siteName": "手寫文稿產生器",
     "ogLocale": "zh_TW"

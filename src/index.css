@@ -33,791 +33,571 @@
 }
 
 :root {
-  --bg-main: #0f172a;
-  --bg-card: #1e293b;
-  --bg-sidebar: #182234;
-  --bg-input: #0f172a;
-  --border-color: #334155;
-  --border-hover: #475569;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
-  --accent: #10b981;
-  --accent-purple: #8b5cf6;
-  --card-radius: 12px;
+  color-scheme: light;
+  --bg-main: #edf0f1;
+  --bg-card: #fffefa;
+  --bg-sidebar: #fbfaf7;
+  --bg-input: #f4f4ee;
+  --border-color: #d9dedb;
+  --border-hover: #a0adad;
+  --primary: #254f70;
+  --primary-hover: #183b57;
+  --selection: #e5edf2;
+  --text-main: #202f36;
+  --text-muted: #4d616a;
+  --text-subtle: #526770;
+  --accent: #26705b;
+  --accent-purple: #634d85;
+  --warning: #835716;
+  --danger: #a33f37;
+  --card-radius: 10px;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body, html {
   width: 100%;
   height: 100%;
   background: var(--bg-main);
   color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei UI", system-ui, sans-serif;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  scrollbar-color: #b8c4c7 transparent;
 }
 
-#root {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+button, input, select, textarea { font-family: inherit; }
+button svg { flex-shrink: 0; }
+button, select, input[type="checkbox"], summary { cursor: pointer; }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.15);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
-}
-
-/* App Header */
-.app-header {
-  /* height 固定为 58px 时，内容一旦放不下就会溢出而不是换行。
-     改成 min-height + flex-wrap：宽屏放得下就仍是一行 58px（内容高 34px，
-     被 min-height 撑住），窄屏自动折成两行。
-     比用媒体查询定死断点稳 —— 顶栏一行大约要 1000px 才放得下，
-     而它下面的分栏断点是 900px，中间那 100px 区间本来会挤压变形。 */
-  height: auto;
-  min-height: 58px;
-  flex-wrap: wrap;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 20px;
-  gap: 8px;
-  flex-shrink: 0;
-  z-index: 10;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* 品牌标识：与 public/favicon.svg 同一份图形，自带米白纸底。
-   不要再套背景色或渐变 —— 图形本身已经提供对比度。 */
-.brand-mark {
-  display: block;
-  flex-shrink: 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-}
-
-/* 「画质」这个标签原本没有 nowrap：旁边的下拉框宽度是内容驱动的、不会让位，
-   于是容器一紧，标签就被挤成两行（实测 390px 下宽 20px、高 32px = 「画」/「质」）。
-   这里先禁止折行；更窄的屏干脆整条藏掉，只留下拉本身。 */
-.quality-label {
-  white-space: nowrap;
-}
-
-.brand-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-badge {
-  font-size: 11px;
-  font-weight: 500;
-  background: rgba(59, 130, 246, 0.18);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  /* 自身也要能换行：否则整块作为一行换到第二行后，
-     在 390px 手机上依旧塞不下，还是会溢出 */
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* Common Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  border: 1px solid transparent;
-  user-select: none;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: white;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-}
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--primary-hover), #1d4ed8);
-}
-
-.btn-secondary {
-  background: #27354a;
-  color: #e2e8f0;
-  border-color: var(--border-color);
-}
-.btn-secondary:hover:not(:disabled) {
-  background: var(--border-color);
-  color: #fff;
-}
-
-.btn-accent {
-  background: linear-gradient(135deg, var(--accent), #059669);
-  color: white;
-}
-.btn-accent:hover:not(:disabled) {
-  background: #059669;
-}
-
-/* 禁用态必须自己给视觉反馈：.btn-* 显式设了 color，会盖掉浏览器对 disabled
-   的默认灰化，结果「导出中」「第一页的上一页」「没有手绘时的清空」这些按钮
-   看起来完全可用，点了却没反应。 */
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* 键盘可达性：这些元素原本没有任何焦点样式，Tab 时看不出焦点落在哪。
-   .preset-card 已经带了 role="button" + tabIndex，能被 Tab 到却是隐形的，
-   属于实打实的坑。用 :focus-visible 而不是 :focus，鼠标点击不会留下焦点圈。 */
-.btn:focus-visible,
-.dropdown-item:focus-visible,
-.tab-btn:focus-visible,
-.preset-card:focus-visible,
-.thumb-item:focus-visible,
-.color-swatch:focus-visible {
-  outline: 2px solid #60a5fa;
+:where(button, a, select, input, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
-.btn-sm {
-  padding: 5px 10px;
-  font-size: 12px;
-}
-
-/* 仅图标的方形按钮（顶栏 GitHub 入口等），去掉文字侧的横向内边距 */
-.btn-icon {
-  padding: 7px;
-  gap: 0;
-}
-
-/* App shell: keeps header + main layout while allowing inert when a modal is open */
-.app-shell {
-  flex: 1;
+.app-frame, .app-shell {
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-/* App Main Body: Split View */
-.draft-save-status {
-  padding: 6px 12px;
-  color: #fbbf24;
+.app-frame { height: 100vh; height: 100dvh; }
+.app-shell { flex: 1; }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding: 12px 26px;
   background: var(--bg-sidebar);
-  font-size: 12px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
+
+.header-brand, .header-actions, .header-utilities, .header-language, .brand-local {
+  display: flex;
+  align-items: center;
+}
+
+.header-brand { gap: 11px; }
+.brand-mark { display: block; flex-shrink: 0; width: 40px; height: 40px; }
+.brand-title { font-size: 19px; line-height: 1.25; font-weight: 700; }
+.brand-local { gap: 4px; font-size: 11px; margin-top: 3px; color: var(--text-muted); }
+.brand-stats {
+  border-inline-start: 1px solid var(--border-color);
+  padding-inline-start: 15px;
+  margin-inline-start: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.header-actions, .header-utilities { gap: 8px; flex-wrap: wrap; }
+.header-language { gap: 4px; color: var(--text-muted); }
+.header-more.btn, .header-language-label, .header-source span { display: none; }
+.header-source { width: 36px; padding: 0; }
+.header-language select {
+  border: 0;
+  background: transparent;
+  width: auto;
+  max-width: 120px;
+  padding-inline-start: 3px;
+  color: inherit;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 13px;
+  min-height: 36px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: inherit;
+  background: transparent;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.btn-primary, .btn-accent { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled), .btn-accent:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-secondary { background: var(--bg-card); color: var(--text-main); border-color: var(--border-color); }
+.btn-secondary:hover:not(:disabled) { background: var(--selection); border-color: var(--border-hover); }
+.btn:disabled { opacity: 0.44; cursor: default; }
+.btn-sm { min-height: 29px; padding: 4px 9px; font-size: 12px; }
+.btn-icon { width: 36px; padding: 0; }
+.header-output { position: relative; }
+.header-output > .btn { min-width: 92px; }
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px #26394624;
+  padding: 7px;
+}
+
+.dropdown-menu[hidden] { display: none; }
+
+.export-quality { display: grid; gap: 5px; padding: 6px 8px 8px; font-size: 12px; color: var(--text-muted); }
+.dropdown-divider { border: 0; border-block-start: 1px solid var(--border-color); margin: 4px 6px; }
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 8px;
+  border-radius: 5px;
+  border: 0;
+  background: transparent;
+  color: var(--text-main);
+  text-align: start;
+  font-size: 13px;
+}
+.dropdown-item:hover { background: var(--selection); }
+
+.draft-save-status { padding: 8px 20px; color: var(--warning); background: #fff3da; font-size: 13px; }
+.mobile-workspace-switch { display: none; }
 
 .app-main {
   flex: 1;
-  display: flex;
-  overflow: hidden;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: clamp(390px, 34vw, 490px) minmax(0, 1fr);
 }
 
-/* Left Configuration Panel */
-.sidebar-panel {
-  width: 480px;
-  min-width: 380px;
-  background: var(--bg-sidebar);
-  /* 逻辑方向：RTL 下侧栏会跑到右侧，物理的 border-right 会落到外侧、
-     导致侧栏与预览之间没有分隔线。border-inline-end 会跟着书写方向走。 */
-  border-inline-end: 1px solid var(--border-color);
+.sidebar-panel, .preview-viewport {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
 }
 
-/* Sidebar Tab navigation */
+.sidebar-panel { background: var(--bg-sidebar); border-inline-end: 1px solid var(--border-color); }
+
 .tab-bar {
-  display: flex;
-  background: #111b27;
-  border-bottom: 1px solid var(--border-color);
-  padding: 4px 8px;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px;
+  padding: 0 17px;
   flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .tab-btn {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 10px;
+  padding: 10px 4px;
+  min-height: 50px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  overflow-wrap: anywhere;
   color: var(--text-muted);
   background: transparent;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
+  border: 0;
+  border-block-end: 2px solid transparent;
 }
 
-.tab-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.05);
-}
+.tab-btn:hover { background: var(--bg-input); }
+.tab-btn.active { color: var(--primary); border-block-end-color: var(--primary); }
+.tab-btn:focus-visible { outline-offset: -4px; }
 
-.tab-btn.active {
-  color: #fff;
-  background: #253347;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-/* Tab Content */
 .tab-content {
   flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px;
+  min-height: 0;
+  overflow: auto;
+  padding: 22px 22px 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-/* Editor Input & Area */
-.text-editor-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   gap: 12px;
 }
 
+.text-editor-container { flex: 1; display: flex; flex-direction: column; gap: 9px; }
+.document-heading, .document-actions, .editor-stats { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.document-heading, .editor-stats { justify-content: space-between; }
+.document-heading label { font-size: 16px; font-weight: 700; }
+.document-actions .btn { border-color: transparent; background: transparent; color: var(--text-muted); }
+.document-actions .btn:hover { background: var(--selection); color: var(--primary); }
+
+.markup-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.markup-toolbar > span { margin-inline-end: 2px; }
+.markup-toolbar .btn { background: transparent; font-weight: 500; font-size: 11px; padding-inline: 5px; }
+.markup-toolbar .btn:hover { background: var(--selection); }
+
 .editor-textarea {
   flex: 1;
-  min-height: 280px;
-  background: var(--bg-input);
+  min-height: 232px;
+  width: 100%;
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 14px;
+  padding: 14px 15px;
   color: var(--text-main);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.8;
   resize: none;
-  outline: none;
-  font-family: inherit;
-}
-.editor-textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.editor-stats {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--text-subtle);
-  padding: 0 4px;
-}
+.editor-textarea::placeholder { color: var(--text-subtle); }
+.editor-stats { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.editor-page-count { color: var(--primary); }
 
 .file-drop-zone {
-  border: 2px dashed var(--border-color);
-  border-radius: 8px;
-  padding: 16px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: rgba(15, 23, 42, 0.4);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: center;
-}
-.file-drop-zone:hover, .file-drop-zone.dragover {
-  border-color: var(--primary);
-  background: rgba(59, 130, 246, 0.08);
-}
-
-/* Control Group / Sections */
-.control-group {
-  background: var(--bg-card);
-  border: 1px solid #2e3c51;
-  border-radius: 10px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.group-title {
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px dashed var(--border-hover);
+  border-radius: 7px;
+  color: var(--primary);
+  background: transparent;
   font-size: 13px;
   font-weight: 600;
-  color: #cbd5e1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* 标题与右侧按钮组在窄屏会互相挤压：按钮组宽度由内容决定、不让位，于是标题被压成
-     两行（实测 390px 下「手写与系统字」/「体」），按钮文字也跟着折行。
-     允许换行后按钮组整体落到下一行，两边都恢复单行。
-     用 row-gap 而不是 gap —— 后者会同时加上横向间距，改动桌面观感。 */
-  flex-wrap: wrap;
-  row-gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-align: start;
 }
 
-.control-item {
+.file-drop-zone small { margin-inline-start: auto; color: var(--text-muted); font-weight: 400; }
+.file-drop-zone:hover, .file-drop-zone.dragover { background: var(--selection); border-color: var(--primary); }
+
+.editor-disclosure { border-block-start: 1px solid var(--border-color); font-size: 13px; }
+.editor-disclosure summary { padding: 9px 2px; color: var(--text-muted); overflow-wrap: anywhere; }
+.editor-disclosure summary:hover { color: var(--primary); }
+.font-guide { padding: 4px 0; line-height: 1.55; color: var(--text-muted); }
+.font-guide a { color: var(--primary); }
+.advanced-settings, .layout-options { display: grid; gap: 10px; }
+.layout-options { padding: 10px; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-card); }
+
+.control-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 13px;
 }
-
-.control-label-row {
+.group-title {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
-  font-size: 13px;
-  color: #e2e8f0;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 700;
 }
-
+.group-title > div { flex-wrap: wrap; }
+.control-item { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.control-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
 .control-value {
   font-size: 12px;
-  font-family: monospace;
-  color: #93c5fd;
-  background: rgba(59, 130, 246, 0.15);
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+  background: var(--selection);
   padding: 2px 6px;
   border-radius: 4px;
 }
-
-/* Sliders */
-input[type="range"] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 5px;
-  background: var(--border-color);
-  border-radius: 3px;
-  outline: none;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
-  background: var(--primary);
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #fff;
-  transition: transform 0.1s;
-}
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
-
-/* Select, Inputs */
+input[type="range"], input[type="checkbox"] { accent-color: var(--primary); }
+input[type="range"] { width: 100%; }
 select, input[type="text"], input[type="number"] {
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: #fff;
-  border-radius: 6px;
-  padding: 7px 10px;
-  font-size: 13px;
-  outline: none;
   width: 100%;
+  min-width: 0;
+  background: var(--bg-input);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 13px;
 }
-select:focus, input:focus {
-  border-color: var(--primary);
-}
-
-/* Ink Color Palette */
-.color-palette {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
+.color-palette { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .color-swatch {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  cursor: pointer;
   border: 2px solid transparent;
-  transition: all 0.15s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 2px #253b4e30;
 }
-.color-swatch:hover {
-  transform: scale(1.15);
-}
-.color-swatch.active {
-  border-color: #fff;
-  box-shadow: 0 0 0 2px var(--primary);
-}
+.color-swatch.active { border-color: white; box-shadow: 0 0 0 2px var(--primary); }
 
-/* Right Preview Viewport */
-.preview-viewport {
-  flex: 1;
-  background: #0a0f1d;
+.preview-viewport { background: var(--bg-main); }
+.preview-toolbar, .preview-footer {
+  min-height: 51px;
+  padding: 7px 20px;
+  flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-.preview-toolbar {
-  /* 同理：这一条工具栏一行要约 690px，而它只有「窗口宽 − 侧栏 480px」可用，
-     也就是 1024px 的笔记本上本来就会溢出（不是只有手机才有的问题）。 */
-  height: auto;
-  min-height: 48px;
   flex-wrap: wrap;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 20px;
-  gap: 8px;
-  flex-shrink: 0;
-  z-index: 5;
+  gap: 6px 12px;
+  background: #f4f6f5;
 }
+.preview-toolbar { border-bottom: 1px solid var(--border-color); }
+.preview-toolbar h2 { font-size: 14px; font-weight: 700; }
+.handwriting-actions { display: flex; justify-content: flex-end; }
+.preview-tools, .tool-set, .preview-pagination { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.preview-tools { gap: 8px; }
+.zoom-tools {
+  flex-wrap: nowrap;
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+}
+.preview-more-toggle.btn, .preview-more-tools span, .preview-save-label { display: none; }
+.preview-more-tools { border-inline-start: 1px solid var(--border-color); padding-inline-start: 8px; }
+.tool-set .btn { width: 32px; padding-inline: 0; }
+.tool-set .btn-secondary, .preview-pagination .btn { border-color: transparent; background: transparent; color: var(--text-muted); }
+.tool-set .btn-secondary:hover:not(:disabled), .preview-pagination .btn:hover:not(:disabled) { background: var(--selection); color: var(--primary); }
+.preview-zoom { min-width: 36px; text-align: center; color: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.preview-footer { border-top: 1px solid var(--border-color); }
+.preview-pagination { font-size: 13px; font-variant-numeric: tabular-nums; }
+.preview-pagination .btn { width: 32px; padding-inline: 0; }
+[dir="rtl"] .preview-pagination svg { transform: scaleX(-1); }
 
-/* 工具栏里的两组控件自身也要能换行。
-   实测 390px 下：缩放组宽 382px，而工具栏内容盒只有 366px —— 组内不换行就会被
-   .preview-viewport 的 overflow:hidden 裁掉最右侧按钮（越界 16px，而按钮仅 35px 宽，
-   近一半被切）。给个换行兜底，以后标签变长也只是多一行，不会切掉。 */
-.preview-toolbar > div {
-  flex-wrap: wrap;
-}
-
-/* 导出按钮与前面的缩放组拉开距离。原本是内联的 marginLeft: 12px，
-   挪到类里是为了窄屏能覆盖掉 —— 那 12px 在 390px 下正是越界的一部分。 */
-.toolbar-export {
-  margin-inline-start: 12px;
-}
-
-/* 手绘会话提示：只在开启画笔或已有笔迹时出现，提醒刷新后不会保留 */
-.doodle-session-hint {
-  flex-shrink: 0;
-  padding: 5px 20px;
-  font-size: 11px;
-  line-height: 1.4;
-  color: #fbbf24;
-  background: rgba(15, 23, 42, 0.92);
-  border-bottom: 1px solid var(--border-color);
-}
+.doodle-session-hint { flex-shrink: 0; padding: 6px 20px; font-size: 12px; color: var(--warning); background: #fff3da; }
 
 .preview-canvas-container {
   flex: 1;
+  min-height: 0;
   overflow: auto;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  background: radial-gradient(circle at center, #151f32 0%, #090e17 100%);
+  padding: 30px;
+  background-color: var(--bg-main);
+  background-image: radial-gradient(circle, #bdc9cc 0.8px, transparent 1px);
+  background-size: 16px 16px;
 }
 
 .paper-canvas-wrapper {
   position: relative;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  transition: transform 0.15s ease-out;
+  flex: none;
+  /* Auto margins only center while space is available, so zoom never hides the top edge. */
+  margin: auto;
   background: #fff;
-  display: inline-block;
-  line-height: 0;
+  box-shadow: 0 1px 2px #20344230, 0 12px 26px #20344226;
 }
+.preview-canvas, .doodle-canvas { width: 100%; height: 100%; display: block; }
+.doodle-canvas { position: absolute; inset: 0; }
 
-.preview-canvas {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-/* 手绘层：绝对定位覆盖纸面，默认不吃指针事件（由内联 pointerEvents 接管） */
-.doodle-canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-
-/* Bottom Thumbnail Strip */
 .thumbnail-strip {
-  height: 90px;
-  background: #111a2c;
-  border-top: 1px solid var(--border-color);
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
+  gap: 8px;
+  padding: 8px 20px;
   overflow-x: auto;
   flex-shrink: 0;
+  border-top: 1px solid var(--border-color);
 }
-
 .thumb-item {
-  width: 52px;
-  height: 70px;
-  /* 页码多时外层是 overflow-x:auto，默认的 flex-shrink 会把缩略图压到十几像素，
-     页码既看不清也点不中；固定宽度才能真的横向滚动。 */
+  width: 34px;
+  height: 43px;
   flex-shrink: 0;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 3px;
-  border: 2px solid transparent;
+  border: 1px solid var(--border-hover);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
   font-weight: 600;
-  color: var(--border-color);
-  transition: all 0.15s;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  position: relative;
+  color: var(--text-muted);
 }
-.thumb-item:hover {
-  transform: translateY(-2px);
-}
-.thumb-item.active {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
+.thumb-item:hover, .thumb-item.active { border-color: var(--primary); color: var(--primary); background: var(--selection); }
+.thumb-item.active { box-shadow: inset 0 0 0 1px var(--primary); }
 
-/* Modal */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #20344270;
+  display: grid;
+  place-items: center;
   z-index: 100;
 }
-
 .modal-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
   width: 720px;
   max-width: 92vw;
-  max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  max-height: 85dvh;
   overflow: hidden;
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-body {
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.preset-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 14px;
-}
-
-.preset-card {
-  background: #111b27;
-  border: 1px solid #2e3c51;
-  border-radius: 10px;
-  padding: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.preset-card:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-  background: #182538;
-}
-
-/* Dropdown Menu */
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  inset-inline-end: 0;
-  margin-top: 6px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  padding: 6px;
-  min-width: 170px;
-  z-index: 50;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px #20344238;
+}
+.modal-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border-color); }
+.modal-header > div { flex-wrap: wrap; }
+.modal-body { padding: 16px 20px; overflow: auto; }
+.preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 10px; }
+.preset-card {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #e2e8f0;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  padding: 13px;
   cursor: pointer;
-  background: transparent;
-  border: none;
-  width: 100%;
-  text-align: start;
 }
-.dropdown-item:hover {
-  background: #2b394f;
-  color: #fff;
+.preset-card:hover { border-color: var(--primary); background: var(--selection); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin { animation: none; }
 }
 
-/* ============================================================
-   响应式适配（桌面优先）
-   ------------------------------------------------------------
-   #root 是 height:100%，且 body/html overflow:hidden —— 页面本身不滚动，
-   纵向空间全靠 flex 分配。所以窄屏必须把「左右分栏」改成「上下分栏」，
-   否则侧栏那 380px 的 min-width 会把预览区挤成一条缝。
-   ============================================================ */
 @media (max-width: 900px) {
-  /* 换行能力已在基础样式里给足，这里只是收紧留白 */
-  .app-header {
-    padding: 8px 12px;
-  }
-
-  /* 字数/页数在窄屏是次要信息，让位给操作按钮。
-     品牌徽标「100% 本地」是隐私卖点，不隐藏。 */
-  .brand-stats {
-    display: none;
-  }
-
-  .app-main {
-    flex-direction: column;
-  }
-
-  /* min-width 归零是重点：380px 的下限正是横向溢出的直接原因。
-     侧栏给 42vh，把更多纵向空间留给预览 —— 配置区本来就能滚。 */
-  .sidebar-panel {
-    width: 100%;
-    min-width: 0;
-    max-height: 42vh;
-    border-inline-end: none;
+  .app-header { padding-inline: 16px; }
+  .brand-stats { display: none; }
+  .mobile-workspace-switch {
+    display: flex;
+    flex-shrink: 0;
+    padding: 3px 10px;
+    gap: 4px;
+    background: var(--bg-sidebar);
     border-bottom: 1px solid var(--border-color);
   }
-
-  /* min-height:0 不能省，否则内部内容会把这块顶高、反过来挤压配置区 */
-  .preview-viewport {
-    flex: 1 1 0;
-    min-height: 0;
+  .mobile-workspace-switch .btn { flex: 1; min-height: 40px; color: var(--text-muted); }
+  .mobile-workspace-switch .btn[aria-pressed="true"] { color: var(--primary); background: var(--selection); }
+  .app-main { grid-template-columns: minmax(0, 1fr); }
+  .app-main[data-mobile-view="editor"] .preview-viewport,
+  .app-main[data-mobile-view="preview"] .sidebar-panel { display: none; }
+  .sidebar-panel { border-inline-end: 0; }
+  .preview-toolbar h2 { display: none; }
+  .preview-toolbar { position: relative; z-index: 1; min-height: 0; padding: 4px 8px; }
+  .preview-tools { margin-inline: auto; justify-content: center; gap: 5px; }
+  .preview-tools > .btn, .preview-more-toggle.btn { min-height: 38px; }
+  .preview-more-toggle.btn { display: inline-flex; }
+  .preview-more-tools { display: none; }
+  .preview-more-tools[data-open="true"] {
+    position: absolute;
+    inset-block-start: calc(100% + 4px);
+    inset-inline-end: 8px;
+    z-index: 1;
+    display: grid;
+    width: max-content;
+    max-width: calc(100% - 16px);
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    box-shadow: 0 8px 24px #20344226;
   }
-
-  /* 输入框 280px 的下限比 42vh 还高，会把侧栏顶出屏幕 */
-  .editor-textarea {
-    min-height: 150px;
-  }
-
-  .tab-content {
-    padding: 12px 14px;
-    gap: 12px;
-  }
-
-  .preview-toolbar {
-    padding: 8px 12px;
-    gap: 8px;
-  }
-
-  .doodle-session-hint {
-    padding: 5px 12px;
-  }
-
-  /* 40px 留白在手机上过于奢侈 */
-  .preview-canvas-container {
-    padding: 16px;
-  }
-
-  .thumbnail-strip {
-    height: 70px;
-    padding: 0 12px;
-    gap: 8px;
-  }
-
-  .thumb-item {
-    width: 40px;
-    height: 54px;
-  }
+  .preview-more-tools .btn { width: 100%; padding-inline: 10px; min-height: 38px; justify-content: flex-start; text-align: start; }
+  .preview-more-tools span, .preview-save-label { display: inline; }
+  .preview-save-format { display: none; }
+  .preview-canvas-container { padding: 12px; }
 }
 
-/* 手机竖屏：文字标签收成纯图标。
-   顶栏按钮、预览工具栏按钮、侧栏 tab 都带 title（本次给预览区导出按钮
-   与侧栏 tab 一并补上），悬停与读屏仍拿得到名称。 */
-@media (max-width: 560px) {
-  .header-actions .btn {
-    padding: 7px 10px;
-  }
-
-  .header-actions .btn > span,
-  .preview-toolbar .btn > span,
-  .tab-btn > span {
-    display: none;
-  }
-
-  /* 窄屏下拉框里的「标准 (1x · 145 DPI)」已经自解释，标签是纯占位 */
-  .quality-label {
-    display: none;
-  }
-
-  /* 收紧工具栏留白，给缩放组腾出 16px（实测的越界量） */
-  .preview-toolbar {
-    padding: 8px 10px;
+@media (max-width: 700px) {
+  .app-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 6px;
+    padding: 5px 10px;
   }
+  .header-brand { min-width: 0; gap: 7px; }
+  .brand-copy { min-width: 0; }
+  .brand-title { font-size: 16px; overflow-wrap: anywhere; }
+  .brand-local { display: none; }
+  .brand-mark { width: 30px; height: 30px; }
+  .header-actions { gap: 5px; flex-wrap: nowrap; }
+  .header-more.btn, .header-output > .btn { min-height: 38px; }
+  .header-more.btn { display: inline-flex; }
+  .header-output { position: static; }
+  .header-output > .btn { min-width: 0; padding-inline: 8px; gap: 4px; }
+  .header-output > .btn > svg:last-child { display: none; }
+  .header-output > .btn > span { max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-utilities, .header-output .dropdown-menu {
+    position: absolute;
+    inset-block-start: calc(100% + 4px);
+    inset-inline-end: 10px;
+    margin: 0;
+    max-height: calc(100dvh - 62px);
+    overflow: auto;
+  }
+  .header-utilities {
+    display: none;
+    width: min(246px, calc(100% - 20px));
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-card);
+    box-shadow: 0 12px 30px #26394624;
+  }
+  .header-utilities[data-open="true"] { display: grid; gap: 4px; }
+  .header-utilities .btn { justify-content: flex-start; border-color: transparent; width: 100%; padding-inline: 9px; text-align: start; }
+  .header-source span, .header-language-label { display: inline; }
+  .header-language { display: grid; grid-template-columns: auto 1fr; gap: 4px 6px; padding: 6px 9px; font-size: 12px; }
+  .header-language select { grid-column: 1 / -1; width: 100%; max-width: none; border: 1px solid var(--border-color); background: var(--bg-input); }
+}
 
-  .preview-toolbar > div {
+@media (max-width: 560px) {
+  .tab-bar { padding-inline: 8px; }
+  .tab-btn { gap: 4px; min-height: 40px; font-size: 12px; }
+  .tab-btn svg { display: none; }
+  .tab-content { padding: 14px; }
+  .editor-textarea { min-height: 180px; font-size: 16px; }
+  .markup-toolbar .btn { min-height: 32px; }
+  .preview-footer { min-height: 44px; padding: 3px 10px; }
+  .zoom-tools .btn, .preview-pagination .btn { min-height: 36px; }
+  .preview-tools {
+    display: grid;
+    grid-template-columns: max-content minmax(0, max-content) max-content minmax(0, max-content);
     gap: 4px;
+    max-width: 100%;
   }
+  .zoom-tools { gap: 0; }
+  .preview-tools > .btn, .preview-more-toggle.btn { padding-inline: 6px; gap: 4px; }
+  .preview-tools > .btn span, .preview-more-toggle span { min-width: 0; overflow-wrap: anywhere; }
+  .preview-more-toggle.btn { width: 100%; }
+}
 
-  .toolbar-export {
-    margin-inline-start: 0;
-  }
+@media (max-width: 360px) {
+  .preview-tools > .btn svg, .preview-more-toggle svg { display: none; }
+  .zoom-tools .btn { width: 30px; }
+  .preview-zoom { min-width: 30px; }
 }
 
 /* Print Media Query */
@@ -832,6 +612,8 @@ select:focus, input:focus {
   .app-header,
   .sidebar-panel,
   .preview-toolbar,
+  .preview-footer,
+  .mobile-workspace-switch,
   .thumbnail-strip,
   .modal-backdrop,
   .dropdown-menu {
@@ -844,7 +626,8 @@ select:focus, input:focus {
     overflow: visible !important;
   }
 
-  .preview-viewport {
+  .app-main .preview-viewport {
+    display: flex !important;
     background: #fff !important;
     overflow: visible !important;
     height: auto !important;
@@ -862,18 +645,18 @@ select:focus, input:focus {
     border-radius: 0 !important;
     margin: 0 auto !important;
     display: block !important;
-    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
   }
 
   .preview-canvas {
     max-width: 100% !important;
     height: auto !important;
     page-break-inside: avoid;
-    /* 屏幕上画布是靠 .preview-canvas-container 的 flex + justify-content:center 居中的，
-       而上面的打印规则把容器改成了 display:block —— 居中就此丢失。
-       A4 / Letter 下画布会缩放到填满宽度所以看不出来，但 A3 横向（420mm ≈ 1587px）
-       这类比画布本身（1200px）还宽的纸，画布就会贴左、右侧空出一大片。
-       这里补回水平居中。 */
+    /* 屏幕上画布靠 .paper-canvas-wrapper 的 margin:auto 在 flex 容器里居中；
+       打印规则把容器改回 display:block、纸张容器强制拉满页宽（见上方 width:100%），
+       画布随 width:100% + height:auto 等比缩放到可打印宽度，
+       A3 横向这类超宽纸也不会再贴左留白。margin:auto 仅作居中兜底。 */
     margin: 0 auto;
   }
 }

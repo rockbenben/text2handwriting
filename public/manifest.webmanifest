@@ -1,14 +1,14 @@
 {
   "name": "Text to Handwriting · 手写文稿生成器",
   "short_name": "手写生成",
-  "description": "把普通文本排版成高拟真手写文稿，纯本地处理，支持导出 PNG / PDF / ZIP。",
+  "description": "把普通文本排版成高拟真手写文稿，纯本地处理，支持导出 PNG / JPG / PDF / ZIP。",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#fbfaf7",
+  "theme_color": "#fbfaf7",
   "icons": [
     {
       "src": "./icon-192.png",

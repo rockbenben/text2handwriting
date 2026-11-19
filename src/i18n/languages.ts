@@ -36,8 +36,9 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
 export const DEFAULT_LANGUAGE = 'zh-CN';
 
 /**
- * 已完成母语翻译的语言。其余语言可选，但界面会回落到英文。
- * 补全某语言后把其代码加进这里，选择器就不再显示「EN」标记。
+ * 标记为「已完成母语翻译」的语言集合：不在集合里的语言仍可选用，
+ * 但选择器会加「(EN)」后缀，提示界面会回落到英文。
+ * 补全某语言的词条后把代码加进这里即可去掉标记（i18n 键集测试会先卡住缺键）。
  */
 export const FULLY_TRANSLATED = new Set([
   'zh-CN', 'zh-TW', 'en', 'ja', 'ko',
@@ -62,12 +63,12 @@ export function isSupportedLanguage(code: unknown): code is string {
 
 /**
  * 根据 BCP 47 语言标签匹配支持的 18 种语言之一。
- * 规则：
- * 1. 繁体中文变体（zh-TW, zh-HK, zh-MO, zh-Hant* -> zh-TW）
- * 2. 简体中文变体（zh-CN, zh-SG, zh-Hans*, zh -> zh-CN）
- * 3. 历史别名（如印尼语 in / in-ID -> id）
- * 4. 大小写不敏感的完整匹配（如 ja, ko, de, fr）
- * 5. 主语言代码前缀匹配（如 en-US / en-GB -> en, pt-BR -> pt, es-419 -> es）
+ * 规则（按优先级）：
+ * 1. 中文方言先按书写脚本区分：繁体变体（zh-TW, zh-HK, zh-MO, zh-Hant* -> zh-TW）、
+ *    简体变体（zh-CN, zh-SG, zh-Hans*, zh -> zh-CN）
+ * 2. 历史别名（如印尼语 in / in-ID -> id）
+ * 3. 大小写不敏感的完整匹配（如 ja, ko, de, fr）
+ * 4. 主语言代码前缀匹配（如 en-US / en-GB -> en, pt-BR -> pt, es-419 -> es）
  */
 export function matchLanguageTag(rawTag: string): string | null {
   if (typeof rawTag !== 'string') return null;

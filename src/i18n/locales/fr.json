@@ -24,6 +24,11 @@
     "githubTitle": "Voir le code source sur GitHub"
   },
   "preview": {
+    "fitPage": "Page entière",
+    "pen": "Stylo",
+    "eraser": "Gomme",
+    "tools": "Outils",
+    "title": "Aperçu",
     "prevPage": "Page précédente",
     "nextPage": "Page suivante",
     "pageIndicator": "Page {{current}} / {{total}}",
@@ -79,11 +84,14 @@
     "crashReload": "Recharger la page"
   },
   "common": {
+    "more": "Plus",
     "reset": "Réinitialiser",
     "apply": "Appliquer",
     "clear": "Effacer"
   },
   "editor": {
+    "workspaceEdit": "Modifier",
+    "advancedHandwriting": "Réglages avancés de l’écriture",
     "tabText": "Saisie du texte",
     "tabHandwriting": "Écriture & Tracé",
     "tabPaper": "Papier & Mise en page",
@@ -483,7 +491,7 @@
   },
   "documentMeta": {
     "title": "Texte en Écriture Manuscrite – Générateur Réaliste de Documents Manuscrits",
-    "description": "Transformez du texte en documents manuscrits ultra-réalistes grâce à un traitement 100% local dans votre navigateur : variations de tracé naturelles, textures de papier et de photographie authentiques, et export haute résolution en PNG, PDF ou ZIP. Confidentialité totale.",
+    "description": "Transformez du texte en documents manuscrits ultra-réalistes grâce à un traitement 100% local dans votre navigateur : variations de tracé naturelles, textures de papier et de photographie authentiques, et export haute résolution en PNG, JPG, PDF ou ZIP. Confidentialité totale.",
     "keywords": "texte en manuscrit,générateur d'écriture manuscrite,devoir manuscrit,lettre manuscrite,imitation écriture",
     "siteName": "Texte en Écriture Manuscrite",
     "ogLocale": "fr_FR"

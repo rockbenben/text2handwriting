@@ -8,7 +8,7 @@ interface RoughnessSectionProps {
   onHandwritingChange: (handwriting: HandwritingConfig) => void;
 }
 
-/** HandwritingTab 的「粗糙度」区块，逐字抽出，未改行为。 */
+/** 笔迹 Tab 高级折叠区内的「粗糙度」区块，并集中放置三档手写真实感快捷预设。 */
 export const RoughnessSection: React.FC<RoughnessSectionProps> = ({
   handwriting,
   onHandwritingChange,
@@ -19,7 +19,7 @@ export const RoughnessSection: React.FC<RoughnessSectionProps> = ({
     <>
       <div className="control-group">
         <div className="group-title">
-          <span style={{ color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span style={{ color: 'var(--warning)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sliders size={14} />
             {t('editor.roughnessTitle')}
           </span>
