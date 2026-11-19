@@ -798,7 +798,7 @@ export function typesetText(
                 ? Math.max(-0.72, Math.min(-0.55, -0.63 + dyJitter))
                 : Math.max(-0.95, Math.min(-0.75, -0.85 + dyJitter));
 
-              // Right-handed pen slant: subtle clockwise tilt (+1.5° ~ +3.5°)
+              // Right-handed pen slant: clockwise tilt centered at +2.2°, clamped to +0.6° ~ +4.6°
               tiltAngle = Math.max(0.01, Math.min(0.08, (rng.gaussian(2.2, 0.6) * Math.PI) / 180));
               caretX = Math.max(0.40, Math.min(0.65, 0.52 + rng.gaussian(0, 0.03)));
               caretY = isFirstLine && smartAvoidance ? -0.52 : -0.68;

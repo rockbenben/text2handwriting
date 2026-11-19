@@ -405,9 +405,11 @@ export const LATIN_CONFUSIONS: Record<string, string[]> = {
 };
 
 /**
- * Returns a plausible slip / typo character for a given Chinese or Latin character.
+ * Returns a plausible slip / typo character for a given Chinese character, Latin letter or digit.
  * GUARANTEES that the returned typo is DIFFERENT from char.
- * If no realistic typo is known, returns null.
+ * When no specific mapping exists, Chinese / Latin / digit characters fall back to a generic
+ * credible slip; null is only returned for characters without a plausible slip
+ * (whitespace, punctuation, symbols, other scripts).
  */
 export function getTypoForChar(char: string, randomFn: () => number = Math.random): string | null {
   // 1. Check high-frequency phonetic typos

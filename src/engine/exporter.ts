@@ -27,7 +27,8 @@ export function composeOutputPage(
 }
 
 // jspdf / jszip 只在点击导出时才用到，改成动态 import 后 Vite 会把它们拆成
-// 独立 chunk，不再计入首屏体积（jszip 含 bluebird/fflate 约 450KB，jspdf 约 270KB）。
+// 独立 chunk，不再计入首屏体积（实测 jszip chunk ≈96 kB / gzip ≈28 kB；
+// jsPDF 与 PDF 导出管线所在 chunk ≈400 kB / gzip ≈130 kB）。
 // 每次调用都 await import() 没有额外开销：模块求值结果会被 JS 运行时缓存，
 // 第二次导出的 import() 直接命中已加载模块。
 
@@ -40,7 +41,8 @@ export function getPdfPageFormat(size: PaperSize, width = 1200, height = 1697): 
     case 'custom': {
       const ratio = height > 0 && width > 0 ? height / width : 1697 / 1200;
       // 上传手机拍纸后纸张尺寸完全跟随照片比例。若按 210mm 宽等比换算，
-      // 3:2 → 315mm、16:9 → 373mm，都超出 A4 可打印高度，打印机会裁掉底部。
+      // 竖拍 3:2（如 1200×1800）→ 315mm、竖拍 16:9（如 1080×1920）→ 373mm，
+      // 都超出 A4 可打印高度，打印机会裁掉底部。
       // 因此对超高比例改成"保持宽高比、且整页能塞进一张 A4"。
       // 画布是按 widthMm×heightMm 整体拉伸的，宽高比一致就不会失真。
       if (ratio >= 297 / 210) {

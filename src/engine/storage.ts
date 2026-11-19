@@ -112,7 +112,7 @@ export const SECTION_DEFAULTS = {
     alignToLines: true,
     smartSignatureAlign: true,
   },
-  // 笔迹扰动 Tab 各区块
+  // 笔迹样式 Tab 各区块
   font: {
     fontFamily: DEFAULT_HANDWRITING_CONFIG.fontFamily,
   },
@@ -228,7 +228,7 @@ function getSafeStorage(): Storage | null {
  *
  * 幂等：新键已存在就跳过，不会覆盖用户在新版本里改过的值；
  * 单项失败不影响其它项，旧键保留待下次重试。
- * 在读取入口（loadStoredSettings / hasStoredText）调用，因此不依赖调用时序。
+ * 在读取入口（loadStoredSettings / loadStoredCustomFonts / hasStoredText）调用，因此不依赖调用时序。
  * 返回是否真的搬动过数据。
  */
 export function migrateLegacyStorage(storage?: Storage | null): boolean {

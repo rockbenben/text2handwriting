@@ -17,8 +17,8 @@ export interface PaperConfig {
   customImageUrl?: string;
   customImageAspectRatio?: number;
   bgOpacity?: number; // 0.1 - 1.0, default 1.0
-  bgBrightness?: number; // 0.5 - 1.5, default 1.0
-  bgContrast?: number; // 0.5 - 1.5, default 1.0
+  bgBrightness?: number; // 0.6 - 1.4, default 1.0
+  bgContrast?: number; // 0.6 - 1.4, default 1.0
   bgFit?: 'cover' | 'contain' | 'stretch'; // default 'cover'
   // Visual effects
   showLineGuide?: boolean;
@@ -26,7 +26,7 @@ export interface PaperConfig {
   showMarginLine?: boolean;
   marginLineColor?: string;
   paperTexture?: 'clean' | 'photo' | 'vintage' | 'creased';
-  shadowIntensity?: number; // 0 - 1
+  shadowIntensity?: number; // 0 - 0.6
   vignette?: boolean;
 }
 
@@ -70,7 +70,7 @@ export interface HandwritingConfig {
   wristArc?: number; // 0 - 1.0 (natural arm/wrist rotation arc across line)
   fatigueEffect?: boolean; // natural loosening of writing as hand fatigues down the page
   inkBleed?: number; // 0 - 1.0 (micro ink spread into paper fibers)
-  inkSplatterProbability?: number; // 0 - 0.03 (occasional micro ink flecks on pen lifts)
+  inkSplatterProbability?: number; // 0 - 1 probability; editor only exposes a toggle (0.008)
   smartSignatureAlign?: boolean; // automatically right-align dates, signatures, salutations or [right]...[/right] tags
   penType?: PenType; // 'gel' (中性笔, default) | 'fountain' (钢笔, shading) | 'pencil' (铅笔, matte graphite) | 'ballpoint' (圆珠笔, oil ink)
 }
@@ -105,9 +105,9 @@ export interface RenderChar {
   opacity: number;
   strokeWidth: number;
   color: string;
-  scaleX?: number; // non-uniform horizontal scale (0.94 - 1.06)
-  scaleY?: number; // non-uniform vertical scale (0.94 - 1.06)
-  skewX?: number; // organic hand shear/slant angle (-0.06 to +0.06 rad)
+  scaleX?: number; // non-uniform horizontal scale (clamped to 0.88 - 1.12)
+  scaleY?: number; // non-uniform vertical scale (clamped to 0.88 - 1.12)
+  skewX?: number; // organic hand shear/slant angle (clamped to ±0.08 rad)
   inkDensity?: number; // pressure deposit factor
   scratchOut?: {
     style: ScratchOutConcreteStyle;

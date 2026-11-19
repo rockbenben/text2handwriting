@@ -20,7 +20,7 @@ export async function parseDocumentFile(file: File): Promise<string> {
   const ext = getExtension(file);
 
   if (ext === 'docx') {
-    // mammoth (~190KB) 只在真的导入 .docx 时才需要，静态 import 会白白占首屏
+    // mammoth 独立 chunk ≈321 kB（gzip ≈76 kB），只在真的导入 .docx 时才需要，静态 import 会白白占首屏
     const { default: mammoth } = await import('mammoth');
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });

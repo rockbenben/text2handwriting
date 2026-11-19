@@ -9,9 +9,10 @@ import type { PageLayout } from './types';
  * 若紧密循环同步执行，UI 线程会被完全卡死，进度弹窗不会更新甚至触发浏览器「页面无响应」提示。
  *
  * 实现机制：
- * 1. 标签页可见时：等待 requestAnimationFrame 并在下一帧后的宏任务 (setTimeout 0) 中恢复，
- *    确保浏览器在绘制完成后才继续下一页。
- * 2. 标签页切后台时：rAF 会被暂停，通过 100ms 超时计时器兜底恢复，保证后台导出不中断。
+ * 1. 标签页在前台：等一帧 requestAnimationFrame（浏览器先完成本帧绘制），再用 setTimeout 0
+ *    把恢复排进宏任务，让进度条有机会重绘后再继续下一页。
+ * 2. 标签页在后台：rAF 不会触发，直接 setTimeout 0 继续；后台本来就不需要重绘，无需等帧。
+ * 3. 兜底：在前台等待 rAF 期间被切到后台时，100ms 超时计时器强制恢复，避免整次导出卡死。
  */
 function yieldForProgressPaint(): Promise<void> {
   return new Promise(resolve => {
@@ -33,8 +34,8 @@ function yieldForProgressPaint(): Promise<void> {
 /**
  * 将全部页面导出为高质量多页 PDF 文档。
  *
- * 该模块通过动态 import('./pdfExporter') 按需加载，将体积庞大的 jsPDF（~130 kB gzip）
- * 隔离在独立 chunk 中，不进入首屏 bundle。
+ * 该模块通过动态 import('./pdfExporter') 按需加载，把 jsPDF 与 PDF 导出管线
+ * （独立 chunk ≈400 kB / gzip ≈130 kB）隔离在首屏 bundle 之外。
  *
  * @param pages 全部排版页面数组
  * @param composition 页面合成参数（纸张、笔迹、缩放、底图与手绘标注）

@@ -3,7 +3,7 @@ import { calculatePaperDimensionsFromImage, HD_PAPER_PRESETS } from '../paper';
 
 describe('Custom Background & HD Realistic Paper Textures', () => {
   it('calculates optimal paper dimensions from image natural aspect ratio', () => {
-    // 16:9 vertical smartphone photo (1080 x 1920)
+    // 9:16 vertical smartphone photo (1080 x 1920)
     const dim1 = calculatePaperDimensionsFromImage(1080, 1920, 1200);
     expect(dim1.width).toBe(1200);
     expect(dim1.height).toBe(Math.round(1200 * (1920 / 1080)));

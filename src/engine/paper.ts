@@ -204,9 +204,9 @@ export const HD_PAPER_PRESETS: HDPaperPreset[] = [
 
 /**
  * Returns ruled line positions across the paper.
- * If fullSheet is true (default when rendering notebook background), lines span the entire notebook sheet
+ * If fullSheet is true (notebook background rendering passes true), lines span the entire notebook sheet
  * rather than being chopped off by text writing margins.
- * If fullSheet is false, lines are restricted between marginTop and height - marginBottom.
+ * If fullSheet is false (the default), lines are restricted between marginTop and height - marginBottom.
  */
 export function getRuledLinePositions(paper: PaperConfig, fullSheet: boolean = false): { y: number }[] {
   const lines: { y: number }[] = [];
@@ -1098,7 +1098,7 @@ export function drawScratchOut(ctx: CanvasRenderingContext2D, item: RenderChar, 
   }
   } // end if (isLeader)
 
-  // 8. Write the correction text above or to the top right of the struck-through mistake.
+  // 14. Write the correction text above or to the top right of the struck-through mistake.
   if (item.scratchOut.correctionChar) {
     const correctionText = item.scratchOut.correctionChar;
     const corrColor = item.scratchOut.correctionColor || color;

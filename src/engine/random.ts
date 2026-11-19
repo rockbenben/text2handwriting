@@ -25,7 +25,7 @@ export class SeededRandom {
   }
 
   /**
-   * Generates a float in [min, max]
+   * Generates a float in [min, max)
    */
   range(min: number, max: number): number {
     return min + this.next() * (max - min);
