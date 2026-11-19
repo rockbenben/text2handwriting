@@ -1,5 +1,5 @@
 // The production build injects its HTML and static JS/CSS dependency list.
-const BUILD = {"version":"794ddff64010eec1","resources":["index.html","assets/index-BgeDr12w.js","assets/rolldown-runtime-BCiCTKAo.js","assets/index-DqpPO5bk.css"]};
+const BUILD = {"version":"5c56299e828b9040","resources":["index.html","assets/index-CUCkU1bW.js","assets/rolldown-runtime-BCiCTKAo.js","assets/index-D9lrmNEi.css"]};
 const scope = new URL(self.registration.scope);
 const prefix = `text2handwriting:${encodeURIComponent(scope.pathname)}:`;
 const shellCache = `${prefix}${BUILD.version}:shell`;
