@@ -2,6 +2,15 @@
   "name": "text2handwriting",
   "headers": [
     {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
       "source": "/assets/*",
       "headers": [
         {
@@ -41,7 +50,7 @@
       ]
     },
     {
-      "source": "**/*.html",
+      "source": "/*.html",
       "headers": [
         {
           "key": "Cache-Control",

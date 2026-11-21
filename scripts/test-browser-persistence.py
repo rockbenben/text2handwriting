@@ -23,6 +23,11 @@ TEXT_KEY = "text2handwriting_text_v1"
 
 class StaticHandler(SimpleHTTPRequestHandler):
     def send_head(self):
+        if self.path == getattr(self.server, "html_fallback_path", None):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            return io.BytesIO(b"<!doctype html><title>Hosting fallback</title>")
         worker = getattr(self.server, "replacement_worker", None)
         if worker is not None and self.path == "/sw.js":
             self.send_response(200)
@@ -743,22 +748,31 @@ def worker_update(context, origin, server, dist):
     original_worker = (dist / "sw.js").read_text(encoding="utf-8")
     original_build = re.search(r"const BUILD = (.+);", original_worker).group(1)
     build = json.loads(original_build)
-    build["version"] = "test-failed-update"
-    build["resources"].append("missing-test-resource.js")
+    missing_asset = "assets/missing-test-resource.js"
+    build["resources"].append(missing_asset)
     try:
-        server.replacement_worker = original_worker.replace(original_build, json.dumps(build)).encode()
-        state = page.evaluate("""async () => {
-          const registration = await navigator.serviceWorker.ready;
-          const state = new Promise(resolve => registration.addEventListener('updatefound', () => {
-            const worker = registration.installing;
-            worker.addEventListener('statechange', () => {
-              if (worker.state === 'redundant' || worker.state === 'installed') resolve(worker.state);
-            });
-          }, { once: true }));
-          await registration.update();
-          return state;
-        }""")
-        assert state == "redundant", "An incomplete shell installed successfully"
+        for suffix in ("404", "html"):
+            build["version"] = f"test-failed-update-{suffix}"
+            server.html_fallback_path = f"/{missing_asset}" if suffix == "html" else None
+            server.replacement_worker = original_worker.replace(original_build, json.dumps(build)).encode()
+            state = page.evaluate("""async () => {
+              const registration = await navigator.serviceWorker.ready;
+              const state = new Promise(resolve => registration.addEventListener('updatefound', () => {
+                const worker = registration.installing;
+                worker.addEventListener('statechange', () => {
+                  if (worker.state === 'redundant' || worker.state === 'installed') resolve(worker.state);
+                });
+              }, { once: true }));
+              await registration.update();
+              return state;
+            }""")
+            assert state == "redundant", f"A shell with an invalid script response ({suffix}) installed"
+            assert not page.evaluate("key => caches.has(key)", f"text2handwriting:%2F:{build['version']}:shell")
+
+        assert page.evaluate("""async (path) => {
+          const response = await fetch(path);
+          return response.headers.get('content-type') === 'text/html' && !(await caches.match(path));
+        }""", missing_asset), "A fallback HTML response entered the runtime cache"
         context.set_offline(True)
         page.reload()
         expect(page.locator("textarea")).to_have_value("Draft during update")
@@ -775,10 +789,12 @@ def worker_update(context, origin, server, dist):
         page.close()
         fresh = editor(context, origin)
         fresh.wait_for_function("async () => navigator.serviceWorker.controller !== null && "
-                                "!(await caches.has('text2handwriting:%2F:test-failed-update:shell'))")
+                                "!(await caches.has('text2handwriting:%2F:' + "
+                                + json.dumps(json.loads(original_build)["version"]) + " + ':shell'))")
         expect(fresh.locator("textarea")).to_have_value("Draft during update")
     finally:
         server.replacement_worker = None
+        server.html_fallback_path = None
 
 
 def main():

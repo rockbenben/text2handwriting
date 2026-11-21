@@ -55,6 +55,9 @@ jobs:
           branch: gh-pages
           # Vite 构建产物目录
           folder: dist
+          # 已打开的页面仍可能按需加载旧版本的哈希资源。
+          clean-exclude: |
+            assets/**
           # 不转发 head commit message——任意提交正文中的 shell 元字符
           # （引号、$、!、反引号）会破坏动作内部的 git commit -m 调用（exit 129）。
           # 动作默认的静态提交信息足矣，规范历史保留在 main。

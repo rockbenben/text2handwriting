@@ -14,6 +14,8 @@
 缓存与安全头由 `public/edgeone.json` 配置，`sw.js` 与 manifest 使用 `no-cache` 以检查更新）。
 推送到 `main` 由 `.github/workflows/deploy.yml` 自动构建并发布 `gh-pages`。
 
+EdgeOne Pages 通过构建产物中的 `404.html` 为缺失路径返回 404，避免把首页 HTML 回退到 JS/CSS URL。`/` 与 `/index.html` 使用 `no-store`。部署时保留 `gh-pages` 上已有的 `assets/` 哈希文件，供仍打开的旧页面加载语言包和导出模块。手动清理旧资源前，应先确认已无需要维持兼容的旧页面。
+
 构建会通过 `vite.config.ts` 中的 `offlineShell` 插件，把 `public/sw.js` 源码、入口 HTML、静态 import 依赖的 JS/CSS 清单与全部产物文件名集合一起计算版本哈希，再注入 `dist/sw.js`。首次访问完成后外壳完全离线可用，语言包、字体与导出模块按需缓存。新版 Service Worker 等旧页面关闭后激活；若出现回滚，能保证同一构建的 HTML、静态资源与 Service Worker 一起恢复。
 
 运行 `npm run build` 后，可用已安装 Playwright 和 Chromium 的 Python 环境运行 `python scripts/test-browser-persistence.py`。使用系统 Chrome 时加 `--chrome <Chrome 可执行文件路径>`。测试脚本（27 个用例）覆盖多标签页保存与冲突检测、存储被禁/配额降级、整篇导入/预设/示例替换、TXT 缩进与 GB18030 兜底、移动端编辑/预览切换与 PNG 下载、纸纹与暗角、命名滑块、语言切换竞态、导出快照与打印预览、阿拉伯语排版、PWA 离线/更新/缓存隔离及长文性能冒烟。用 `--case <测试名称片段>` 可单独运行指定用例。
@@ -135,8 +137,8 @@ src/
 1. **自动化外壳打包 (`offlineShell`)**：
    - Vite 构建阶段自动收集入口 HTML 及其静态 import 依赖的 JS/CSS chunk，计算「入口 HTML + 静态依赖清单 + 全部产物文件名」的哈希版本号（chunk 内容变化会改变文件名，因此可代表整包版本），将外壳清单注入 `dist/sw.js`。
 2. **精细缓存策略**：
-   - 静态外壳（Shell）：`cache-first` 批量预载，确保离线即开。
-   - 构建哈希产物（`assets/*`）：`cache-first`，天然具备不变性。
+   - 静态外壳（Shell）：`cache-first`。预载时验证 HTTP 状态及 JS/CSS 的媒体类型，任一资源校验或写入失败就删除不完整的新版缓存。
+   - 构建哈希产物（`assets/*`）：`cache-first`，跳过媒体类型错误的 JS/CSS 响应。
    - 本地字体（`fonts/*`）：`stale-while-revalidate`，首次使用后沉淀缓存。
    - 品牌与静态资产（`favicon`、PWA 图标、`apple-touch-icon`、`social-card`、`manifest`）：`network-first`，确保版本更新时品牌图标与描述即时同步。
    - Google Fonts（`fonts.gstatic.com` / `fonts.googleapis.com`）：`stale-while-revalidate`，先用缓存字体再后台更新。

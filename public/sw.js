@@ -6,13 +6,34 @@ const shellCache = `${prefix}${BUILD.version}:shell`;
 const runtimeCache = `${prefix}${BUILD.version}:runtime`;
 const index = new URL('index.html', scope);
 
+function hasAssetContentType(path, response) {
+  const type = response.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase();
+  if (path.endsWith('.css')) return type === 'text/css';
+  if (path.endsWith('.js')) return /^(application|text)\/(x-)?(java|ecma)script$/.test(type ?? '');
+  return true;
+}
+
 self.addEventListener('install', (event) => {
-  const requests = BUILD.resources.map(
-    (path) => new Request(new URL(path, scope), { cache: 'reload' }),
-  );
-  // addAll commits the shell as a batch. A failed install leaves the active
-  // worker in place. Let the new worker wait until old pages have closed.
-  event.waitUntil(caches.open(shellCache).then((cache) => cache.addAll(requests)));
+  // A hosting fallback can return 200 HTML for a missing JS or CSS file.
+  // Validate each response before caching it. A failed install leaves the
+  // active worker in place.
+  event.waitUntil((async () => {
+    const cache = await caches.open(shellCache);
+    const results = await Promise.allSettled(BUILD.resources.map(async (path) => {
+      const request = new Request(new URL(path, scope), { cache: 'reload' });
+      const response = await fetch(request);
+      if (!response.ok || !hasAssetContentType(path, response)) {
+        await response.body?.cancel();
+        throw new Error(`Invalid offline shell resource: ${path}`);
+      }
+      await cache.put(request, response);
+    }));
+    const failure = results.find((result) => result.status === 'rejected');
+    if (failure) {
+      await caches.delete(shellCache);
+      throw failure.reason;
+    }
+  })());
 });
 
 self.addEventListener('activate', (event) => {
@@ -42,7 +63,7 @@ async function fromShell(request) {
   return cache.match(request);
 }
 
-function cacheAsset(event, { networkFirst = false, revalidate = false } = {}) {
+function cacheAsset(event, { networkFirst = false, revalidate = false, buildAsset = false } = {}) {
   const request = event.request;
   const cached = (async () => {
     if (!networkFirst) {
@@ -57,7 +78,7 @@ function cacheAsset(event, { networkFirst = false, revalidate = false } = {}) {
       if (response) return response;
     }
     const response = await fetch(request);
-    if (response.ok) {
+    if (response.ok && (!buildAsset || hasAssetContentType(new URL(request.url).pathname, response))) {
       try {
         await (await caches.open(runtimeCache)).put(request, response.clone());
       } catch (error) {
@@ -102,7 +123,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   const path = url.pathname.slice(scope.pathname.length);
-  if (path.startsWith('assets/')) cacheAsset(event);
+  if (path.startsWith('assets/')) cacheAsset(event, { buildAsset: true });
   else if (path.startsWith('fonts/')) cacheAsset(event, { revalidate: true });
   else if (identityAssets.has(path)) cacheAsset(event, { networkFirst: true });
 });
